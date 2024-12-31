@@ -14,7 +14,7 @@ import SingUpScreen from './src/screens/SignUpScreen';
 import IdealTypeImg from './src/screens/Simulation/IdealTypeImg';
 import IdealTypeSet from './src/screens/Simulation/IdealTypeSet';
 import MyCharacter from './src/screens/MyCharacter';
-
+import TabBar from './src/components/TabBar';
 
 const Stack = createStackNavigator(); // 스택 내비게이션 생성
 
@@ -43,15 +43,16 @@ const MainNavigator = () => {
           component={LoginScreen} // 로그인 화면 추가
           options={{ headerShown: false}}
         />
-        <Stack.Screen
-          name="MainScreen"
-          component={MainScreen}
-          options={{ headerTitle: '메인 화면', headerTitleAlign: 'center' }}
-        />
+        
         <Stack.Screen
           name="SingUpScreen"
           component={SingUpScreen}
           options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="MainScreen"
+          component={TabBar}
+          options={{ headerTitle: '메인 화면', headerTitleAlign: 'center' }}
         />
         <Stack.Screen
           name="ProfileScreen"
@@ -97,6 +98,11 @@ const MainNavigator = () => {
           name="MyCharacter"
           component={MyCharacter}
           options={{ headerTitle: '캐릭터 생성', headerTitleAlign: 'center' }}
+        />
+        <Stack.Screen
+          name="TabBar"
+          component={TabBar}
+          options={{ headerTitle: '', headerTitleAlign: 'center' }}
         />
       </Stack.Navigator>
     </NavigationContainer>

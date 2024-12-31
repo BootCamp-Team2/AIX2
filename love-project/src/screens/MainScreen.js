@@ -1,87 +1,49 @@
-import { View, Text, TouchableOpacity, StyleSheet, Platform, Modal } from 'react-native';
-import { useNavigation, useFocusEffect } from "@react-navigation/native";
-import TabBar from '../components/TebBar';
+import React from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 const MainScreen = () => {
-    const navigation = useNavigation();
+  const navigation = useNavigation();
 
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>메인화면</Text>
 
-    return(
-        <View style={[styles.container]}>
-            <View style={styles.content}>
-            <Text>
-                메인화면
-            </Text>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("MatchingScreen")}>
+        <Text style={styles.buttonText}>매칭 화면</Text>
+      </TouchableOpacity>
 
-            {/* 매칭화면 */} 
-            <TouchableOpacity 
-                style={[styles.button]} 
-                onPress={() => navigation.navigate("MatchingScreen", { screen: 'MatchingScreen' })}> 
-                <Text style={styles.BtnText}>매칭화면</Text>
-            </TouchableOpacity> 
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("ConversationScreen")}>
+        <Text style={styles.buttonText}>대화 시뮬레이션 화면</Text>
+      </TouchableOpacity>
 
-            {/* 대화 시뮬레이션 화면 */} 
-            <TouchableOpacity 
-                style={[styles.button]} 
-                onPress={() => navigation.navigate("ConversationScreen", { screen: 'ConversationScreen' })}> 
-                <Text style={styles.BtnText}>대화 시뮬레이션 화면</Text>
-            </TouchableOpacity> 
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("CoordinationScreen")}>
+        <Text style={styles.buttonText}>코디 화면</Text>
+      </TouchableOpacity>
 
-            {/* 코디 화면 */} 
-            <TouchableOpacity 
-                style={[styles.button]} 
-                onPress={() => navigation.navigate("CoordinationScreen", { screen: 'CoordinationScreen' })}> 
-                <Text style={styles.BtnText}>코디 화면</Text>
-            </TouchableOpacity> 
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("ProfileScreen")}>
+        <Text style={styles.buttonText}>프로필 화면</Text>
+      </TouchableOpacity>
 
-            {/* 프로필 화면 */} 
-            <TouchableOpacity 
-                style={[styles.button]} 
-                onPress={() => navigation.navigate("ProfileScreen", { screen: 'ProfileScreen' })}> 
-                <Text style={styles.BtnText}>프로필 화면</Text>
-            </TouchableOpacity> 
-
-            {/* 설정 화면 */} 
-            <TouchableOpacity 
-                style={[styles.button]} 
-                onPress={() => navigation.navigate("SettingScreen", { screen: 'SettingScreen' })}> 
-                <Text style={styles.BtnText}>설정 화면</Text>
-            </TouchableOpacity> 
-
-            </View>
-
-            <TabBar navigation={navigation} />
-        </View>
-    );
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("SettingScreen")}>
+        <Text style={styles.buttonText}>설정 화면</Text>
+      </TouchableOpacity>
+    </View>
+  );
 };
 
-const styles = StyleSheet.create({ 
-    container: { 
-        flex: 1, 
-        justifyContent: 'flex-start', 
-    }, 
-    content: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    button: { 
-        margin: 10,
-        marginTop:20,
-        backgroundColor: "#009688",
-        padding: 10,
-        width: "110%",
-        alignSelf: "center",
-        borderRadius: 10
-    }, 
-    BtnText: {
-        fontWeight: 'bold',
-        fontSize:16,
-        textAlign: 'center',
-        color: 'white',
-        paddingTop:7,
-        height:30
-      },
+const styles = StyleSheet.create({
+  container: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 },
+  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20 },
+  button: {
+    backgroundColor: '#009688',
+    padding: 15,
+    borderRadius: 8,
+    width: '100%',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  buttonText: { color: 'white', fontSize: 16, fontWeight: 'bold' },
 });
 
 export default MainScreen;
