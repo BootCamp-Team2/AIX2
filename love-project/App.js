@@ -11,7 +11,6 @@ import MatchingChatScreen from './src/screens/Matching/MatchingChatScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
 import SettingScreen from './src/screens/SettingScreen';
 import SingUpScreen from './src/screens/SignUpScreen';
-import MatchingChatScreen from './src/screens/Matching/MatchingChatScreen';
 import IdealTypeImg from './src/screens/Simulation/IdealTypeImg';
 import IdealTypeSet from './src/screens/Simulation/IdealTypeSet';
 import MyCharacter from './src/screens/MyCharacter';
@@ -83,11 +82,6 @@ const MainNavigator = () => {
           name="CoordinationScreen"
           component={CoordinationScreen}
           options={{ headerTitle: '코디 화면', headerTitleAlign: 'center' }}
-        />
-        <Stack.Screen
-          name="MatchingChatScreen"
-          component={MatchingChatScreen}
-          options={{ headerTitle: '매칭 채팅 화면', headerTitleAlign: 'center' }}
         />
         <Stack.Screen
           name="IdealTypeImg"

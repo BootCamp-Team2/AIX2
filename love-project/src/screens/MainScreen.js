@@ -1,5 +1,6 @@
 import { View, Text, TouchableOpacity, StyleSheet, Platform, Modal } from 'react-native';
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import TabBar from '../components/TebBar';
 
 const MainScreen = () => {
     const navigation = useNavigation();
@@ -7,10 +8,11 @@ const MainScreen = () => {
 
     return(
         <View style={[styles.container]}>
+            <View style={styles.content}>
             <Text>
                 메인화면
             </Text>
-            
+
             {/* 매칭화면 */} 
             <TouchableOpacity 
                 style={[styles.button]} 
@@ -45,6 +47,10 @@ const MainScreen = () => {
                 onPress={() => navigation.navigate("SettingScreen", { screen: 'SettingScreen' })}> 
                 <Text style={styles.BtnText}>설정 화면</Text>
             </TouchableOpacity> 
+
+            </View>
+
+            <TabBar navigation={navigation} />
         </View>
     );
 };
@@ -54,6 +60,11 @@ const styles = StyleSheet.create({
         flex: 1, 
         justifyContent: 'flex-start', 
     }, 
+    content: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
     button: { 
         margin: 10,
         marginTop:20,
