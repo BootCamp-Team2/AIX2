@@ -4,12 +4,18 @@ import { createStackNavigator } from '@react-navigation/stack';
 import MainScreen from './src/screens/MainScreen';
 import SplashScreenComponent from './src/screens/SplashScreen';
 import CoordinationScreen from './src/screens/CoordinationScreen';
-import ConversationScreen from './src/screens/ConversationScreen';
+import ConversationScreen from './src/screens/Simulation/ConversationScreen';
 import LoginScreen from './src/screens/LoginScreen';
-import MatchingScreen from './src/screens/MatchingScreen';
+import MatchingScreen from './src/screens/Matching/MatchingScreen';
+import MatchingChatScreen from './src/screens/Matching/MatchingChatScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
 import SettingScreen from './src/screens/SettingScreen';
 import SingUpScreen from './src/screens/SignUpScreen';
+import MatchingChatScreen from './src/screens/Matching/MatchingChatScreen';
+import IdealTypeImg from './src/screens/Simulation/IdealTypeImg';
+import IdealTypeSet from './src/screens/Simulation/IdealTypeSet';
+import MyCharacter from './src/screens/MyCharacter';
+
 
 const Stack = createStackNavigator(); // 스택 내비게이션 생성
 
@@ -64,6 +70,11 @@ const MainNavigator = () => {
           options={{ headerTitle: '매칭 화면', headerTitleAlign: 'center' }}
         />
         <Stack.Screen
+          name="MatchingChatScreen"
+          component={MatchingChatScreen}
+          options={{ headerTitle: '코디 화면', headerTitleAlign: 'center' }}
+        />
+        <Stack.Screen
           name="ConversationScreen"
           component={ConversationScreen}
           options={{ headerTitle: 'AI 대화 시뮬레이션 화면', headerTitleAlign: 'center' }}
@@ -72,6 +83,26 @@ const MainNavigator = () => {
           name="CoordinationScreen"
           component={CoordinationScreen}
           options={{ headerTitle: '코디 화면', headerTitleAlign: 'center' }}
+        />
+        <Stack.Screen
+          name="MatchingChatScreen"
+          component={MatchingChatScreen}
+          options={{ headerTitle: '매칭 채팅 화면', headerTitleAlign: 'center' }}
+        />
+        <Stack.Screen
+          name="IdealTypeImg"
+          component={IdealTypeImg}
+          options={{ headerTitle: '이상형 이미지 생성 화면', headerTitleAlign: 'center' }}
+        />
+        <Stack.Screen
+          name="IdealTypeSet"
+          component={IdealTypeSet}
+          options={{ headerTitle: '이상형 이미지 설정 화면', headerTitleAlign: 'center' }}
+        />
+        <Stack.Screen
+          name="MyCharacter"
+          component={MyCharacter}
+          options={{ headerTitle: '캐릭터 생성', headerTitleAlign: 'center' }}
         />
       </Stack.Navigator>
     </NavigationContainer>
