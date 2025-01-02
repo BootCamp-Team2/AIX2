@@ -18,16 +18,17 @@ const TabBar = () => {
           borderRadius: 20, // 둥글게 만들기
           marginHorizontal: 10, // 양쪽에 간격 추가
           marginBottom: 10, // 아래쪽 간격
-          elevation: 5, // 그림자 효과 (Android)
+          elevation: 3, // 그림자 효과 (Android)
           shadowColor: '#000', // 그림자 색상 (iOS)
           shadowOffset: { width: 0, height: 2 }, // 그림자 위치 (iOS)
           shadowOpacity: 0.25, // 그림자 투명도 (iOS)
           shadowRadius: 3.84, // 그림자 반경 (iOS)
+          height: 55,
         },
         tabBarItemStyle: {
           borderRadius: 15, // 각 탭 아이템 둥글게
         },
-        tabBarActiveTintColor: '#009688', // 활성 상태 아이템 색상
+        tabBarActiveTintColor: '#FF9AAB', // 활성 상태 아이템 색상
         tabBarInactiveTintColor: '#8e8e8e', // 비활성 상태 아이템 색상
       }}
     >
