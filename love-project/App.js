@@ -53,12 +53,12 @@ const MainNavigator = () => {
         <Stack.Screen
           name="MainScreen"
           component={TabBar}
-          options={{ headerTitle: '메인 화면', headerTitleAlign: 'center' }}
+          options={{ headerShown: false, headerTitle: '메인 화면', headerTitleAlign: 'center' }}
         />
         <Stack.Screen
           name="ProfileScreen"
           component={ProfileScreen}
-          options={{ headerTitle: '프로필 화면', headerTitleAlign: 'center' }}
+          options={{ headerShown: false}}
         />
         <Stack.Screen
           name="SettingScreen"
