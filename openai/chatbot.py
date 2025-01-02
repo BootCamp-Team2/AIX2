@@ -1,3 +1,4 @@
+from analyzing_emotion import initialize_emotion_model, analyze_emotion
 from openai import OpenAI
 import time
 
@@ -92,35 +93,35 @@ if __name__ == "__main__":
         print("파트너 ID를 읽는 중...")
         partner_id = get_partner_id_from_file()
         print(f"파트너 ID: {partner_id}")
-    except Exception as e:
-        print("파트너 ID 가져오기 실패:", e)
-        exit(1)
+        thread_id = get_or_create_thread_and_summary()
+        
+        # 감정 분석 모델 초기화
+        emotion_model = initialize_emotion_model()
 
-    thread_id = get_or_create_thread_and_summary()
+        print("\n==== Welcome to your Romantic Chat! ====")
+        print("You can talk to your partner as if they are right here. Type 'exit' or say goodbye to end the conversation.\n")
 
-    print("\n==== Welcome to your Romantic Chat! ====")
-    print("You can talk to your partner as if they are right here. Type 'exit' or say goodbye to end the conversation.\n")
-
-    while True:
-        user_input = input("You: ")
-        if user_input.lower() == "exit":
-            print("안녕! 다음에 또 얘기하자. 😊")
-            request_chat_summary()
-            break
-
-        try:
-            send_message(thread_id, user_input)
-            run_id = activate_message(thread_id, partner_id)
-            wait_for_completion(thread_id, run_id)
-            partner_response = list_messages(thread_id)
-            print(f"파트너: {partner_response}\n")
-
-            # 종료 판단 로직 추가
-            if "작별인사" in partner_response or "다음에 보자" in partner_response:
-                print("대화를 종료합니다.")
+        while True:
+            user_input = input("You: ")
+            if user_input.lower() == "exit":
+                print("안녕! 다음에 또 얘기하자. 😊")
                 request_chat_summary()
                 break
 
-        except Exception as e:
-            print("대화 중 오류 발생:", e)
-            break
+            try:
+                send_message(thread_id, user_input)
+                run_id = activate_message(thread_id, partner_id)
+                wait_for_completion(thread_id, run_id)
+                partner_response = list_messages(thread_id)
+                print(f"파트너: {partner_response}\n")
+
+                # 감정 분석 실행
+                analyze_emotion(partner_response, emotion_model)
+
+            except Exception as e:
+                print("대화 중 오류 발생:", e)
+                break
+        
+    except Exception as e:
+        print("파트너 ID 가져오기 실패:", e)
+        
