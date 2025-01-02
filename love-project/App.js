@@ -8,12 +8,13 @@ import ConversationScreen from './src/screens/Simulation/ConversationScreen';
 import LoginScreen from './src/screens/LoginScreen';
 import MatchingScreen from './src/screens/Matching/MatchingScreen';
 import MatchingChatScreen from './src/screens/Matching/MatchingChatScreen';
-import ProfileScreen from './src/screens/ProfileScreen';
+import ProfileScreen from './src/screens/Profile/ProfileScreen';
+import AvatarScreen from './src/screens/Profile/AvatarScreen';
 import SettingScreen from './src/screens/SettingScreen';
 import SingUpScreen from './src/screens/SignUpScreen';
 import IdealTypeImg from './src/screens/Simulation/IdealTypeImg';
 import IdealTypeSet from './src/screens/Simulation/IdealTypeSet';
-import MyCharacter from './src/screens/MyCharacter';
+import MyCharacter from './src/screens/Profile/MyCharacter';
 import TabBar from './src/components/TabBar';
 
 const Stack = createStackNavigator(); // 스택 내비게이션 생성
@@ -98,6 +99,11 @@ const MainNavigator = () => {
           name="MyCharacter"
           component={MyCharacter}
           options={{ headerTitle: '캐릭터 생성', headerTitleAlign: 'center' }}
+        />
+        <Stack.Screen
+          name="AvatarScreen"
+          component={AvatarScreen}
+          options={{ headerTitle: '아바타 생성', headerTitleAlign: 'center' }}
         />
         <Stack.Screen
           name="TabBar"
