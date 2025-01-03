@@ -38,7 +38,7 @@ const AvatarScreen = () => {
     }
 
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ImagePicker.Images,
       allowsEditing: true,
       quality: 1,
     });

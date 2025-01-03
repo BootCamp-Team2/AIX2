@@ -22,6 +22,7 @@ const ProfileScreen = () => {
     const [additionalInfo, setAdditionalInfo] = useState([]);
     const [showInput, setShowInput] = useState(false); // 추가 정보 입력 필드 보이기 상태
     const [showEditButtons, setShowEditButtons] = useState(false); // 수정 버튼 보이기 상태
+    const [isCircleFront, setIsCircleFront] = useState(false);
 
     const handleAddInfo = () => {
         if (newInfo.title && newInfo.value) {
@@ -31,11 +32,15 @@ const ProfileScreen = () => {
             Alert.alert("오류", "모든 필드를 입력해주세요.");
         }
     };
+    const handleSwitch = () => {
+        setIsCircleFront(!isCircleFront); // 상태 스위치
+    };
 
     const handleDeleteInfo = (index) => {
         const updatedInfo = additionalInfo.filter((_, i) => i !== index);
         setAdditionalInfo(updatedInfo);
     };
+    
 
     return (
         <KeyboardAvoidingView 
@@ -59,13 +64,38 @@ const ProfileScreen = () => {
                 <View style={styles.photoContainer}>
                     <Image
                         source={{ uri: 'https://example.com/profile.jpg' }} // 여기에 사진 URL을 추가하세요.
-                        style={styles.profilePhoto}
+                        style={[
+                            styles.profilePhoto,
+                            { 
+                                zIndex: isCircleFront ? 0 : 1,
+                                left: isCircleFront ? 30 : 0, // 왼쪽으로 이동
+                                width: isCircleFront ? 80 : 100, // 오른쪽으로 이동한 원 크기 조정
+                                height: isCircleFront ? 80 : 100, // 크기 조정
+                            }, // z-index 조정
+                        ]}
                     />
+                    {/* 겹치는 원 추가 */}
+                    <Image
+                        source={{ uri: 'https://example.com/profile.jpg' }} // 여기에 사진 URL을 추가하세요.
+                        style={[
+                            styles.overlappingCircle,
+                            {
+                                zIndex: isCircleFront ? 1 : 0, // z-index 조정
+                                left: isCircleFront ? 115 : 145, // 왼쪽으로 이동
+                                width: isCircleFront ? 100 : 80, // 오른쪽으로 이동한 원 크기 조정
+                                height: isCircleFront ? 100 : 80, // 크기 조정
+                            },
+                        ]}
+                    />
+                    <TouchableOpacity style={styles.switchButton} onPress={handleSwitch}>
+                        <Icon5 style={styles.switchText} name="account-convert-outline" size={24} color="#9AAEFF" />
+                    </TouchableOpacity>
                 </View>
 
+
                 <View>
-                    <TouchableOpacity style={styles.editButton} onPress={() => navigation.navigate("AvatarScreen")}>
-                        <Icon2 style={styles.editButtonText} name="edit-3" size={24} color="#9AAEFF" />
+                    <TouchableOpacity style={styles.avatarButton} onPress={() => navigation.navigate("AvatarScreen")}>
+                        <Text style={styles.avatarText}>캐릭터 생성하기</Text>
                     </TouchableOpacity>
                 </View>
 
@@ -215,7 +245,7 @@ const styles = StyleSheet.create({
     },
     photoContainer: {
         alignItems: 'center',
-        marginBottom: 20,
+        flexDirection: 'row',
     },
     profilePhoto: {
         width: 100,
@@ -354,6 +384,56 @@ const styles = StyleSheet.create({
     appealText: {
         color: '#9AAEFF',
     },
+    avatarText:{
+        color: '#9AAEFF',
+    },
+    avatarButton: {
+        borderWidth: 2,           // Sets the border width
+        borderColor: '#9AAEFF',      // Sets the border color to blue
+        borderRadius: 10,         // Optional: Adds rounded corners
+        padding: 7,              // Optional: Adds padding inside the button
+        alignItems: 'center',     // Centers text inside the button
+        justifyContent: 'center', // Centers text vertically
+        backgroundColor: 'white', // Optional: Sets background color
+        width: '35%',
+        marginBottom: 20
+      },
+      switchButton: {
+        position: 'absolute', // 절대 위치로 설정
+        right: 30, // 원의 오른쪽으로 버튼 이동
+        top: '80%', // 원의 수직 중앙에 배치
+        transform: [{ translateY: -12 }], // 버튼 크기의 절반만큼 위로 이동하여 중앙 정렬
+        backgroundColor: 'white', // 선택사항: 버튼 배경색
+        padding: 5, // 선택사항: 여백 추가
+        borderRadius: 15, // 선택사항: 둥근 버튼
+        elevation: 5, // 선택사항: 그림자 효과
+    },
+      switchText:{
+
+      },
+      photoContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        position: 'relative', // 자식 요소의 위치를 절대적으로 배치하기 위해 추가
+    },
+    profilePhoto: {
+        width: 100,
+        height: 100,
+        borderRadius: 50,
+        borderWidth: 2,
+        borderColor: '#E0E0E0',
+        position: 'relative', // 원과의 관계 설정을 위해 추가
+    },
+    overlappingCircle: {
+        width: 100, // 사진과 동일한 크기
+        height: 100,
+        borderRadius: 50,
+        backgroundColor: '#9AAEFF', // 원의 색상
+        position: 'absolute', // 사진에 겹치도록 설정
+        left: 160, // 오른쪽으로 이동
+        top:0,
+    },
+    
 });
 
 export default ProfileScreen;
