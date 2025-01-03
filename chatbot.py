@@ -79,8 +79,9 @@ def list_messages(thread_id):
     response = messages.data[0].content[0].text.value
     return response
 
+
 # 대화 요약 요청 함수
-def request_chat_summary():
+def request_chat_summary(thread_id, partner_id):
     try:
         with open("chat_summation.txt", "w") as file:
             summary_prompt = "지금까지 대화를 요약해줘"
@@ -93,7 +94,8 @@ def request_chat_summary():
     except Exception as e:
         logging.error("대화 요약 중 오류 발생: %s", e)
 
-if __name__ == "__main__":
+# 기존 main 함수에 있던것 따로 함수로 분리함
+def start_chat():
     try:
         partner_id = get_partner_id()
         thread_id = get_or_create_thread_and_summary()
@@ -108,7 +110,7 @@ if __name__ == "__main__":
             user_input = input("You: ")
             if user_input.lower() == "exit":
                 logging.info("안녕! 다음에 또 얘기하자. 😊")
-                request_chat_summary()
+                request_chat_summary(thread_id, partner_id)  # 변수 전달
                 break
 
             try:
@@ -127,3 +129,7 @@ if __name__ == "__main__":
 
     except Exception as e:
         logging.error("파트너 ID 가져오기 실패: %s", e)
+
+# 다른 파일에서 사용할 거면 메인 함수에서 start_chat() 불러오기
+if __name__ == "__main__":
+    start_chat()
