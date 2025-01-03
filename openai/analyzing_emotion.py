@@ -1,7 +1,12 @@
+import logging
 from transformers import pipeline
+
+# 로깅 설정
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # 감정 분석 모델 초기화
 def initialize_emotion_model():
+    logging.info("감정 분석 모델 초기화 중...")
     return pipeline("sentiment-analysis")
 
 # 감정을 희, 노, 애, 락 네 가지로 분류
@@ -24,6 +29,9 @@ def classify_emotion(sentiment_result):
 
 # 감정 분석 실행
 def analyze_emotion(response, emotion_model):
-    sentiment_result = emotion_model(response)[0]
-    emotion = classify_emotion(sentiment_result)
-    print(f"응답: {response}\n감정 분석: {emotion}\n")
+    try:
+        sentiment_result = emotion_model(response)[0]
+        emotion = classify_emotion(sentiment_result)
+        logging.info(f"감정 분석 결과: {emotion}")
+    except Exception as e:
+        logging.error(f"감정 분석 중 오류 발생: {e}")
