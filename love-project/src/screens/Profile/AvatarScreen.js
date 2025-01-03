@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { View, Button, Image, Text } from 'react-native';
+import { View, Button, Image, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
+import { Ionicons } from '@expo/vector-icons';
 
 const AvatarScreen = () => {
   const [imageUri, setImageUri] = useState(null);
@@ -79,26 +80,129 @@ const AvatarScreen = () => {
   };
 
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Button title="Take Photo" onPress={takePhoto} />
-      <Button title="Choose Image" onPress={chooseImage} style={{ marginTop: 10 }} />
+    <View style={styles.container}>
+      <Text style={styles.title}>Upload Your Avatar</Text>
+      
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.button} onPress={takePhoto}>
+          <Ionicons name="camera" size={24} color="white" />
+          <Text style={styles.buttonText}>Take Photo</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={chooseImage}>
+          <Ionicons name="image" size={24} color="white" />
+          <Text style={styles.buttonText}>Choose Image</Text>
+        </TouchableOpacity>
+      </View>
+
       {imageUri && (
-        <View style={{ marginTop: 20 }}>
+        <View style={styles.imageCard}>
           <Image
             source={{ uri: imageUri }}
-            style={{ width: 200, height: 200 }}
-            resizeMode="contain"
+            style={styles.image}
+            resizeMode="cover"
           />
         </View>
       )}
-      <Button
-        title={loading ? 'Uploading...' : 'Upload Image'}
+
+      <TouchableOpacity
+        style={[styles.uploadButton, loading && styles.uploadButtonLoading]}
         onPress={uploadImage}
         disabled={loading}
-      />
-      {uploadStatus && <Text>{uploadStatus}</Text>}
+      >
+        <Text style={styles.uploadButtonText}>
+          {loading ? 'Uploading...' : 'Upload Image'}
+        </Text>
+      </TouchableOpacity>
+
+      {uploadStatus && <Text style={styles.uploadStatus}>{uploadStatus}</Text>}
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'linear-gradient(to top, #6a11cb, #2575fc)',
+    padding: 20,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#fff',
+    marginBottom: 30,
+    textAlign: 'center',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginBottom: 30,
+  },
+  button: {
+    backgroundColor: '#3B82F6',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+    marginLeft: 8,
+  },
+  imageCard: {
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    padding: 10,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    marginBottom: 30,
+  },
+  image: {
+    width: 250,
+    height: 250,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: '#ddd',
+  },
+  uploadButton: {
+    backgroundColor: '#22C55E',
+    paddingVertical: 14,
+    paddingHorizontal: 50,
+    borderRadius: 12,
+    marginTop: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+  },
+  uploadButtonLoading: {
+    backgroundColor: '#A3F4D9',
+  },
+  uploadButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  uploadStatus: {
+    fontSize: 16,
+    color: '#333',
+    fontWeight: '600',
+    marginTop: 15,
+  },
+});
 
 export default AvatarScreen;
