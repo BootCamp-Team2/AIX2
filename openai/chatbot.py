@@ -1,23 +1,28 @@
+import logging
 from analyzing_emotion import initialize_emotion_model, analyze_emotion
 from openai import OpenAI
 import time
+from dotenv import load_dotenv
+import os
+
+# .env 파일 로드
+load_dotenv()
+
+# 로깅 설정
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # OpenAI 클라이언트 초기화
-api_key = "your_api_key"
+api_key = os.getenv("REACT_APP_OPENAI_API_KEY")
+if not api_key:
+    raise Exception("REACT_APP_OPENAI_API_KEY가 .env 파일에 설정되지 않았습니다.")
 client = OpenAI(api_key=api_key)
 
 # Partner ID 읽기
-def get_partner_id_from_file():
-    try:
-        with open("partner_id.txt", "r") as file:
-            partner_id = file.read().strip()
-            if not partner_id:
-                raise Exception("partner_id.txt 파일이 비어 있습니다.")
-            return partner_id
-    except FileNotFoundError:
-        raise Exception("partner_id.txt 파일이 없습니다. 올바른 경로에 파일을 추가하세요.")
-    except Exception as e:
-        raise Exception(f"파트너 ID 읽기 중 오류 발생: {e}")
+def get_partner_id():
+    partner_id = os.getenv("REACT_APP_PARTNER_ID")
+    if not partner_id:
+        raise Exception("REACT_APP_PARTNER_ID가 .env 파일에 설정되지 않았습니다.")
+    return partner_id
 
 # 대화 스레드 생성 및 요약 파일 읽기
 def get_or_create_thread_and_summary():
@@ -36,7 +41,7 @@ def get_or_create_thread_and_summary():
             if summary_content:
                 send_message(thread_id, f"지난 대화 요약: {summary_content}")
     except FileNotFoundError:
-        print("chat_summation.txt 파일이 없습니다. 새 대화를 시작합니다.")
+        logging.info("chat_summation.txt 파일이 없습니다. 새 대화를 시작합니다.")
 
     return thread_id
 
@@ -74,8 +79,9 @@ def list_messages(thread_id):
     response = messages.data[0].content[0].text.value
     return response
 
+
 # 대화 요약 요청 함수
-def request_chat_summary():
+def request_chat_summary(thread_id, partner_id):
     try:
         with open("chat_summation.txt", "w") as file:
             summary_prompt = "지금까지 대화를 요약해줘"
@@ -84,28 +90,27 @@ def request_chat_summary():
             wait_for_completion(thread_id, run_id)
             summary_response = list_messages(thread_id)
             file.write(summary_response)
-        print("대화 요약이 chat_summation.txt에 저장되었습니다.")
+        logging.info("대화 요약이 chat_summation.txt에 저장되었습니다.")
     except Exception as e:
-        print("대화 요약 중 오류 발생:", e)
+        logging.error("대화 요약 중 오류 발생: %s", e)
 
-if __name__ == "__main__":
+# 기존 main 함수에 있던것 따로 함수로 분리함
+def start_chat():
     try:
-        print("파트너 ID를 읽는 중...")
-        partner_id = get_partner_id_from_file()
-        print(f"파트너 ID: {partner_id}")
+        partner_id = get_partner_id()
         thread_id = get_or_create_thread_and_summary()
-        
+
         # 감정 분석 모델 초기화
         emotion_model = initialize_emotion_model()
 
-        print("\n==== Welcome to your Romantic Chat! ====")
-        print("You can talk to your partner as if they are right here. Type 'exit' or say goodbye to end the conversation.\n")
+        logging.info("\n==== Welcome to your Romantic Chat! ====")
+        logging.info("You can talk to your partner as if they are right here. Type 'exit' or say goodbye to end the conversation.\n")
 
         while True:
             user_input = input("You: ")
             if user_input.lower() == "exit":
-                print("안녕! 다음에 또 얘기하자. 😊")
-                request_chat_summary()
+                logging.info("안녕! 다음에 또 얘기하자. 😊")
+                request_chat_summary(thread_id, partner_id)  # 변수 전달
                 break
 
             try:
@@ -113,15 +118,17 @@ if __name__ == "__main__":
                 run_id = activate_message(thread_id, partner_id)
                 wait_for_completion(thread_id, run_id)
                 partner_response = list_messages(thread_id)
-                print(f"파트너: {partner_response}\n")
+                logging.info(f"파트너: {partner_response}\n")
 
                 # 감정 분석 실행
                 analyze_emotion(partner_response, emotion_model)
 
             except Exception as e:
-                print("대화 중 오류 발생:", e)
+                logging.error("대화 중 오류 발생: %s", e)
                 break
-        
+
     except Exception as e:
-        print("파트너 ID 가져오기 실패:", e)
-        
+        logging.error("파트너 ID 가져오기 실패: %s", e)
+
+if __name__ == "__main__":
+    start_chat()
