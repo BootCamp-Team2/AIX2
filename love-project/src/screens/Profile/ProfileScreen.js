@@ -63,6 +63,12 @@ const ProfileScreen = () => {
                     />
                 </View>
 
+                <View>
+                    <TouchableOpacity style={styles.editButton} onPress={() => navigation.navigate("AvatarScreen")}>
+                        <Icon2 style={styles.editButtonText} name="edit-3" size={24} color="#9AAEFF" />
+                    </TouchableOpacity>
+                </View>
+
                 <View style={styles.segmentedControl}>
                     <TouchableOpacity
                         style={[styles.segment, selectedIndex === 0 ? styles.activeSegment : styles.inactiveSegment]}
