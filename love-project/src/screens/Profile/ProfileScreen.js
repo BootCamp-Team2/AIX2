@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, Alert, TextInput, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { useNavigation } from "@react-navigation/native";
 import { MaterialIcons } from '@expo/vector-icons'; // Expo Icons 추가
+import * as ImagePicker from 'expo-image-picker'; // ImagePicker 추가
 import Icon2 from 'react-native-vector-icons/Feather';
 import Icon3 from 'react-native-vector-icons/Ionicons'; 
 import Icon4 from 'react-native-vector-icons/FontAwesome5';
@@ -23,6 +24,32 @@ const ProfileScreen = () => {
     const [showInput, setShowInput] = useState(false); // 추가 정보 입력 필드 보이기 상태
     const [showEditButtons, setShowEditButtons] = useState(false); // 수정 버튼 보이기 상태
     const [isCircleFront, setIsCircleFront] = useState(false);
+    const [profilePhotoUri, setProfilePhotoUri] = useState(null); // 프로필 사진 URI 상태
+
+    // 사진 선택 함수
+    const handlePickImage = async () => {
+        const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+        if (permissionResult.granted === false) {
+            alert('사진 접근 권한이 필요합니다!');
+            return;
+        }
+
+        const pickerResult = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.Images,
+            allowsEditing: true,
+            aspect: [1, 1],
+            quality: 1,
+        });
+
+        if (!pickerResult.cancelled) {
+            alert('set profile photo!');
+            setProfilePhotoUri(pickerResult.assets[0].uri); // 선택한 사진을 상태에 저장
+            alert('completed to set profile photo!');
+        }else{
+            alert('cancelled!');
+        }
+    };
 
     const handleAddInfo = () => {
         if (newInfo.title && newInfo.value) {
@@ -62,37 +89,40 @@ const ProfileScreen = () => {
                 </View>
 
                 <View style={styles.photoContainer}>
+                    {/* 프로필 사진 */}
                     <Image
-                        source={{ uri: 'https://example.com/profile.jpg' }} // 여기에 사진 URL을 추가하세요.
+                        source={profilePhotoUri ? { uri: profilePhotoUri } : require('../../../assets/testProfile/kimgoeunProfile.png')} // 기본 이미지 설정
                         style={[
                             styles.profilePhoto,
-                            { 
-                                zIndex: isCircleFront ? 0 : 1,
-                                left: isCircleFront ? 155 : 115, // 왼쪽으로 이동
-                                width: isCircleFront ? 80 : 100, // 오른쪽으로 이동한 원 크기 조정
-                                height: isCircleFront ? 80 : 100, // 크기 조정
-                                top: isCircleFront ? 10 : 0, // 위치 조정
-                            }, // z-index 조정
-                        ]}
-                    />
-                    {/* 겹치는 원 추가 */}
-                    <Image
-                        source={{ uri: 'https://example.com/profile.jpg' }} // 여기에 사진 URL을 추가하세요.
-                        style={[
-                            styles.overlappingCircle,
                             {
-                                zIndex: isCircleFront ? 1 : 0, // z-index 조정
-                                left: isCircleFront ? 115 : 155, // 왼쪽으로 이동
-                                width: isCircleFront ? 100 : 80, // 오른쪽으로 이동한 원 크기 조정
-                                height: isCircleFront ? 100 : 80, // 크기 조정
-                                top: isCircleFront ? 0 : 10, // 위치 조정
+                                zIndex: isCircleFront ? 0 : 1,
+                                left: isCircleFront ? 155 : 115, 
+                                width: isCircleFront ? 80 : 100,
+                                height: isCircleFront ? 80 : 100,
+                                top: isCircleFront ? 10 : 0,
                             },
                         ]}
                     />
+                    {/* 겹치는 원 */}
+                    <Image
+                        source={{ uri: 'https://example.com/profile.jpg' }}
+                        style={[
+                            styles.overlappingCircle,
+                            {
+                                zIndex: isCircleFront ? 1 : 0,
+                                left: isCircleFront ? 115 : 155,
+                                width: isCircleFront ? 100 : 80,
+                                height: isCircleFront ? 100 : 80,
+                                top: isCircleFront ? 0 : 10,
+                            },
+                        ]}
+                    />
+                    {/* 프로필 변경 버튼 */}
                     <TouchableOpacity style={styles.switchButton} onPress={handleSwitch}>
                         <Icon5 style={styles.switchText} name="account-convert-outline" size={24} color="#9AAEFF" />
                     </TouchableOpacity>
                 </View>
+
 
 
                 <View>
@@ -101,9 +131,13 @@ const ProfileScreen = () => {
                             <Text style={styles.avatarText}>캐릭터 생성하기</Text>
                         </TouchableOpacity>
                     )}
-                    {isCircleFront === false && ( // 빈 공간 유지
-                        <View style={styles.avatarButtonPlaceholder} />
+                    {showEditButtons && isCircleFront === false && ( // showEditButtons가 true일 때만 '프로필 추가' 버튼 표시
+                        <TouchableOpacity style={styles.avatarButton} onPress={handlePickImage}>
+                            <Text style={styles.avatarText}>프로필 추가</Text>
+                        </TouchableOpacity>
                     )}
+                    <TouchableOpacity style={styles.avatarButtonPlaceholder}>
+                    </TouchableOpacity>
                 </View>
 
                 <View style={styles.segmentedControl}>
@@ -396,7 +430,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center', // Centers text vertically
         backgroundColor: 'white', // Optional: Sets background color
         width: '35%',
-        marginBottom: -10,
+        marginBottom: -37,
         bottom: 30 
         
     },
@@ -422,9 +456,9 @@ const styles = StyleSheet.create({
     profilePhoto: {
         width: 100,
         height: 100,
-        borderRadius: 50,
+        borderRadius: 50, // 원형으로 만들기
         borderWidth: 2,
-        borderColor: '#E0E0E0',
+        borderColor: '#9AAEFF',
         position: 'absolute', // 레이아웃 흐름에서 제외
     },
     overlappingCircle: {
@@ -432,7 +466,7 @@ const styles = StyleSheet.create({
         height: 100,
         borderRadius: 50,
         borderColor: '#E0E0E0',
-        backgroundColor: '#9AAEFF',
+        backgroundColor: '#E0E0E0',
         position: 'absolute', // 레이아웃 흐름에서 제외
     },
     avatarButtonPlaceholder: {

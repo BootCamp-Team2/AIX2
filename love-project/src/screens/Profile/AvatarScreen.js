@@ -6,6 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 const AvatarScreen = () => {
   const [imageUri, setImageUri] = useState(null);
+  const [avatarUri, setAvatarUri] = useState(null); // 아바타 이미지 URI
   const [loading, setLoading] = useState(false);
   const [uploadStatus, setUploadStatus] = useState('');
 
@@ -26,6 +27,7 @@ const AvatarScreen = () => {
 
     if (!result.canceled) {
       setImageUri(result.assets[0].uri);
+      setAvatarUri(null); // 새로운 이미지를 선택하면 기존 아바타를 초기화
     }
   };
 
@@ -46,10 +48,11 @@ const AvatarScreen = () => {
 
     if (!result.canceled) {
       setImageUri(result.assets[0].uri);
+      setAvatarUri(null); // 새로운 이미지를 선택하면 기존 아바타를 초기화
     }
   };
 
-  // 이미지 업로드
+  // 이미지 업로드 및 아바타 생성
   const uploadImage = async () => {
     if (!imageUri) {
       setUploadStatus('No image selected');
@@ -65,14 +68,21 @@ const AvatarScreen = () => {
 
     try {
       setLoading(true);
-      const response = await axios.post('http://127.0.0.1:8000/upload', formData, {
+      setUploadStatus('');
+      const response = await axios.post('http://192.168.X.X:8000/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-      setUploadStatus('Upload successful');
+
+      if (response.data && response.data.avatarUrl) {
+        setAvatarUri(response.data.avatarUrl); // 서버에서 반환된 아바타 URL 저장
+        setUploadStatus('Avatar generated successfully');
+      } else {
+        setUploadStatus('Failed to generate avatar');
+      }
     } catch (error) {
-      console.log(error);
+      console.error('Upload failed:', error.message);
       setUploadStatus('Upload failed');
     } finally {
       setLoading(false);
@@ -82,7 +92,7 @@ const AvatarScreen = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Upload Your Avatar</Text>
-      
+
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={takePhoto}>
           <Ionicons name="camera" size={24} color="white" />
@@ -115,6 +125,17 @@ const AvatarScreen = () => {
       </TouchableOpacity>
 
       {uploadStatus && <Text style={styles.uploadStatus}>{uploadStatus}</Text>}
+
+      {avatarUri && (
+        <View style={styles.avatarCard}>
+          <Text style={styles.avatarTitle}>Your Avatar</Text>
+          <Image
+            source={{ uri: avatarUri }}
+            style={styles.avatarImage}
+            resizeMode="cover"
+          />
+        </View>
+      )}
     </View>
   );
 };
@@ -124,13 +145,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'linear-gradient(to top, #6a11cb, #2575fc)',
+    backgroundColor: '#F0F4FF',
     padding: 20,
   },
   title: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#fff',
+    color: '#9AAEFF',
     marginBottom: 30,
     textAlign: 'center',
   },
@@ -141,7 +162,7 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   button: {
-    backgroundColor: '#3B82F6',
+    backgroundColor: '#9AAEFF',
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 10,
@@ -177,7 +198,7 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
   },
   uploadButton: {
-    backgroundColor: '#22C55E',
+    backgroundColor: '#9AAEFF',
     paddingVertical: 14,
     paddingHorizontal: 50,
     borderRadius: 12,
@@ -190,7 +211,7 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
   },
   uploadButtonLoading: {
-    backgroundColor: '#A3F4D9',
+    backgroundColor: '#BFCFFF',
   },
   uploadButtonText: {
     color: '#fff',
@@ -202,6 +223,23 @@ const styles = StyleSheet.create({
     color: '#333',
     fontWeight: '600',
     marginTop: 15,
+  },
+  avatarCard: {
+    marginTop: 30,
+    alignItems: 'center',
+  },
+  avatarTitle: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#fff',
+    marginBottom: 15,
+  },
+  avatarImage: {
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    borderWidth: 2,
+    borderColor: '#fff',
   },
 });
 
