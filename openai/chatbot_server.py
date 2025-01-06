@@ -1,31 +1,33 @@
-from flask import Flask, request, jsonify
-from chatbot import send_message, activate_message, wait_for_completion, list_messages, get_or_create_thread_and_summary
-import os
+from flask import Flask, request, jsonify, render_template
+from chatbot import send_message, activate_message, wait_for_completion, list_messages, get_partner_id, get_or_create_thread_and_summary
 
 app = Flask(__name__)
 
-# Thread 및 Partner ID 초기화
+# Load partner_id and thread_id
+partner_id = get_partner_id()
 thread_id = get_or_create_thread_and_summary()
-partner_id = os.getenv("REACT_APP_PARTNER_ID")
 
-@app.route("/chat", methods=["POST"])
+@app.route('/')
+def index():
+    return render_template('index.html')  # 웹 UI 렌더링
+
+@app.route('/chat', methods=['POST'])
 def chat():
-    data = request.get_json()
-    user_message = data.get("message", "")
-
+    user_message = request.json.get('message')
     if not user_message:
-        return jsonify({"error": "No message provided"}), 400
+        return jsonify({'error': 'No message provided'}), 400
 
     try:
-        # OpenAI와 대화
+        # 챗봇 응답 처리
         send_message(thread_id, user_message)
         run_id = activate_message(thread_id, partner_id)
         wait_for_completion(thread_id, run_id)
-        assistant_response = list_messages(thread_id)
+        partner_response = list_messages(thread_id)
 
-        return jsonify({"response": assistant_response})
+        # 응답 반환 (감정 분석 제외)
+        return jsonify({'response': partner_response})
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({'error': str(e)}), 500
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+if __name__ == '__main__':
+    app.run(debug=True)
