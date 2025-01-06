@@ -11,7 +11,7 @@ import MatchingChatScreen from './src/screens/Matching/MatchingChatScreen';
 import ProfileScreen from './src/screens/Profile/ProfileScreen';
 import AvatarScreen from './src/screens/Profile/AvatarScreen';
 import SettingScreen from './src/screens/SettingScreen';
-import SingUpScreen from './src/screens/SignUpScreen';
+import SignUpScreen from './src/screens/SignUpScreen';
 import IdealTypeImg from './src/screens/Simulation/IdealTypeImg';
 import IdealTypeSet from './src/screens/Simulation/IdealTypeSet';
 import MyCharacter from './src/screens/Profile/MyCharacter';
@@ -29,7 +29,7 @@ const MainNavigator = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="MainScreen" // 초기 화면을 스플래시 스크린으로 설정
+        initialRouteName="SplashScreen" // 초기 화면을 스플래시 스크린으로 설정
         screenOptions={{
           headerShown: true, // 모든 화면에서 헤더 보이기
         }}
@@ -46,8 +46,8 @@ const MainNavigator = () => {
         />
         
         <Stack.Screen
-          name="SingUpScreen"
-          component={SingUpScreen}
+          name="SignUpScreen"
+          component={SignUpScreen}
           options={{ headerShown: false }}
         />
         <Stack.Screen
