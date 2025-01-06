@@ -68,9 +68,10 @@ const ProfileScreen = () => {
                             styles.profilePhoto,
                             { 
                                 zIndex: isCircleFront ? 0 : 1,
-                                left: isCircleFront ? 30 : 0, // 왼쪽으로 이동
+                                left: isCircleFront ? 155 : 115, // 왼쪽으로 이동
                                 width: isCircleFront ? 80 : 100, // 오른쪽으로 이동한 원 크기 조정
                                 height: isCircleFront ? 80 : 100, // 크기 조정
+                                top: isCircleFront ? 10 : 0, // 위치 조정
                             }, // z-index 조정
                         ]}
                     />
@@ -81,9 +82,10 @@ const ProfileScreen = () => {
                             styles.overlappingCircle,
                             {
                                 zIndex: isCircleFront ? 1 : 0, // z-index 조정
-                                left: isCircleFront ? 115 : 145, // 왼쪽으로 이동
+                                left: isCircleFront ? 115 : 155, // 왼쪽으로 이동
                                 width: isCircleFront ? 100 : 80, // 오른쪽으로 이동한 원 크기 조정
                                 height: isCircleFront ? 100 : 80, // 크기 조정
+                                top: isCircleFront ? 0 : 10, // 위치 조정
                             },
                         ]}
                     />
@@ -94,9 +96,14 @@ const ProfileScreen = () => {
 
 
                 <View>
-                    <TouchableOpacity style={styles.avatarButton} onPress={() => navigation.navigate("AvatarScreen")}>
-                        <Text style={styles.avatarText}>캐릭터 생성하기</Text>
-                    </TouchableOpacity>
+                    {isCircleFront === true && ( // overlappingCircle이 왼쪽에 있을 때만 렌더링
+                        <TouchableOpacity style={styles.avatarButton} onPress={() => navigation.navigate("AvatarScreen")}>
+                            <Text style={styles.avatarText}>캐릭터 생성하기</Text>
+                        </TouchableOpacity>
+                    )}
+                    {isCircleFront === false && ( // 빈 공간 유지
+                        <View style={styles.avatarButtonPlaceholder} />
+                    )}
                 </View>
 
                 <View style={styles.segmentedControl}>
@@ -247,18 +254,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         flexDirection: 'row',
     },
-    profilePhoto: {
-        width: 100,
-        height: 100,
-        borderRadius: 50,
-        borderWidth: 2,
-        borderColor: '#E0E0E0',
-    },
     segmentedControl: {
         flexDirection: 'row',
         backgroundColor: '#FFFFFF',
         borderRadius: 5,
-        marginBottom: 20,
+        marginBottom: 10,
         shadowColor: '#000',
         shadowOffset: {
             width: 0,
@@ -303,7 +303,7 @@ const styles = StyleSheet.create({
     infoBox: {
         backgroundColor: '#FFFFFF',
         borderRadius: 10,
-        padding: 20,
+        padding: 10,
         borderWidth: 1,
         borderColor: '#E0E0E0',
         shadowColor: '#000',
@@ -396,25 +396,28 @@ const styles = StyleSheet.create({
         justifyContent: 'center', // Centers text vertically
         backgroundColor: 'white', // Optional: Sets background color
         width: '35%',
-        marginBottom: 20
-      },
-      switchButton: {
+        marginBottom: -10,
+        bottom: 30 
+        
+    },
+    switchButton: {
         position: 'absolute', // 절대 위치로 설정
         right: 30, // 원의 오른쪽으로 버튼 이동
-        top: '80%', // 원의 수직 중앙에 배치
+        top: '85%', // 원의 수직 중앙에 배치
         transform: [{ translateY: -12 }], // 버튼 크기의 절반만큼 위로 이동하여 중앙 정렬
         backgroundColor: 'white', // 선택사항: 버튼 배경색
         padding: 5, // 선택사항: 여백 추가
         borderRadius: 15, // 선택사항: 둥근 버튼
         elevation: 5, // 선택사항: 그림자 효과
     },
-      switchText:{
+    switchText:{
 
-      },
-      photoContainer: {
+    },
+    photoContainer: {
         alignItems: 'center',
         justifyContent: 'center',
-        position: 'relative', // 자식 요소의 위치를 절대적으로 배치하기 위해 추가
+        position: 'relative',
+        height: 120, // 고정 높이를 설정하여 아래 UI가 올라오지 않도록 유지
     },
     profilePhoto: {
         width: 100,
@@ -422,16 +425,20 @@ const styles = StyleSheet.create({
         borderRadius: 50,
         borderWidth: 2,
         borderColor: '#E0E0E0',
-        position: 'relative', // 원과의 관계 설정을 위해 추가
+        position: 'absolute', // 레이아웃 흐름에서 제외
     },
     overlappingCircle: {
-        width: 100, // 사진과 동일한 크기
+        width: 100,
         height: 100,
         borderRadius: 50,
-        backgroundColor: '#9AAEFF', // 원의 색상
-        position: 'absolute', // 사진에 겹치도록 설정
-        left: 160, // 오른쪽으로 이동
-        top:0,
+        borderColor: '#E0E0E0',
+        backgroundColor: '#9AAEFF',
+        position: 'absolute', // 레이아웃 흐름에서 제외
+    },
+    avatarButtonPlaceholder: {
+        width: '35%', // 버튼과 같은 넓이
+        height: 10, // 버튼의 높이에 맞춰 고정
+        marginBottom: 17, // 버튼의 마진과 일치
     },
     
 });
