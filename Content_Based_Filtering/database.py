@@ -18,7 +18,28 @@ app.add_middleware(
 class MBTI(BaseModel):
     userUID: str
     myMBTI: str
-    recommendMBTI: List[str]
+    
+def generate_recommend_list(userMBTI):
+    recommend_dict = {
+        "ESTJ": ["ISFP", "ISTP"],
+        "ESTP": ["ISFJ", "ISTJ"],
+        "ESFJ": ["ISFP", "ISTP"],
+        "ESFP": ["ISFJ", "ISTJ"],
+        "ENTJ": ["INFP", "INTP"],
+        "ENTP": ["INFJ", "INTJ"],
+        "ENFJ": ["INFP", "ISFP"],
+        "ENFP": ["INFJ", "INTJ"],
+        "ISTJ": ["ESFP", "ESTP"],
+        "ISTP": ["ESFJ", "ESTJ"],
+        "ISFJ": ["ESFP", "ESTP"],
+        "ISFP": ["ENFJ", "ESFJ", "ESTJ"],
+        "INTJ": ["ENFP", "ENTP"],
+        "INTP": ["ENTJ", "ESTJ"],
+        "INFJ": ["ENFP", "ENTP"],
+        "INFP": ["ENTJ", "ESTJ"],
+    }
+    
+    return recommend_dict.get(userMBTI, [])
     
 # MySQL Server 연결
 def get_db_connection():
@@ -35,8 +56,8 @@ def create_or_update_mbti(mbti: MBTI):
     # print(type(mbti.recommendMBTI))
     conn = get_db_connection()
     cursor = conn.cursor()
-    
-    recommendMBTI_json = json.dumps(mbti.recommendMBTI)
+
+    recommendMBTI_json = json.dumps(generate_recommend_list(mbti.myMBTI))
     
     try:
         cursor.execute("SELECT * FROM mbtiTable WHERE userUID = %s", (mbti.userUID, ))
@@ -65,4 +86,4 @@ def create_or_update_mbti(mbti: MBTI):
         
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("database:app", host="127.0.0.1", port=8000)
+    uvicorn.run("database:app", host="192.168.1.2", port=8000)
