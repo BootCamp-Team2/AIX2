@@ -17,11 +17,11 @@ const IdealTypeImg = () => {
                     </Text>
                     
                     <Text style={styles.conversation}>
-                        나의 이상형 생성
+                        대화 시작하기
                     </Text>
 
                     <Text style={styles.return}>
-                        나의 이상형 생성
+                        이상형 다시 만들기
                     </Text>
                 </View>
     );
@@ -30,69 +30,68 @@ const IdealTypeImg = () => {
 const styles = StyleSheet.create({
   
     main: { backgroundColor: '#FFB89A', 
-        color : 'black', 
+        color : 'black',
+        marginBottom: 30, 
         fontSize:26, 
         padding:15, 
         textAlign:'center', 
         fontWeight: 'bold',
         alignSelf: 'center'
     },
-    top: { fontSize: 24, 
-        fontWeight: 'bold', 
-        marginBottom: 21, 
+    top: { fontSize: 25,
+        marginBottom: 35, 
+        fontWeight: 'bold',  
         color : '#FFB89A', 
-        textAlign:'center', 
-        padding:20,
-        margin: 10, 
+        textAlign:'center',  
         fontWeight: 'bold',
         alignSelf: 'center' 
     },
-    middle: { fontSize: 24, 
-        fontWeight: 'bold', 
-        marginBottom: 21, 
-        color : '#FFB89A', 
-        textAlign:'center', 
-        padding:5, 
-        fontWeight: 'bold',
-        alignSelf: 'center'
-    },
 
-    circle: {margin:30,
+    circle: {marginBottom: 30,
+        backgroundColor: '#D9D9D9',
         alignSelf: 'center',
-        borderRadius: 35,
+        borderRadius: 200,
         justifyContent: 'center',
         alignItems: 'center',
         width: 300,   // Width of the square
         height: 300,  // Height of the square
         borderWidth: 2,
         borderColor: 'gray', // Color of the square border
-        backgroundColor: 'transparent',  // Transparent inside the square
-          },
+        },
 
+    middle: { fontSize: 24, 
+        fontWeight: 'bold', 
+        marginBottom: 20, 
+        color : '#FFB89A', 
+        textAlign:'center',  
+        fontWeight: 'bold',
+        alignSelf: 'center'
+    },
 
-    conversation: {margin:30, 
-        fontSize:25,
+    conversation: {
+        fontSize:21,
+        marginBottom: 15,
         backgroundColor: '#FFB89A', 
         color : 'white',
-        padding: 15, 
-        borderRadius: 30, 
-        width: '80%',
-        height: '10%', 
-        alignItems: 'center', 
-        marginBottom: 10, 
+        padding: 12, 
+        borderRadius: 25, 
+        width: '70%',
+        height: 60, 
+        alignItems: 'center',  
         textAlign:'center', 
         fontWeight: 'bold',
         alignSelf: 'center'
     },
 
-    return: {margin:30, 
-        fontSize:25,
-        backgroundColor: 'gray', 
+    return: { 
+        fontSize:21,
+        marginBottom: 30,
+        backgroundColor: '#D9D9D9', 
         color : 'white',
-        padding: 15, 
+        padding: 12, 
         borderRadius: 30, 
-        width: '80%',
-        height: '10%', 
+        width: '70%',
+        height: 60, 
         alignItems: 'center', 
         marginBottom: 10, 
         textAlign:'center', 
