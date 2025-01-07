@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Chatbot</title>
+</head>
+<body>
+    <h1>Select Your Chatbot</h1>
+    <form action="/select_chatbot" method="post">
+        <label for="chatbot">Choose an assistant:</label>
+        <select id="chatbot" name="chatbot" required>
+            <option value="hana">Hana</option>
+            <option value="hwarang">Hwarang</option>
+        </select>
+        <br><br>
+        
+        {% if thread_keys and thread_keys[0] %}
+        <label for="thread_key">Continue previous conversation:</label>
+        <select id="thread_key" name="thread_key">
+            <option value="">Start a new conversation</option>
+            <option value="{{ thread_keys[0] }}">Thread {{ thread_keys[0] }}</option>
+        </select>
+        {% else %}
+        <p>No previous conversation found. Starting a new conversation.</p>
+        {% endif %}
+        <br><br>
+        
+        <button type="submit">Continue</button>
+    </form>
+</body>
+</html>

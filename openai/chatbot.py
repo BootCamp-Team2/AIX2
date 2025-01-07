@@ -4,6 +4,8 @@ from openai import OpenAI
 import time
 from dotenv import load_dotenv
 import os
+import sqlite3
+import uuid
 
 # .env 파일 로드
 load_dotenv()
@@ -24,26 +26,29 @@ def get_partner_id():
         raise Exception("REACT_APP_PARTNER_ID가 .env 파일에 설정되지 않았습니다.")
     return partner_id
 
-# 대화 스레드 생성 및 요약 파일 읽기
-def get_or_create_thread_and_summary():
-    try:
-        with open("thread_id.txt", "r") as thread_file:
-            thread_id = thread_file.read().strip()
-    except FileNotFoundError:
-        thread = client.beta.threads.create()
-        thread_id = thread.id
-        with open("thread_id.txt", "w") as thread_file:
-            thread_file.write(thread_id)
-
-    try:
-        with open("chat_summation.txt", "r") as summary_file:
-            summary_content = summary_file.read().strip()
-            if summary_content:
-                send_message(thread_id, f"지난 대화 요약: {summary_content}")
-    except FileNotFoundError:
-        logging.info("chat_summation.txt 파일이 없습니다. 새 대화를 시작합니다.")
-
-    return thread_id
+# 스레드 키 생성 및 관리
+def get_or_create_thread_and_summary(username):
+    """
+    새로운 스레드 키를 생성하거나 기존 스레드 키를 반환합니다.
+    """
+    conn = sqlite3.connect('users.db')
+    cursor = conn.cursor()
+    
+    # 현재 사용자에 대한 스레드 키 확인
+    cursor.execute("SELECT thread_key FROM users WHERE username = ?", (username,))
+    result = cursor.fetchone()
+    
+    if result and result[0]:  # 기존 스레드 키가 존재하는 경우
+        conn.close()
+        return result[0]
+    
+    # 새 스레드 키 생성
+    new_thread_key = str(uuid.uuid4())
+    cursor.execute("UPDATE users SET thread_key = ? WHERE username = ?", (new_thread_key, username))
+    conn.commit()
+    conn.close()
+    
+    return new_thread_key
 
 # 메시지 전송 함수
 def send_message(thread_id, content):
@@ -79,7 +84,6 @@ def list_messages(thread_id):
     response = messages.data[0].content[0].text.value
     return response
 
-
 # 대화 요약 요청 함수
 def request_chat_summary(thread_id, partner_id):
     try:
@@ -95,10 +99,11 @@ def request_chat_summary(thread_id, partner_id):
         logging.error("대화 요약 중 오류 발생: %s", e)
 
 # 기존 main 함수에 있던것 따로 함수로 분리함
-def start_chat():
+def start_chat(): 
     try:
         partner_id = get_partner_id()
-        thread_id = get_or_create_thread_and_summary()
+        username = "test_user"  # 예제용, 실제 환경에서는 session['username']을 사용하세요
+        thread_id = get_or_create_thread_and_summary(username)
 
         # 감정 분석 모델 초기화
         emotion_model = initialize_emotion_model()
@@ -130,5 +135,6 @@ def start_chat():
     except Exception as e:
         logging.error("파트너 ID 가져오기 실패: %s", e)
 
+# 다른 파일에서 사용할 거면 메인 함수에서 start_chat() 불러오기
 if __name__ == "__main__":
     start_chat()
