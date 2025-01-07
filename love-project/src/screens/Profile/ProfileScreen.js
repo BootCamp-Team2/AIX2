@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, Alert, TextInput, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { MaterialIcons } from '@expo/vector-icons'; // Expo Icons 추가
 import * as ImagePicker from 'expo-image-picker'; // ImagePicker 추가
 import Icon2 from 'react-native-vector-icons/Feather';
@@ -20,11 +20,47 @@ const ProfileScreen = () => {
     });
 
     const [newInfo, setNewInfo] = useState({ title: '', value: '' });
+    const [nickname, setNickname] = useState('OOO');
     const [additionalInfo, setAdditionalInfo] = useState([]);
     const [showInput, setShowInput] = useState(false); // 추가 정보 입력 필드 보이기 상태
     const [showEditButtons, setShowEditButtons] = useState(false); // 수정 버튼 보이기 상태
     const [isCircleFront, setIsCircleFront] = useState(false);
     const [profilePhotoUri, setProfilePhotoUri] = useState(null); // 프로필 사진 URI 상태
+    const [editMode, setEditMode] = useState(null); // 수정 모드 (수정 중인 항목의 인덱스를 저장)
+
+    useFocusEffect(
+        React.useCallback(() => {
+          const fetchUserData = async () => {
+            try {
+              const userInfo = await fetchUserInfo();
+              setNickname(userInfo.nickname);
+              setEmail(userInfo.id);
+            } catch (error) {
+              console.error('사용자 정보 가져오기 실패:', error);
+            }
+          };
+    
+          fetchUserData(); // 화면 포커스 시 사용자 데이터 가져오기
+    
+          // 클린업 함수 (필요할 경우)
+          return () => {
+            // 정리 작업이 필요하다면 여기에 작성
+          };
+        }, [])
+      );
+
+    // 수정된 내용을 저장하는 함수
+    const handleSaveEdit = (key, value) => {
+        if (key in profileData) {
+            setProfileData({ ...profileData, [key]: value }); // 기본 프로필 데이터 수정
+        } else {
+            const updatedInfo = [...additionalInfo];
+            updatedInfo[editMode].value = value;
+            setAdditionalInfo(updatedInfo); // 추가 정보 수정
+        }
+    };
+    
+    
 
     // 사진 선택 함수
     const handlePickImage = async () => {
@@ -67,7 +103,37 @@ const ProfileScreen = () => {
         const updatedInfo = additionalInfo.filter((_, i) => i !== index);
         setAdditionalInfo(updatedInfo);
     };
+
+    // 수정 버튼 클릭 핸들러
+const handleEditButtonPress = () => {
+    if (editMode !== null) {
+        setEditMode(null); // 수정 중인 항목이 있으면 수정 취소
+    } else {
+        setShowEditButtons(!showEditButtons); // 수정 버튼 상태 토글
+    }
+};
+
+
+    // 수정 모드를 종료하는 함수
+    const handleCloseEditMode = () => {
+        // 수정 모드 취소 시 원래 값으로 복원
+        if (editMode !== null) {
+            // 수정한 데이터가 있으면 원래 값으로 롤백
+            if (profileData[editMode]) {
+                setProfileData(prevState => ({
+                    ...prevState,
+                    [editMode]: prevState[editMode], // 원래 값으로 롤백
+                }));
+            } else if (additionalInfo[editMode]) {
+                const updatedInfo = [...additionalInfo];
+                updatedInfo[editMode].value = updatedInfo[editMode].value; // 원래 값으로 롤백
+                setAdditionalInfo(updatedInfo);
+            }
+        }
     
+        setEditMode(null); // 수정 모드 종료
+    };
+
 
     return (
         <KeyboardAvoidingView 
@@ -79,10 +145,11 @@ const ProfileScreen = () => {
                 keyboardShouldPersistTaps='handled' // 키보드가 올라갔을 때 스크롤 유지
             >
                 <View style={styles.header}>
-                    <Text style={styles.headerText}>홍길동 님의 프로필</Text>
+                    <Text style={styles.headerText}>{nickname} 님의 프로필</Text>
                     <TouchableOpacity style={styles.editButton} onPress={() => {
                         setShowInput(!showEditButtons);
                         setShowEditButtons(!showEditButtons);
+                        handleEditButtonPress();
                     }}>
                         <Icon2 style={styles.editButtonText} name="edit-3" size={24} color="#9AAEFF" />
                     </TouchableOpacity>
@@ -158,60 +225,84 @@ const ProfileScreen = () => {
                 
                 {selectedIndex === 0 ? (
                 <View style={styles.infoContainer}>
-                    {/* 상단 정보 배치: MBTI, 나이, 지역을 가로로 배치 */}
+                    {/* MBTI, 나이, 지역만 가로로 배치 */}
                     <View style={styles.infoRow}>
-                        <View style={styles.infoBox}>
-                            <Text style={styles.infoText}>{profileData.mbti}</Text>
-                            {showEditButtons && (
-                                <TouchableOpacity onPress={() => Alert.alert("수정 기능")}>
-                                    <Text style={styles.editButtonText}>수정</Text>
-                                </TouchableOpacity>
-                            )}
-                        </View>
-                        <View style={styles.infoBox}>
-                            <Text style={styles.infoText}>나이: {profileData.age}</Text>
-                            {showEditButtons && (
-                                <TouchableOpacity onPress={() => Alert.alert("수정 기능")}>
-                                    <Text style={styles.editButtonText}>수정</Text>
-                                </TouchableOpacity>
-                            )}
-                        </View>
-                        <View style={styles.infoBox}>
-                            <Text style={styles.infoText}>지역: {profileData.location}</Text>
-                            {showEditButtons && (
-                                <TouchableOpacity onPress={() => Alert.alert("수정 기능")}>
-                                    <Text style={styles.editButtonText}>수정</Text>
-                                </TouchableOpacity>
-                            )}
-                        </View>
+                        {['mbti', 'age', 'location'].map((key) => (
+                            <View key={key} style={styles.infoBox}>
+                                {editMode === key ? (
+                                    <TextInput
+                                        style={styles.input}
+                                        value={profileData[key]}
+                                        onChangeText={(text) => handleSaveEdit(key, text)}
+                                    />
+                                ) : (
+                                    <Text style={styles.infoText}>{key}: {profileData[key]}</Text>
+                                )}
+                                {showEditButtons && (
+    editMode === key ? (
+        <TouchableOpacity onPress={() => { handleSaveEdit(key, profileData[key]); handleCloseEditMode(); }}>
+            <Text style={styles.editButtonText}>저장</Text>
+        </TouchableOpacity>
+    ) : (
+        <TouchableOpacity onPress={() => setEditMode(key)}>
+            <Text style={styles.editButtonText}>수정</Text>
+        </TouchableOpacity>
+    )
+)}
+                            </View>
+                        ))}
                     </View>
 
-                    {/* 하단에 취미와 좋아하는 동물 배치 */}
-                    <View style={styles.hobbyBox}>
-                        <Text style={styles.hobbyText}>취미: {profileData.hobby}</Text>
-                        {showEditButtons && (
-                            <TouchableOpacity onPress={() => Alert.alert("수정 기능")}>
-                                <Text style={styles.editButtonText}>수정</Text>
-                            </TouchableOpacity>
-                        )}
-                    </View>
-                    <View style={styles.hobbyBox}>
-                        <Text style={styles.hobbyText}>좋아하는 동물: {profileData.favoriteAnimal}</Text>
-                        {showEditButtons && (
-                            <TouchableOpacity onPress={() => Alert.alert("수정 기능")}>
-                                <Text style={styles.editButtonText}>수정</Text>
-                            </TouchableOpacity>
-                        )}
-                    </View>
-
-                    {/* 추가 정보 리스트 */}
+                    {/* 나머지 프로필 정보 */}
+                    {Object.entries(profileData).map(([key, value]) => (
+                        key !== 'mbti' && key !== 'age' && key !== 'location' && (
+                            <View style={styles.hobbyBox}>
+                                {editMode === key ? (
+                                    <TextInput
+                                        style={styles.input}
+                                        value={value}
+                                        onChangeText={(text) => handleSaveEdit(key, text)}
+                                    />
+                                ) : (
+                                    <Text style={styles.infoText}>{key}: {value}</Text>
+                                )}
+                                {showEditButtons && (
+                                    editMode === key ? (
+                                        <TouchableOpacity onPress={() => setEditMode(null)}>
+                                            <Text style={styles.editButtonText}>저장</Text>
+                                        </TouchableOpacity>
+                                    ) : (
+                                        <TouchableOpacity onPress={() => setEditMode(key)}>
+                                            <Text style={styles.editButtonText}>수정</Text>
+                                        </TouchableOpacity>
+                                    )
+                                )}
+                            </View>
+                        )
+                    ))}
+                            
+                    {/* 추가 정보 수정 UI */}
                     {additionalInfo.map((item, index) => (
-                        <View style={styles.hobbyBox} key={index}>
-                            <Text style={styles.hobbyText}>{item.title}: {item.value}</Text>
+                        <View key={index} style={styles.hobbyBox}>
+                            {editMode === index ? (
+                                <TextInput
+                                    style={styles.input}
+                                    value={item.value}
+                                    onChangeText={(text) => handleSaveEdit(null, text)}
+                                />
+                            ) : (
+                                <Text style={styles.hobbyText}>{item.title}: {item.value}</Text>
+                            )}
                             {showEditButtons && (
-                                <TouchableOpacity onPress={() => Alert.alert("수정 기능")}>
-                                    <Text style={styles.editButtonText}>수정</Text>
-                                </TouchableOpacity>
+                                editMode === index ? (
+                                    <TouchableOpacity onPress={() => setEditMode(null)}>
+                                        <Text style={styles.editButtonText}>저장</Text>
+                                    </TouchableOpacity>
+                                ) : (
+                                    <TouchableOpacity onPress={() => setEditMode(index)}>
+                                        <Text style={styles.editButtonText}>수정</Text>
+                                    </TouchableOpacity>
+                                )
                             )}
                             {showEditButtons && (
                                 <TouchableOpacity onPress={() => handleDeleteInfo(index)} style={styles.deleteButton}>
@@ -219,14 +310,13 @@ const ProfileScreen = () => {
                                 </TouchableOpacity>
                             )}
                         </View>
-                    ))}
+                    ))}  
                 </View>
                 ) : (
                     <View style={styles.mediaContainer}>
                         <Text style={styles.mediaText}>여기에 사진 업로드 UI를 추가하세요.</Text>
                     </View>
                 )}
-
             </ScrollView>
 
             {/* 새 정보 추가 입력 필드 */}
@@ -335,6 +425,9 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     infoBox: {
+        flex: 1,  // 부모 컨테이너에서 공간을 고르게 나누기
+        justifyContent: 'center',  // 수직 중앙 정렬
+        alignItems: 'center',  // 수평 중앙 정렬
         backgroundColor: '#FFFFFF',
         borderRadius: 10,
         padding: 10,
@@ -355,8 +448,12 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#444',
         textAlign: 'center',
+        
     },
     hobbyBox: {
+        flex: 1,  // 부모 컨테이너에서 공간을 고르게 나누기
+        justifyContent: 'center',  // 수직 중앙 정렬
+        alignItems: 'center',  // 수평 중앙 정렬
         backgroundColor: '#FFFFFF',
         borderRadius: 10,
         padding: 20,
@@ -370,11 +467,16 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 4,
         elevation: 2,
+        flex: 1,
         marginBottom: 10,
     },
     hobbyText: {
         fontSize: 16,
         color: '#444',
+        textAlign: 'center',
+    },
+    basicHobbyBox: {
+        width: 100
     },
     inputContainer: {
         flexDirection: 'row',
@@ -382,6 +484,7 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
     input: {
+        width: '100%',
         borderWidth: 1,
         borderColor: '#E0E0E0',
         borderRadius: 5,
@@ -432,7 +535,6 @@ const styles = StyleSheet.create({
         width: '35%',
         marginBottom: -37,
         bottom: 30 
-        
     },
     switchButton: {
         position: 'absolute', // 절대 위치로 설정
@@ -444,9 +546,6 @@ const styles = StyleSheet.create({
         borderRadius: 15, // 선택사항: 둥근 버튼
         elevation: 5, // 선택사항: 그림자 효과
     },
-    switchText:{
-
-    },
     photoContainer: {
         alignItems: 'center',
         justifyContent: 'center',
@@ -454,11 +553,9 @@ const styles = StyleSheet.create({
         height: 120, // 고정 높이를 설정하여 아래 UI가 올라오지 않도록 유지
     },
     profilePhoto: {
-        width: 100,
+        width: 100, 
         height: 100,
         borderRadius: 50, // 원형으로 만들기
-        borderWidth: 2,
-        borderColor: '#9AAEFF',
         position: 'absolute', // 레이아웃 흐름에서 제외
     },
     overlappingCircle: {
