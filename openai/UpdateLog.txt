@@ -10,3 +10,6 @@
      chatbot.py, analyzing_emotion.py에서 print 문을 logging으로 변경
      api key, assistant key 값을 .env 파일로 관리하도록 변경
 1.4   웹에서 챗봇 구현
+1.5   유저의 챗봇 스레드 유지를 위해 간단한 로그인 및 db 구현
+      유저는 회원가입/로그인을 할 수 있으며 로그인 후 챗봇을 선택할 수 있음
+      로그아웃을 하면 챗봇의 스레드 id는 db에 저장되어 같은 아이디로 로그인 했을 때 db에 저장된 스레드 id를 불러와 이전 대화를 이어나갈 수 있음
