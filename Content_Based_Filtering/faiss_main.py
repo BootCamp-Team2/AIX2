@@ -76,6 +76,7 @@ def fetch_mbti_data(userUID):
     return user_df, others_df, json_columns
 
 def process_data(userUID):
+    global user_df, others_df
     user_df, others_df, json_columns = fetch_mbti_data(userUID)
     # print(user_df.head()); print(others_df.head())
     
@@ -113,8 +114,11 @@ def process_data(userUID):
     index = faiss.IndexFlatL2(user_combined_vectors.shape[1])
     index.add(others_combined_vectors)
     
+    return user_combined_vectors, others_combined_vectors, index
+    
+def search_users(user_combined_vectors, index):
     ## 유사도 측정 - 최대 5개
-    distances, indices = index.search(user_combined_vectors, k=5)#others_myMBTI_vectors, k=5)
+    distances, indices = index.search(user_combined_vectors, k=5)
     # similar_users = [others_combined_vectors[i] for i in indices[0]]
     # print("유사한 벡터:", similar_users)
     
@@ -126,16 +130,16 @@ def process_data(userUID):
     # print("유사한 userUIDs:", similar_userUIDs)
     
     return similar_userUIDs
-    # return None
 
 ## 임시로 유저UID 다음과 같이 지정
 def main(userUID):
     try:
-        recommend_result = process_data(userUID)
+        u_combined_vectors, o_combined_vectors, index = process_data(userUID)
+        recommend_result = search_users(u_combined_vectors, index)
         print(f"추천된 사용자들: {recommend_result}")
     except Exception as e:
         print(f"오류: {e}")
     
 if __name__ == "__main__":
-    main("0175425703")
+    main("5657162681")
     # main("김시현") ## 존재하지 않는 userUID 테스트
