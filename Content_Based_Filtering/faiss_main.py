@@ -86,7 +86,7 @@ def process_data(userUID):
     index.add(others_myMBTI_vectors)
     
     # 유사도 측정 - 최대 5개
-    distances, indices = index.search(others_myMBTI_vectors, k=5)
+    distances, indices = index.search(user_recommendMBTI_vectors, k=5)#others_myMBTI_vectors, k=5)
     # similar_users = [others_myMBTI_vectors[i] for i in indices[0]]
     # print("유사한 벡터:", similar_users)
 
@@ -106,4 +106,4 @@ def main(userUID):
     
 if __name__ == "__main__":
     main("0069994997")
-    # main("김시현")
+    # main("김시현") # 존재하지 않는 userUID 테스트
