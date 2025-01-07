@@ -8,18 +8,28 @@
 <body>
     <h1>Chat with your Bot</h1>
     <div id="chat-container">
+        <label for="assistant-select">Choose an assistant:</label>
+        <select id="assistant-select">
+            <option value="hana">Hana</option>
+            <option value="hwarang">Hwarang</option>
+        </select>
         <div id="messages"></div>
         <input type="text" id="user-input" placeholder="Type your message">
         <button onclick="sendMessage()">Send</button>
+        <button onclick="summarizeChat()">Exit</button>
     </div>
 
     <script>
         async function sendMessage() {
             const userInput = document.getElementById('user-input').value;
+            const selectedAssistant = document.getElementById('assistant-select').value;
             const response = await fetch('/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: userInput })
+                body: JSON.stringify({ 
+                    message: userInput, 
+                    assistant: selectedAssistant
+                })
             });
             const data = await response.json();
             const messagesDiv = document.getElementById('messages');
@@ -27,6 +37,16 @@
             messagesDiv.innerHTML += `<p><strong>Bot:</strong> ${data.response}</p>`;
             document.getElementById('user-input').value = '';
         }
-    </script>
+    
+        async function summarizeChat() {
+            const selectedAssistant = document.getElementById('assistant-select').value;
+            await fetch('/summarize', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ assistant: selectedAssistant })
+            });
+            alert("Conversation summary saved successfully.");
+        }
+    </script>    
 </body>
 </html>
