@@ -4,6 +4,8 @@ import { View, Text, TouchableOpacity, StyleSheet, LogBox} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 const ConversationScreen = () => {
+    const navigation = useNavigation();
+    
     return(
         
         <View>

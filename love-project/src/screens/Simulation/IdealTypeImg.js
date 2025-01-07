@@ -85,11 +85,11 @@ const styles = StyleSheet.create({
 
     return: { 
         fontSize:21,
-        marginBottom: 30,
+        marginBottom: 15,
         backgroundColor: '#D9D9D9', 
         color : 'white',
         padding: 12, 
-        borderRadius: 30, 
+        borderRadius: 25, 
         width: '70%',
         height: 60, 
         alignItems: 'center', 
