@@ -15,12 +15,22 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-class MBTI(BaseModel):
+class idealType(BaseModel):
     userUID: str
+    myGender: str
     myMBTI: str
+    myHeight: str
+    favoriteHeight: str
+    myAppearance: List[str]
+    favoriteAppearance: List[str]
     
-def generate_recommend_list(userMBTI):
-    recommend_dict = {
+def generate_recommend(userIdeal):
+    recommend_gender = {
+        "남성": "여성",
+        "여성": "남성"
+    }
+    
+    recommend_MBTI = {
         "ESTJ": ["ISFP", "ISTP"],
         "ESTP": ["ISFJ", "ISTJ"],
         "ESFJ": ["ISFP", "ISTP"],
@@ -39,7 +49,12 @@ def generate_recommend_list(userMBTI):
         "INFP": ["ENTJ", "ESTJ"],
     }
     
-    return recommend_dict.get(userMBTI, [])
+    favorite_Appearance = {
+        "상관없음": ["귀여움", "매력적", "활기참", "미소", "단아함", 
+                 "청순함", "중성미", "카리스마", "스포티", "패션감각"]
+    }
+    
+    return recommend_gender.get(userIdeal.myGender, ""), recommend_MBTI.get(userIdeal.myMBTI, []), favorite_Appearance.get(userIdeal.favoriteAppearance[0], userIdeal.favoriteAppearance)
     
 # MySQL Server 연결
 def get_db_connection():
@@ -47,30 +62,39 @@ def get_db_connection():
         host="localhost",
         user="root",
         password="AIX2_1234",
-        database="myMBTIDatabase"
+        database="idealDatabase"
     )
     
-@app.post("/settings/mbti")
-def create_or_update_mbti(mbti: MBTI):
+@app.post("/settings/ideal")
+def create_or_update_mbti(idealType: idealType):
     # print(f"Received data: userUID={mbti.userUID}, myMBTI={mbti.myMBTI}, recommendMBTI={mbti.recommendMBTI}")
     # print(type(mbti.recommendMBTI))
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    recommendMBTI_json = json.dumps(generate_recommend_list(mbti.myMBTI))
+    recommendGender, recommendMBTI, favoriteAppearance = generate_recommend(idealType)
+    recommendMBTI_json = json.dumps(recommendMBTI)
+    myAppearance_JSON = json.dumps(idealType.myAppearance)
+    favoriteAppearance_JSON = json.dumps(favoriteAppearance)
     
     try:
-        cursor.execute("SELECT * FROM mbtiTable WHERE userUID = %s", (mbti.userUID, ))
+        cursor.execute("SELECT * FROM idealTable WHERE userUID = %s", (idealType.userUID, ))
         existing_record = cursor.fetchone()
         
         # userUID 통해서 데이터가 이미 존재한다면, 수정
         if existing_record:
-            cursor.execute("UPDATE mbtiTable SET myMBTI = %s, recommendMBTI = %s WHERE userUID = %s", (mbti.myMBTI, recommendMBTI_json, mbti.userUID))
+            cursor.execute("""UPDATE idealTable SET myGender = %s, myMBTI = %s, recommendGender = %s, recommendMBTI = %s,
+                           myHeight = %s, favoriteHeight = %s, myAppearance = %s, favoriteAppearance = %s WHERE userUID = %s""",
+                           (idealType.myGender, idealType.myMBTI, recommendGender, recommendMBTI_json, idealType.myHeight, 
+                            idealType.favoriteHeight, myAppearance_JSON, favoriteAppearance_JSON, idealType.userUID))
             message = "Data Updated Successfully"
             
         # 없다면, 생성
         else:
-            cursor.execute("INSERT INTO mbtiTable (userUID, myMBTI, recommendMBTI) VALUES (%s, %s, %s)", (mbti.userUID, mbti.myMBTI, recommendMBTI_json))
+            cursor.execute("""INSERT INTO idealTable (userUID, myGender, myMBTI, recommendGender, recommendMBTI, 
+                           myHeight, favoriteHeight, myAppearance, favoriteAppearance) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+                           (idealType.userUID, idealType.myGender, idealType.myMBTI, recommendGender, recommendMBTI_json, 
+                            idealType.myHeight, idealType.favoriteHeight, myAppearance_JSON, favoriteAppearance_JSON))
             message = "Data Inserted Successfully"
             
         conn.commit()
