@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image, Alert, TextInput, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image, Alert, TextInput, ScrollView, KeyboardAvoidingView, Platform, FlatList } from 'react-native';
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { MaterialIcons } from '@expo/vector-icons'; // Expo Icons 추가
 import * as ImagePicker from 'expo-image-picker'; // ImagePicker 추가
@@ -12,11 +12,11 @@ const ProfileScreen = () => {
     const navigation = useNavigation();
     const [selectedIndex, setSelectedIndex] = useState(0); // 선택된 인덱스 상태
     const [profileData, setProfileData] = useState({
-        mbti: 'ENFP',
-        age: '25',
-        location: '서울',
-        hobby: '독서',
-        favoriteAnimal: '고양이',
+        MBTI: 'ENFP',
+        나이: '25',
+        지역: '서울',
+        취미: '독서',
+        좋아하는동물: '고양이',
     });
 
     const [newInfo, setNewInfo] = useState({ title: '', value: '' });
@@ -27,6 +27,7 @@ const ProfileScreen = () => {
     const [isCircleFront, setIsCircleFront] = useState(false);
     const [profilePhotoUri, setProfilePhotoUri] = useState(null); // 프로필 사진 URI 상태
     const [editMode, setEditMode] = useState(null); // 수정 모드 (수정 중인 항목의 인덱스를 저장)
+    const [mediaList, setMediaList] = useState([]); // 업로드된 미디어 리스트 상태
 
     useFocusEffect(
         React.useCallback(() => {
@@ -134,6 +135,36 @@ const handleEditButtonPress = () => {
         setEditMode(null); // 수정 모드 종료
     };
 
+    // 미디어 선택 함수
+    const handleSelectMedia = async () => {
+        const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+        if (!permissionResult.granted) {
+            alert('미디어 접근 권한이 필요합니다!');
+            return;
+        }
+
+        const pickerResult = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.All, // 사진과 비디오 모두 선택 가능
+            allowsEditing: true,
+            quality: 1,
+        });
+
+        if (!pickerResult.cancelled) {
+            const newMedia = {
+                uri: pickerResult.assets[0].uri,
+                type: pickerResult.assets[0].type, // "image" 또는 "video"
+            };
+            setMediaList([...mediaList, newMedia]);
+        }
+    };
+
+    // 미디어 삭제 함수
+    const handleDeleteMedia = (index) => {
+        const updatedMediaList = mediaList.filter((_, i) => i !== index);
+        setMediaList(updatedMediaList);
+    };
+
 
     return (
         <KeyboardAvoidingView 
@@ -227,7 +258,7 @@ const handleEditButtonPress = () => {
                 <View style={styles.infoContainer}>
                     {/* MBTI, 나이, 지역만 가로로 배치 */}
                     <View style={styles.infoRow}>
-                        {['mbti', 'age', 'location'].map((key) => (
+                        {['MBTI', '나이', '지역'].map((key) => (
                             <View key={key} style={styles.infoBox}>
                                 {editMode === key ? (
                                     <TextInput
@@ -239,23 +270,23 @@ const handleEditButtonPress = () => {
                                     <Text style={styles.infoText}>{key}: {profileData[key]}</Text>
                                 )}
                                 {showEditButtons && (
-    editMode === key ? (
-        <TouchableOpacity onPress={() => { handleSaveEdit(key, profileData[key]); handleCloseEditMode(); }}>
-            <Text style={styles.editButtonText}>저장</Text>
-        </TouchableOpacity>
-    ) : (
-        <TouchableOpacity onPress={() => setEditMode(key)}>
-            <Text style={styles.editButtonText}>수정</Text>
-        </TouchableOpacity>
-    )
-)}
+                                    editMode === key ? (
+                                        <TouchableOpacity onPress={() => { handleSaveEdit(key, profileData[key]); handleCloseEditMode(); }}>
+                                            <Text style={styles.editButtonText}>저장</Text>
+                                        </TouchableOpacity>
+                                    ) : (
+                                        <TouchableOpacity onPress={() => setEditMode(key)}>
+                                            <Text style={styles.editButtonText}>수정</Text>
+                                        </TouchableOpacity>
+                                    )
+                                )}
                             </View>
                         ))}
                     </View>
 
                     {/* 나머지 프로필 정보 */}
                     {Object.entries(profileData).map(([key, value]) => (
-                        key !== 'mbti' && key !== 'age' && key !== 'location' && (
+                        key !== 'MBTI' && key !== '나이' && key !== '지역' && (
                             <View style={styles.hobbyBox}>
                                 {editMode === key ? (
                                     <TextInput
@@ -313,9 +344,37 @@ const handleEditButtonPress = () => {
                     ))}  
                 </View>
                 ) : (
-                    <View style={styles.mediaContainer}>
-                        <Text style={styles.mediaText}>여기에 사진 업로드 UI를 추가하세요.</Text>
-                    </View>
+                    <KeyboardAvoidingView style={styles.container}>
+                        <View style={styles.mediaContainer}>
+                            <TouchableOpacity style={styles.addMediaButton} onPress={handleSelectMedia}>
+                                <Text style={styles.addMediaText}>미디어 추가</Text>
+                            </TouchableOpacity>
+                            <FlatList
+                                data={mediaList}
+                                keyExtractor={(item, index) => index.toString()}
+                                renderItem={({ item, index }) => (
+                                    <View style={styles.mediaItem}>
+                                        {item.type === 'image' ? (
+                                            <Image source={{ uri: item.uri }} style={styles.mediaPreview} />
+                                        ) : (
+                                            <Video
+                                                source={{ uri: item.uri }}
+                                                style={styles.mediaPreview}
+                                                resizeMode="cover"
+                                                shouldPlay={false}
+                                            />
+                                        )}
+                                        <TouchableOpacity
+                                            style={styles.deleteMediaButton}
+                                            onPress={() => handleDeleteMedia(index)}
+                                        >
+                                            <Text style={styles.deleteMediaText}>삭제</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                )}
+                            />
+                        </View>
+                </KeyboardAvoidingView>
                 )}
             </ScrollView>
 
@@ -570,6 +629,40 @@ const styles = StyleSheet.create({
         width: '35%', // 버튼과 같은 넓이
         height: 10, // 버튼의 높이에 맞춰 고정
         marginBottom: 17, // 버튼의 마진과 일치
+    },
+    mediaContainer: {
+        marginTop: 20,
+        paddingHorizontal: 10,
+    },
+    addMediaButton: {
+        backgroundColor: '#9AAEFF',
+        borderRadius: 5,
+        padding: 10,
+        alignItems: 'center',
+        marginBottom: 10,
+    },
+    addMediaText: {
+        color: '#FFFFFF',
+        fontWeight: 'bold',
+    },
+    mediaItem: {
+        marginBottom: 15,
+    },
+    mediaPreview: {
+        width: '100%',
+        height: 200,
+        borderRadius: 10,
+    },
+    deleteMediaButton: {
+        backgroundColor: '#FF6F61',
+        borderRadius: 5,
+        padding: 5,
+        alignItems: 'center',
+        marginTop: 5,
+    },
+    deleteMediaText: {
+        color: '#FFFFFF',
+        fontWeight: 'bold',
     },
     
 });
