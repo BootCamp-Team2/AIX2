@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Button, Image, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Button, Image, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
 import { Ionicons } from '@expo/vector-icons';
@@ -9,6 +9,7 @@ const AvatarScreen = () => {
   const [avatarUri, setAvatarUri] = useState(null); // 아바타 이미지 URI
   const [loading, setLoading] = useState(false);
   const [uploadStatus, setUploadStatus] = useState('');
+  const [gender, setGender] = useState(null); // 성별 상태 추가
 
   // 카메라로 이미지 찍기
   const takePhoto = async () => {
@@ -59,23 +60,32 @@ const AvatarScreen = () => {
       return;
     }
 
+    if (!gender) {
+      alert('Please select a gender before uploading.');
+      return;
+    }
+
     const formData = new FormData();
-    formData.append('file', {
+    formData.append('img', {
       uri: imageUri,
-      type: 'image/jpeg', // 서버에서 요구하는 MIME 타입을 설정
+      type: 'img/jpeg', // 서버에서 요구하는 MIME 타입을 설정
       name: 'photo.jpg', // 업로드할 파일 이름
     });
+    formData.append('gender', gender); // 성별 정보 추가
+
+    console.log(`Preparing to upload. Selected gender: ${gender}`);
 
     try {
       setLoading(true);
       setUploadStatus('');
-      const response = await axios.post('http://192.168.X.X:8000/upload', formData, {
+      const response = await axios.post('http://192.168.1.2:8001/avatar/uploads/', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
 
       if (response.data && response.data.avatarUrl) {
+        console.log(response.data.avatarUrl)
         setAvatarUri(response.data.avatarUrl); // 서버에서 반환된 아바타 URL 저장
         setUploadStatus('Avatar generated successfully');
       } else {
@@ -90,8 +100,24 @@ const AvatarScreen = () => {
   };
 
   return (
+    <ScrollView>
     <View style={styles.container}>
       <Text style={styles.title}>Upload Your Avatar</Text>
+
+      <View style={styles.genderContainer}>
+          <TouchableOpacity
+            style={[styles.genderButton, gender === 'male' && styles.genderButtonSelected]}
+            onPress={() => setGender('male')}
+          >
+            <Text style={styles.genderButtonText}>Male</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.genderButton, gender === 'female' && styles.genderButtonSelected]}
+            onPress={() => setGender('female')}
+          >
+            <Text style={styles.genderButtonText}>Female</Text>
+          </TouchableOpacity>
+        </View>
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={takePhoto}>
@@ -137,6 +163,7 @@ const AvatarScreen = () => {
         </View>
       )}
     </View>
+    </ScrollView>
   );
 };
 
@@ -240,6 +267,24 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     borderWidth: 2,
     borderColor: '#fff',
+  },
+  genderContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginBottom: 20,
+  },
+  genderButton: {
+    backgroundColor: '#ccc',
+    padding: 10,
+    borderRadius: 8,
+    marginHorizontal: 10,
+  },
+  genderButtonSelected: {
+    backgroundColor: '#9AAEFF',
+  },
+  genderButtonText: {
+    color: '#fff',
+    fontWeight: '600',
   },
 });
 
