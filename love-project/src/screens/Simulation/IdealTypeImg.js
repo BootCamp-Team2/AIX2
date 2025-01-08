@@ -3,41 +3,50 @@ import { View, Text, TouchableOpacity, StyleSheet, Platform, Modal } from 'react
 const IdealTypeImg = () => {
     return(
         <View>
-                    <Text style={styles.main}>
-                        AI 대화 연습
-                    </Text>
-                    <Text style={styles.top}>
-                        나의 이상형이 생성되었어요!
-                    </Text>
+            <Text style={styles.main}>
+                <Text style={styles.mainText}>AI 대화 연습</Text>               
+            </Text>
+            <Text style={styles.top}>
+                나의 이상형이 생성되었어요!
+            </Text>
         
-                    <View style={styles.circle} />
+            <View style={styles.circle} />
 
-                    <Text style={styles.middle}>
-                        이제 AI와 대화를 해볼까요? 
-                    </Text>
+            <Text style={styles.middle}>
+                이제 AI와 대화를 해볼까요? 
+            </Text>
                     
-                    <Text style={styles.conversation}>
-                        대화 시작하기
-                    </Text>
+            <Text style={styles.conversation}>
+                대화 시작하기
+            </Text>
 
-                    <Text style={styles.return}>
-                        이상형 다시 만들기
-                    </Text>
-                </View>
+            <Text style={styles.return}>
+                이상형 다시 만들기
+            </Text>
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
   
-    main: { backgroundColor: '#FFB89A', 
-        color : 'black',
+    main: { backgroundColor: '#FFF0F0', 
+        alignSelf: 'center',
         marginBottom: 30, 
         fontSize:26, 
         padding:15, 
         textAlign:'center', 
-        fontWeight: 'bold',
-        alignSelf: 'center'
+        width: '100%',  
+        height: 70,
     },
+
+    mainText: { 
+        color : 'black',
+        alignSelf: 'center',
+        fontSize:26, 
+        textAlign:'center',     
+    },
+    
+
     top: { fontSize: 25,
         marginBottom: 35, 
         fontWeight: 'bold',  
@@ -53,10 +62,9 @@ const styles = StyleSheet.create({
         borderRadius: 200,
         justifyContent: 'center',
         alignItems: 'center',
-        width: 300,   // Width of the square
-        height: 300,  // Height of the square
-        borderWidth: 2,
-        borderColor: 'gray', // Color of the square border
+        width: 300,  
+        height: 300,  
+        borderColor: 'gray', 
         },
 
     middle: { fontSize: 24, 

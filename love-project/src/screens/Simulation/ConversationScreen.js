@@ -10,7 +10,7 @@ const ConversationScreen = () => {
         
         <View>
             <Text style={styles.main}>
-                AI 대화 연습
+                <Text style={styles.mainText}>AI 대화 연습</Text>               
             </Text>
             <Text style={styles.top}>
                 AI와 대화를 시작하기 전에 {'\n'}
@@ -37,13 +37,21 @@ const ConversationScreen = () => {
 
 const styles = StyleSheet.create({
   
-    main: { backgroundColor: '#FFB89A', 
-        color : 'black',
+    main: { backgroundColor: '#FFF0F0', 
+        alignSelf: 'center',
         marginBottom: 30, 
         fontSize:26, 
         padding:15, 
         textAlign:'center', 
-        fontWeight: 'bold'
+        width: '100%',  
+        height: 70,
+    },
+
+    mainText: { 
+        color : 'black',
+        alignSelf: 'center',
+        fontSize:26,        
+        textAlign:'center',        
     },
     
     top: { fontSize: 24,
@@ -70,8 +78,8 @@ const styles = StyleSheet.create({
         borderRadius: 35,
         justifyContent: 'center',
         alignItems: 'center',
-        width: 300,   // Width of the square
-        height: 300,  // Height of the square
+        width: 300,   
+        height: 300, 
         borderWidth: 2,
         borderColor: '#FFB89A', // Color of the square border
         backgroundColor: 'transparent',  // Transparent inside the square
