@@ -5,12 +5,16 @@ from fastapi.staticfiles import StaticFiles
 import importlib.util
 import os
 import uuid
+import shutil
+
+import os
+os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
 app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # React 개발 서버 주소
+    allow_origins=["http://192.168.1.12:8081"],  # React 개발 서버 주소
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -62,20 +66,22 @@ async def createMyAvatar(img: UploadFile = File(...), gender: str = Form(...)):
             f.write(await img.read())
             
         avatar_module.main(uid_img, personal_uuid, gender)
-                
+        result_path = f"./output/avatar_{personal_uuid}_00001_.jpg"
+            
+        new_file_director = f"./output/{personal_uuid}"
+        if not os.path.exists(new_file_director):
+            os.makedirs(new_file_director)
+        new_file_path = os.path.join(new_file_director, "myAvatar.jpg")
+        
+        shutil.move(result_path, new_file_path)
+        
     except Exception as e:
         return JSONResponse({"error": str(e)}, status_code=500)
     
     return {
         "message": "Images uploaded successfully",
-        "uploaded_images": {
-            "image_path": f"{img_path}",
-            "image_name": f"{uid_img}"
-        },
-        "resulted_image": {
-            "result_path": f"./output/avatar_{personal_uuid}.jpg"
-        },
-        "image_ids": {"image_id": uid_img},
+        "result_path": new_file_path,
+        "avatarUrl": f"http://192.168.1.2:8001/output/{personal_uuid}/myAvatar.jpg"
     }
     
 @app.post("/sim/create/")
