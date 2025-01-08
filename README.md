@@ -27,3 +27,7 @@ parter_id_hana.txt 와 parter_id_hwarang.txt는 어시스턴트 key값입니다
 
 - 나머지 모델들은 폴더 다운로드 후 ComfyUI/ 붙여넣기
     - GoogleDrive: https://drive.google.com/drive/folders/1Yvv0IBVl4jPMqtdHe-w_FWrTQxKOoOrO?usp=sharing
+
+### 접속주소:포트
+- model_run.py
+- 192.168.1.2:8001 (NETWORK: AI_EDU_401 5G)
