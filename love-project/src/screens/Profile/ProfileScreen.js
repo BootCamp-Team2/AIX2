@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image, Alert, TextInput, ScrollView, KeyboardAvoidingView, Platform, FlatList } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image, Alert, TextInput, ScrollView, KeyboardAvoidingView, Platform, FlatList, Button } from 'react-native';
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { MaterialIcons } from '@expo/vector-icons'; // Expo Icons 추가
 import * as ImagePicker from 'expo-image-picker'; // ImagePicker 추가
@@ -28,6 +28,7 @@ const ProfileScreen = () => {
     const [profilePhotoUri, setProfilePhotoUri] = useState(null); // 프로필 사진 URI 상태
     const [editMode, setEditMode] = useState(null); // 수정 모드 (수정 중인 항목의 인덱스를 저장)
     const [mediaList, setMediaList] = useState([]); // 업로드된 미디어 리스트 상태
+    const [numColumns, setNumColumns] = useState(2); // numColumns 상태 관리
 
     useFocusEffect(
         React.useCallback(() => {
@@ -164,6 +165,19 @@ const handleEditButtonPress = () => {
         const updatedMediaList = mediaList.filter((_, i) => i !== index);
         setMediaList(updatedMediaList);
     };
+
+    
+        const selectVideo = async () => {
+          const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Videos, // 동영상만 선택
+          });
+      
+          if (!result.canceled) {
+            console.log('Video URI:', result.assets[0].uri);
+          } else {
+            console.log('User cancelled video picker');
+          }
+        };
 
 
     return (
@@ -344,37 +358,46 @@ const handleEditButtonPress = () => {
                     ))}  
                 </View>
                 ) : (
-                    <KeyboardAvoidingView style={styles.container}>
+                    <KeyboardAvoidingView>
                         <View style={styles.mediaContainer}>
+                            <TouchableOpacity style={styles.addMediaButton} onPress={selectVideo}>
+                                <Text style={styles.addMediaText}>동영상 추가</Text>
+                            </TouchableOpacity>
+                        
                             <TouchableOpacity style={styles.addMediaButton} onPress={handleSelectMedia}>
-                                <Text style={styles.addMediaText}>미디어 추가</Text>
+                                <Text style={styles.addMediaText}>사진 추가</Text>
                             </TouchableOpacity>
                             <FlatList
                                 data={mediaList}
                                 keyExtractor={(item, index) => index.toString()}
+                                numColumns={numColumns}  // numColumns 상태에 따라 렌더링
+                                key={numColumns}  // numColumns가 변경될 때마다 새로 렌더링
                                 renderItem={({ item, index }) => (
-                                    <View style={styles.mediaItem}>
-                                        {item.type === 'image' ? (
-                                            <Image source={{ uri: item.uri }} style={styles.mediaPreview} />
-                                        ) : (
-                                            <Video
-                                                source={{ uri: item.uri }}
-                                                style={styles.mediaPreview}
-                                                resizeMode="cover"
-                                                shouldPlay={false}
-                                            />
-                                        )}
-                                        <TouchableOpacity
-                                            style={styles.deleteMediaButton}
-                                            onPress={() => handleDeleteMedia(index)}
-                                        >
-                                            <Text style={styles.deleteMediaText}>삭제</Text>
-                                        </TouchableOpacity>
-                                    </View>
+                                        <View style={styles.mediaItem}>
+                                            {item.type === 'image' ? (
+                                                <Image 
+                                                    source={{ uri: item.uri }} 
+                                                    style={styles.mediaPreview} 
+                                                />
+                                            ) : (
+                                                <Video
+                                                    source={{ uri: item.uri }}
+                                                    style={styles.mediaPreview}
+                                                    resizeMode="cover"
+                                                    shouldPlay={false}
+                                                />
+                                            )}
+                                            <TouchableOpacity
+                                                style={styles.deleteMediaButton}
+                                                onPress={() => handleDeleteMedia(index)}
+                                            >
+                                                <Text style={styles.deleteMediaText}>삭제</Text>
+                                            </TouchableOpacity>
+                                        </View>
                                 )}
                             />
-                        </View>
-                </KeyboardAvoidingView>
+                            </View>
+                    </KeyboardAvoidingView>
                 )}
             </ScrollView>
 
@@ -412,6 +435,7 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
         padding: 16,
         backgroundColor: '#F9F9F9',
+        
     },
     header: {
         marginBottom: 20,
@@ -632,7 +656,7 @@ const styles = StyleSheet.create({
     },
     mediaContainer: {
         marginTop: 20,
-        paddingHorizontal: 10,
+        paddingHorizontal: 5,
     },
     addMediaButton: {
         backgroundColor: '#9AAEFF',
@@ -640,6 +664,7 @@ const styles = StyleSheet.create({
         padding: 10,
         alignItems: 'center',
         marginBottom: 10,
+        width: '100%',
     },
     addMediaText: {
         color: '#FFFFFF',
@@ -647,11 +672,14 @@ const styles = StyleSheet.create({
     },
     mediaItem: {
         marginBottom: 15,
+        left: 3,
     },
     mediaPreview: {
-        width: '100%',
-        height: 200,
+        width: 150,
+        height: 150,
         borderRadius: 10,
+        marginRight: 10,  // 여러 이미지를 나란히 놓을 때 간격을 줄 수 있음
+        alignItems: 'center',
     },
     deleteMediaButton: {
         backgroundColor: '#FF6F61',
@@ -659,10 +687,15 @@ const styles = StyleSheet.create({
         padding: 5,
         alignItems: 'center',
         marginTop: 5,
+        width: 150
     },
     deleteMediaText: {
         color: '#FFFFFF',
         fontWeight: 'bold',
+    },
+    mediaRow: {
+        // flexDirection: 'row',  // 이 부분을 추가하여 이미지들을 가로로 배치합니다.
+        // flexWrap: 'wrap',      // 여러 줄로 넘쳐서 나올 때 줄 바꿈을 하도록 설정
     },
     
 });
