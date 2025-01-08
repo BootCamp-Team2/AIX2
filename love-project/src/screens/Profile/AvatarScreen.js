@@ -104,21 +104,6 @@ const AvatarScreen = () => {
     <View style={styles.container}>
       <Text style={styles.title}>Upload Your Avatar</Text>
 
-      <View style={styles.genderContainer}>
-          <TouchableOpacity
-            style={[styles.genderButton, gender === 'male' && styles.genderButtonSelected]}
-            onPress={() => setGender('male')}
-          >
-            <Text style={styles.genderButtonText}>Male</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.genderButton, gender === 'female' && styles.genderButtonSelected]}
-            onPress={() => setGender('female')}
-          >
-            <Text style={styles.genderButtonText}>Female</Text>
-          </TouchableOpacity>
-        </View>
-
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={takePhoto}>
           <Ionicons name="camera" size={24} color="white" />
@@ -140,6 +125,21 @@ const AvatarScreen = () => {
         </View>
       )}
 
+      <View style={styles.genderContainer}>
+        <TouchableOpacity
+          style={[styles.genderButton, gender === 'male' && styles.genderButtonSelected]}
+          onPress={() => setGender('male')}
+        >
+          <Text style={styles.genderButtonText}>Male</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.genderButton, gender === 'female' && styles.genderButtonSelected]}
+          onPress={() => setGender('female')}
+        >
+          <Text style={styles.genderButtonText}>Female</Text>
+        </TouchableOpacity>
+      </View>
+
       <TouchableOpacity
         style={[styles.uploadButton, loading && styles.uploadButtonLoading]}
         onPress={uploadImage}
@@ -149,6 +149,8 @@ const AvatarScreen = () => {
           {loading ? 'Uploading...' : 'Upload Image'}
         </Text>
       </TouchableOpacity>
+
+      
 
       {uploadStatus && <Text style={styles.uploadStatus}>{uploadStatus}</Text>}
 
@@ -250,6 +252,8 @@ const styles = StyleSheet.create({
     color: '#333',
     fontWeight: '600',
     marginTop: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   avatarCard: {
     marginTop: 30,
