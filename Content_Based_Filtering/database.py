@@ -1,9 +1,10 @@
 import mysql.connector
 import json
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Form
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
+import faiss_main
 
 app = FastAPI()
 
@@ -108,6 +109,13 @@ def create_or_update_mbti(idealType: idealType):
         cursor.close()
         conn.close()
         
+@app.post("/recommend/")
+async def recommendUser(uid: str = Form(...)):
+    resultUID = faiss_main.main(uid)
+    return {
+        f"Result Recommend UID: {resultUID}"
+    }
+        
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("database:app", host="192.168.1.2", port=8000)
+    uvicorn.run("database:app", host="192.168.1.2", port=8002)
