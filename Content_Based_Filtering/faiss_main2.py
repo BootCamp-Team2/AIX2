@@ -4,6 +4,9 @@ import faiss
 import numpy as np
 import json
 
+df = None
+feature_list = None
+
 ## 원핫인코딩 리스트
 gender_types = ["남성", "여성"]
 
@@ -30,7 +33,7 @@ def list_to_multiply_hot(value_list, value_types):
         combined_vector = np.maximum(combined_vector, single_vector)  # 합집합 처리
     return combined_vector.tolist()
 
-def fetch_mbti_data(userUID):
+def fetch_mbti_data():
     ## MySQL Server 연결
     conn = mysql.connector.connect(
         host="localhost",
@@ -40,28 +43,15 @@ def fetch_mbti_data(userUID):
     )
     
     cursor = conn.cursor()
-    
-    ## 해당 유저의 행 뽑아오기
-    query_row = "SELECT * FROM idealTable WHERE userUID = %s"
-    cursor.execute(query_row, (userUID, ))
-    results_user = cursor.fetchall()
-    
-    if not results_user:
-        raise Exception(f"존재하지 않는 userUID 입니다. [ userUID >> {userUID} ]")
-    
-    # for row in results_user:
-    #     print(row)
-    
-    query_row = "SELECT * FROM idealTable WHERE userUID != %s"
-    cursor.execute(query_row, (userUID, ))
+
+    query_row = "SELECT * FROM idealTable"
+    cursor.execute(query_row)
     results_others = cursor.fetchall()
         
     # for row in results_others:
     #     print(row)
     
-    user_df = pd.DataFrame(results_user, columns=["userUID", "myGender", "recommendGender", "myMBTI", "recommendMBTI", 
-                                                  "myHeight", "favoriteHeight", "myAppearance", "favoriteAppearance"])
-    others_df = pd.DataFrame(results_others, columns=["userUID", "myGender", "recommendGender", "myMBTI", "recommendMBTI", 
+    df = pd.DataFrame(results_others, columns=["userUID", "myGender", "recommendGender", "myMBTI", "recommendMBTI", 
                                                   "myHeight", "favoriteHeight", "myAppearance", "favoriteAppearance"])
     
     ## 타입이 JSON인 feature 이름 가져오기
@@ -71,30 +61,35 @@ def fetch_mbti_data(userUID):
     
     cursor.close()
     conn.close()
-    return user_df, others_df, list(set(json_columns))
+    return df, list(set(json_columns))
 
-def process_data(userUID):
-    global user_df, others_df
-    user_df, others_df, json_columns = fetch_mbti_data(userUID)
+def process_data():
+    global df, feature_list
+    df, json_columns = fetch_mbti_data()
     # print(user_df.head()); print(others_df.head())
     # print(json_columns)
     
     for feature in json_columns:
-        user_df[feature] = user_df[feature].apply(lambda x: json.loads(x))
-        others_df[feature] = others_df[feature].apply(lambda x: json.loads(x))
+        df[feature] = df[feature].apply(lambda x: json.loads(x))
     # print(user_df.head()); print(others_df.head())
     
-    feature_list = user_df.columns[user_df.columns != "userUID"]
+    feature_list = df.columns[df.columns != "userUID"]
     type_list = [gender_types, mbti_types, height_types, appearance_types]
     for i, feature in enumerate(feature_list):
-        if not isinstance(user_df[feature][0], list):
-            user_df[feature] = user_df[feature].apply(lambda x: to_one_hot(x, type_list[i // 2]))
-            others_df[feature] = others_df[feature].apply(lambda x: to_one_hot(x, type_list[i // 2]))
+        if not isinstance(df[feature][0], list):
+            df[feature] = df[feature].apply(lambda x: to_one_hot(x, type_list[i // 2]))
         else:
-            user_df[feature] = user_df[feature].apply(lambda x: list_to_multiply_hot(x, type_list[i // 2]))
-            others_df[feature] = others_df[feature].apply(lambda x: list_to_multiply_hot(x, type_list[i // 2]))
-    # print(user_df.head()); print(others_df.head())
-
+            df[feature] = df[feature].apply(lambda x: list_to_multiply_hot(x, type_list[i // 2]))
+    # print(df.head())
+    
+def search_users(userUID):        
+    if not userUID in df["userUID"].values:
+        raise f"이용하실 수 없는 유저입니다. uid: {userUID}"
+    
+    ## user_df, others_df 분리
+    user_df = df[df["userUID"] == userUID]
+    others_df = df[df["userUID"] != userUID]
+    
     ## FAISS를 위한 벡터리스트로 변환
     user_vector_list = [feature for i, feature in enumerate(feature_list) if i % 2 != 0]
     # print(f"user_vector: {user_vector_list}")
@@ -102,8 +97,8 @@ def process_data(userUID):
     # print(f"other_vector: {others_vector_list}")
     
     ## 벡터 결합
-    user_combined_vectors = np.array([np.concatenate([user_df[col][i] for col in user_vector_list], axis=None) for i in range(len(user_df))], dtype=np.float32)
-    others_combined_vectors = np.array([np.concatenate([others_df[col][i] for col in others_vector_list], axis=None) for i in range(len(others_df))], dtype=np.float32)
+    user_combined_vectors = np.array([np.concatenate([user_df[col].iloc[i] for col in user_vector_list], axis=None) for i in range(len(user_df))], dtype=np.float32)
+    others_combined_vectors = np.array([np.concatenate([others_df[col].iloc[i] for col in others_vector_list], axis=None) for i in range(len(others_df))], dtype=np.float32)
     
     ## 벡터 정규화
     faiss.normalize_L2(user_combined_vectors)
@@ -113,9 +108,6 @@ def process_data(userUID):
     index = faiss.IndexFlatL2(user_combined_vectors.shape[1])
     index.add(others_combined_vectors)
     
-    return user_combined_vectors, others_combined_vectors, index
-    
-def search_users(user_combined_vectors, index):
     ## 유사도 측정 - 최대 50개
     distances, indices = index.search(user_combined_vectors, k=50)
     # similar_users = [others_combined_vectors[i] for i in indices[0]]
@@ -132,7 +124,7 @@ def search_users(user_combined_vectors, index):
     add_score = 0.1
     adjusted_scores = [
         (i, (distances[0][idx])
-            + (add_score if user_df["myHeight"][0] != others_df["favoriteHeight"][i] else 0)
+            + (add_score if user_df["myHeight"].iloc[0] != others_df["favoriteHeight"].iloc[i] else 0)
             + (add_score if any(item not in user_df["myAppearance"].tolist() for item in others_df["favoriteAppearance"].tolist()) else 0))
         for idx, i in enumerate(valid_indices)
     ]
@@ -148,14 +140,13 @@ def search_users(user_combined_vectors, index):
 
 # 임시로 유저UID 다음과 같이 지정
 def main(userUID):
-    try:
-        u_combined_vectors, o_combined_vectors, index = process_data(userUID)
-        recommend_result = search_users(u_combined_vectors, index)
+    # try:
+        process_data()
+        recommend_result = search_users(userUID)
         print(f"추천된 사용자들: {recommend_result}")
         return recommend_result
-    except Exception as e:
-        print(f"오류: {e}")
-    
+    # except Exception as e:
+    #     print(f"오류: {e}")
 if __name__ == "__main__":
     main("0009759695")
     # main("김시현") ## 존재하지 않는 userUID 테스트
