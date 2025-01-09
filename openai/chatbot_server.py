@@ -1,28 +1,37 @@
-from flask import Flask, request, jsonify, render_template, redirect, url_for, session
-from chatbot import send_message, activate_message, wait_for_completion, list_messages, get_or_create_thread_and_summary
-from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
+import logging
+from flask import Flask, request, jsonify, render_template, redirect, url_for, session
+from werkzeug.security import generate_password_hash, check_password_hash
+from dotenv import load_dotenv
 import os
+import time
+from chatbot import send_message, activate_message, wait_for_completion, list_messages, create_and_save_thread, get_thread_and_chatbot_from_db
+
+# .env 파일 로드
+load_dotenv()
+
+# 로깅 설정
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'
+app.secret_key = os.getenv("FLASK_SECRET_KEY", "default_secret_key")
 
 # SQLite 데이터베이스 초기화
 def init_db():
-    conn = sqlite3.connect('users.db')  # 데이터베이스 파일 이름을 일관되게 유지
+    conn = sqlite3.connect('users.db')
     cursor = conn.cursor()
     cursor.execute('''CREATE TABLE IF NOT EXISTS users (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         username TEXT UNIQUE NOT NULL,
                         password TEXT NOT NULL,
-                        thread_key TEXT
+                        thread_key TEXT,
+                        chatbot_id TEXT
                     )''')
     conn.commit()
     conn.close()
 
 init_db()
 
-# 로그인 페이지
 @app.route('/')
 def login_page():
     if 'username' in session:
@@ -42,8 +51,8 @@ def login():
 
     if user and check_password_hash(user[2], password):
         session['username'] = username
-        # thread_key가 없는 경우 기본값으로 None 설정
         session['thread_key'] = user[3] if len(user) > 3 and user[3] else None
+        session['selected_chatbot'] = user[4] if len(user) > 4 and user[4] else None
         return redirect(url_for('select_chatbot'))
     else:
         return "<h1>로그인 실패! 다시 시도하세요.</h1>"
@@ -72,40 +81,32 @@ def logout():
     session.pop('thread_key', None)
     return redirect(url_for('login_page'))
 
-# 챗봇 선택 페이지
 @app.route('/select_chatbot', methods=['GET', 'POST'])
 def select_chatbot():
     if 'username' not in session:
         return redirect(url_for('login_page'))
-    
+
     if request.method == 'POST':
-        selected_chatbot = request.form.get('chatbot')
         thread_key = request.form.get('thread_key')
-        
+
+        # 기존 스레드 로드 시 데이터베이스에서 chatbot_id를 불러옴
         if thread_key:
-            session['thread_key'] = thread_key  # 이전 스레드 키 사용
+            session['thread_key'] = thread_key
+            _, session['selected_chatbot'] = get_thread_and_chatbot_from_db(session['username'])
         else:
-            session['thread_key'] = get_or_create_thread_and_summary(session['username'])  # 새로운 스레드 키 생성
-        
-        if selected_chatbot in ['hana', 'hwarang']:
+            # 새 스레드 생성
+            selected_chatbot = request.form.get('chatbot', 'hana')  # 기본값 설정
+            session['thread_key'] = create_and_save_thread(session['username'], selected_chatbot)
             session['selected_chatbot'] = selected_chatbot
-            return redirect(url_for('chat_page'))
-        else:
-            return "<h1>Invalid chatbot selection. Please try again.</h1>"
 
-    # Load available thread keys for the user
-    conn = sqlite3.connect('users.db')  # 일관된 파일 이름 사용
-    cursor = conn.cursor()
-    cursor.execute("SELECT thread_key FROM users WHERE username = ?", (session['username'],))
-    result = cursor.fetchone()
-    conn.close()
+        return redirect(url_for('chat_page'))
 
-    # Handle case where no thread key exists
-    thread_keys = [result[0]] if result and result[0] else []
+    # 기존 스레드 키 불러오기
+    thread_key, chatbot_id = get_thread_and_chatbot_from_db(session['username'])
+    session['selected_chatbot'] = chatbot_id  # DB에서 가져온 chatbot_id 설정
 
-    return render_template('select_chatbot.html', thread_keys=thread_keys)
+    return render_template('select_chatbot.html', thread_keys=[thread_key] if thread_key else [])
 
-# 채팅 페이지
 @app.route('/chat')
 def chat_page():
     if 'username' not in session or 'selected_chatbot' not in session:
@@ -117,7 +118,7 @@ def chat_api():
     user_message = request.json.get('message')
     selected_assistant = session.get('selected_chatbot')
     thread_key = session.get('thread_key')
-    
+
     if not user_message or not selected_assistant or not thread_key:
         return jsonify({'error': 'No message, assistant, or thread provided'}), 400
 
@@ -141,14 +142,24 @@ def chat_api():
 @app.route('/exit', methods=['POST'])
 def exit_chat():
     if 'username' in session:
-        conn = sqlite3.connect('users.db')
-        cursor = conn.cursor()
-        cursor.execute("UPDATE users SET thread_key = ? WHERE username = ?", (session.get('thread_key'), session['username']))
-        conn.commit()
-        conn.close()
-    session.pop('selected_chatbot', None)
-    session.pop('thread_key', None)
-    return redirect(url_for('select_chatbot'))
+        try:
+            if 'thread_key' in session and session['thread_key']:
+                conn = sqlite3.connect('users.db')
+                cursor = conn.cursor()
+                cursor.execute(
+                    "UPDATE users SET thread_key = ? WHERE username = ?",
+                    (session['thread_key'], session['username'])
+                )
+                conn.commit()
+                conn.close()
+        except Exception as e:
+            logging.error(f"Error updating thread_key in database: {e}")
+            return jsonify({'error': 'Failed to update database'}), 500
+
+        session.pop('selected_chatbot', None)
+        session.pop('thread_key', None)
+
+    return jsonify({'message': 'Chat session ended successfully'}), 200
 
 if __name__ == '__main__':
     app.run(debug=True)

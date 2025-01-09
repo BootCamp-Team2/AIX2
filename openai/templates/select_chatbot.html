@@ -14,18 +14,16 @@
             <option value="hwarang">Hwarang</option>
         </select>
         <br><br>
-        
-        {% if thread_keys and thread_keys[0] %}
+
         <label for="thread_key">Continue previous conversation:</label>
         <select id="thread_key" name="thread_key">
             <option value="">Start a new conversation</option>
-            <option value="{{ thread_keys[0] }}">Thread {{ thread_keys[0] }}</option>
+            {% for thread in thread_keys %}
+            <option value="{{ thread }}">Thread {{ thread }}</option>
+            {% endfor %}
         </select>
-        {% else %}
-        <p>No previous conversation found. Starting a new conversation.</p>
-        {% endif %}
         <br><br>
-        
+
         <button type="submit">Continue</button>
     </form>
 </body>
