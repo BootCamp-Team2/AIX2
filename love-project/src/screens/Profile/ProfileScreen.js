@@ -233,15 +233,19 @@ const handleEditButtonPress = () => {
                     />
                     {/* 겹치는 원 */}
                     <Image
-                        source={{ uri: 'https://example.com/profile.jpg' }}
+                        source={
+                            profilePhotoUri
+                            ? { uri: profilePhotoUri } // 적용된 아바타 URI 사용
+                            : { uri: 'https://example.com/profile.jpg' } // 기본 이미지
+                        }
                         style={[
                             styles.overlappingCircle,
                             {
-                                zIndex: isCircleFront ? 1 : 0,
-                                left: isCircleFront ? 115 : 155,
-                                width: isCircleFront ? 100 : 80,
-                                height: isCircleFront ? 100 : 80,
-                                top: isCircleFront ? 0 : 10,
+                            zIndex: isCircleFront ? 1 : 0,
+                            left: isCircleFront ? 115 : 155,
+                            width: isCircleFront ? 100 : 80,
+                            height: isCircleFront ? 100 : 80,
+                            top: isCircleFront ? 0 : 10,
                             },
                         ]}
                     />
