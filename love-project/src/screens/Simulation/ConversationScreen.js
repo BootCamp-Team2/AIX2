@@ -2,16 +2,29 @@ import React from 'react';
 
 import { View, Text, TouchableOpacity, StyleSheet, LogBox} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+
+
 
 const ConversationScreen = () => {
     const navigation = useNavigation();
     
-    return(
-        
-        <View>
+    return(       
+        <View style={styles.container}>
             <Text style={styles.top}>
-                <Text style={styles.topText}>AI 대화 연습</Text>               
+
+                
+                <Icon name="menu" size={40} color="black" />
+               
+            
+                <Text style={styles.topText}>           AI 대화 연습           </Text>  
+
+               
+                <Icon name="check" size={40} color="black" />
+                        
             </Text>
+
+            
             <Text style={styles.main}>
                 AI와 대화를 시작하기 전에 {'\n'}
                 나의 이상형을 만드세요!
@@ -32,22 +45,28 @@ const ConversationScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  
-    top: { backgroundColor: '#FFF0F0', 
-        alignSelf: 'center',
+
+    container: { flex: 1,     
+      },
+
+    top: { backgroundColor: '#FFF0F0',
         marginBottom: 30, 
         fontSize:26, 
-        padding:15, 
-        textAlign:'center', 
+        paddingTop:15, 
         width: '100%',  
         height: 70,
+        flexDirection: 'row', // Arrange children in a row
+        alignItems: 'center', // Vertically center all items
+        justifyContent: 'space-between',
+        textAlign:'center', 
     },
 
-    topText: { 
+    topText: {
+        textAlign: 'center', // Center text horizontally within its space
+        flex: 1, // Take up remaining space between the icons 
         color : 'black',
         alignSelf: 'center',
-        fontSize:26,        
-        textAlign:'center',        
+        fontSize:26,       
     },
     
     main: { fontSize: 24,

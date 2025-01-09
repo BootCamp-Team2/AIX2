@@ -1,11 +1,16 @@
 import { View, Text, TouchableOpacity, StyleSheet, Platform, Modal, ScrollView } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const CoordinationScreen = () => {
     return(
         <ScrollView>
         <View>
                     <Text style={styles.top}>
-                        <Text style={styles.topText}>AI 스타일 코디</Text>               
+                       <Icon name="menu" size={40} color="black" />                                      
+                                   
+                        <Text style={styles.topText}>            AI 스타일 코디           </Text>                       
+                                      
+                        <Icon name="check" size={40} color="black" />               
                     </Text>
                     <Text style={styles.main}>
                         나에게 어울리는 스타일을{'\n'}찾아보세요!
@@ -44,7 +49,7 @@ const CoordinationScreen = () => {
         
         const styles = StyleSheet.create({
           
-            top: { 
+            top: {
                 backgroundColor: '#FFF0F0', 
                 alignSelf: 'center',
                 marginBottom: 30,  
@@ -52,13 +57,25 @@ const CoordinationScreen = () => {
                 textAlign:'center', 
                 width: '100%',  
                 height: 70,
+
+                flexDirection: 'row', // Arrange children in a row
+                alignItems: 'center', // Vertically center all items
+                justifyContent: 'space-between',
             },
+
+
+            
         
             topText: { 
                 color : 'black',
                 alignSelf: 'center',
                 fontSize:24,        
-                textAlign:'center',        
+                textAlign:'center',
+                
+                flex: 1, // Take up remaining space between the icons 
+               
+               
+                    
             },
             
             main: { 
@@ -128,7 +145,7 @@ const CoordinationScreen = () => {
                 width: '80%',
                 height: 70, 
                 alignItems: 'center', 
-                marginBottom: 10, 
+                marginBottom: 20, 
                 textAlign:'center', 
                 fontWeight: 'bold',
                 alignSelf: 'center'
