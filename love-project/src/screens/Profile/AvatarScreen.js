@@ -9,6 +9,7 @@ const AvatarScreen = () => {
   const [avatarUri, setAvatarUri] = useState(null); // 아바타 이미지 URI
   const [loading, setLoading] = useState(false);
   const [uploadStatus, setUploadStatus] = useState('');
+  const [gender, setGender] = useState(null); // 성별 상태 추가
 
   // 카메라로 이미지 찍기
   const takePhoto = async () => {
@@ -59,12 +60,20 @@ const AvatarScreen = () => {
       return;
     }
 
+    if (!gender) {
+      alert('Please select a gender before uploading.');
+      return;
+    }
+
     const formData = new FormData();
     formData.append('img', {
       uri: imageUri,
       type: 'img/jpeg', // 서버에서 요구하는 MIME 타입을 설정
       name: 'photo.jpg', // 업로드할 파일 이름
     });
+    formData.append('gender', gender); // 성별 정보 추가
+
+    console.log(`Preparing to upload. Selected gender: ${gender}`);
 
     try {
       setLoading(true);
@@ -92,8 +101,8 @@ const AvatarScreen = () => {
 
   return (
     <ScrollView>
-      <View style={styles.container}>
-        <Text style={styles.title}>Upload Your Avatar</Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>Upload Your Avatar</Text>
 
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.button} onPress={takePhoto}>
@@ -115,30 +124,56 @@ const AvatarScreen = () => {
             />
           </View>
         )}
+      {imageUri && (
+        <View style={styles.imageCard}>
+          <Image
+            source={{ uri: imageUri }}
+            style={styles.image}
+            resizeMode="cover"
+          />
+        </View>
+      )}
 
+      <View style={styles.genderContainer}>
         <TouchableOpacity
-          style={[styles.uploadButton, loading && styles.uploadButtonLoading]}
-          onPress={uploadImage}
-          disabled={loading}
+          style={[styles.genderButton, gender === 'male' && styles.genderButtonSelected]}
+          onPress={() => setGender('male')}
         >
-          <Text style={styles.uploadButtonText}>
-            {loading ? 'Uploading...' : 'Upload Image'}
-          </Text>
+          <Text style={styles.genderButtonText}>Male</Text>
         </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.genderButton, gender === 'female' && styles.genderButtonSelected]}
+          onPress={() => setGender('female')}
+        >
+          <Text style={styles.genderButtonText}>Female</Text>
+        </TouchableOpacity>
+      </View>
+
+      <TouchableOpacity
+        style={[styles.uploadButton, loading && styles.uploadButtonLoading]}
+        onPress={uploadImage}
+        disabled={loading}
+      >
+        <Text style={styles.uploadButtonText}>
+          {loading ? 'Uploading...' : 'Upload Image'}
+        </Text>
+      </TouchableOpacity>
+
+      
 
         {uploadStatus && <Text style={styles.uploadStatus}>{uploadStatus}</Text>}
 
-        {avatarUri && (
-          <View style={styles.avatarCard}>
-            <Text style={styles.avatarTitle}>Your Avatar</Text>
-            <Image
-              source={{ uri: avatarUri }}
-              style={styles.avatarImage}
-              resizeMode="cover"
-            />
-          </View>
-        )}
-      </View>
+      {avatarUri && (
+        <View style={styles.avatarCard}>
+          <Text style={styles.avatarTitle}>Your Avatar</Text>
+          <Image
+            source={{ uri: avatarUri }}
+            style={styles.avatarImage}
+            resizeMode="cover"
+          />
+        </View>
+      )}
+    </View>
     </ScrollView>
   );
 };
@@ -226,6 +261,8 @@ const styles = StyleSheet.create({
     color: '#333',
     fontWeight: '600',
     marginTop: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   avatarCard: {
     marginTop: 30,
@@ -243,6 +280,24 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     borderWidth: 2,
     borderColor: '#fff',
+  },
+  genderContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginBottom: 20,
+  },
+  genderButton: {
+    backgroundColor: '#ccc',
+    padding: 10,
+    borderRadius: 8,
+    marginHorizontal: 10,
+  },
+  genderButtonSelected: {
+    backgroundColor: '#9AAEFF',
+  },
+  genderButtonText: {
+    color: '#fff',
+    fontWeight: '600',
   },
 });
 

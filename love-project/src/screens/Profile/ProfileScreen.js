@@ -156,7 +156,7 @@ const handleEditButtonPress = () => {
                 uri: pickerResult.assets[0].uri,
                 type: pickerResult.assets[0].type, // "image" 또는 "video"
             };
-            setMediaList([...mediaList, newMedia]);
+            setMediaList([newMedia, ...mediaList]);
         }
     };
 
@@ -356,13 +356,21 @@ const handleEditButtonPress = () => {
                             )}
                         </View>
                     ))}  
+                    <View style={styles.appeal}>
+                        <Text style={styles.appealText}>어필하고 싶은 내용을 적어보세요!</Text>
+                    </View>
                 </View>
                 ) : (
                     <KeyboardAvoidingView>
-                        <View style={styles.mediaContainer}>
-                            <TouchableOpacity style={styles.addMediaButton} onPress={selectVideo}>
+                        <View 
+                            style={[
+                                styles.mediaContainer, 
+                                mediaList.length === 1 ? { alignItems: 'flex-start' } : { alignItems: 'center' }
+                            ]}
+                        >
+                            {/* <TouchableOpacity style={styles.addMediaButton} onPress={selectVideo}>
                                 <Text style={styles.addMediaText}>동영상 추가</Text>
-                            </TouchableOpacity>
+                            </TouchableOpacity> */}
                         
                             <TouchableOpacity style={styles.addMediaButton} onPress={handleSelectMedia}>
                                 <Text style={styles.addMediaText}>사진 추가</Text>
@@ -387,15 +395,20 @@ const handleEditButtonPress = () => {
                                                     shouldPlay={false}
                                                 />
                                             )}
+                                            {showEditButtons === true && (
                                             <TouchableOpacity
                                                 style={styles.deleteMediaButton}
                                                 onPress={() => handleDeleteMedia(index)}
                                             >
                                                 <Text style={styles.deleteMediaText}>삭제</Text>
                                             </TouchableOpacity>
+                                            )}
                                         </View>
                                 )}
                             />
+                            </View>
+                            <View style={styles.appeal}>
+                                <Text style={styles.appealText}>공유하고 싶은 사진을 올려보세요!</Text>
                             </View>
                     </KeyboardAvoidingView>
                 )}
@@ -422,9 +435,7 @@ const handleEditButtonPress = () => {
                 </View>
             )}
 
-            <View style={styles.appeal}>
-                <Text style={styles.appealText}>어필하고 싶은 내용을 적어보세요!</Text>
-            </View>
+            
         </KeyboardAvoidingView>
     );
 };
@@ -657,6 +668,7 @@ const styles = StyleSheet.create({
     mediaContainer: {
         marginTop: 20,
         paddingHorizontal: 5,
+        alignItems: 'center', // 가운데 정렬
     },
     addMediaButton: {
         backgroundColor: '#9AAEFF',
