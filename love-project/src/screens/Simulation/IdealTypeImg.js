@@ -3,10 +3,10 @@ import { View, Text, TouchableOpacity, StyleSheet, Platform, Modal } from 'react
 const IdealTypeImg = () => {
     return(
         <View>
-            <Text style={styles.main}>
-                <Text style={styles.mainText}>AI 대화 연습</Text>               
-            </Text>
             <Text style={styles.top}>
+                <Text style={styles.topText}>AI 대화 연습</Text>               
+            </Text>
+            <Text style={styles.main}>
                 나의 이상형이 생성되었어요!
             </Text>
         
@@ -29,7 +29,7 @@ const IdealTypeImg = () => {
 
 const styles = StyleSheet.create({
   
-    main: { backgroundColor: '#FFF0F0', 
+    top: { backgroundColor: '#FFF0F0', 
         alignSelf: 'center',
         marginBottom: 30, 
         fontSize:26, 
@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
         height: 70,
     },
 
-    mainText: { 
+    topText: { 
         color : 'black',
         alignSelf: 'center',
         fontSize:26, 
@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
     },
     
 
-    top: { fontSize: 25,
+    main: { fontSize: 25,
         marginBottom: 35, 
         fontWeight: 'bold',  
         color : '#FFB89A', 

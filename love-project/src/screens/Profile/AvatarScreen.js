@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Button, Image, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Button, Image, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
 import { Ionicons } from '@expo/vector-icons';
@@ -60,22 +60,23 @@ const AvatarScreen = () => {
     }
 
     const formData = new FormData();
-    formData.append('file', {
+    formData.append('img', {
       uri: imageUri,
-      type: 'image/jpeg', // 서버에서 요구하는 MIME 타입을 설정
+      type: 'img/jpeg', // 서버에서 요구하는 MIME 타입을 설정
       name: 'photo.jpg', // 업로드할 파일 이름
     });
 
     try {
       setLoading(true);
       setUploadStatus('');
-      const response = await axios.post('http://192.168.X.X:8000/upload', formData, {
+      const response = await axios.post('http://192.168.1.2:8001/avatar/uploads/', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
 
       if (response.data && response.data.avatarUrl) {
+        console.log(response.data.avatarUrl)
         setAvatarUri(response.data.avatarUrl); // 서버에서 반환된 아바타 URL 저장
         setUploadStatus('Avatar generated successfully');
       } else {
@@ -90,53 +91,55 @@ const AvatarScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Upload Your Avatar</Text>
+    <ScrollView>
+      <View style={styles.container}>
+        <Text style={styles.title}>Upload Your Avatar</Text>
 
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={takePhoto}>
-          <Ionicons name="camera" size={24} color="white" />
-          <Text style={styles.buttonText}>Take Photo</Text>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button} onPress={takePhoto}>
+            <Ionicons name="camera" size={24} color="white" />
+            <Text style={styles.buttonText}>Take Photo</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={chooseImage}>
+            <Ionicons name="image" size={24} color="white" />
+            <Text style={styles.buttonText}>Choose Image</Text>
+          </TouchableOpacity>
+        </View>
+
+        {imageUri && (
+          <View style={styles.imageCard}>
+            <Image
+              source={{ uri: imageUri }}
+              style={styles.image}
+              resizeMode="cover"
+            />
+          </View>
+        )}
+
+        <TouchableOpacity
+          style={[styles.uploadButton, loading && styles.uploadButtonLoading]}
+          onPress={uploadImage}
+          disabled={loading}
+        >
+          <Text style={styles.uploadButtonText}>
+            {loading ? 'Uploading...' : 'Upload Image'}
+          </Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={chooseImage}>
-          <Ionicons name="image" size={24} color="white" />
-          <Text style={styles.buttonText}>Choose Image</Text>
-        </TouchableOpacity>
+
+        {uploadStatus && <Text style={styles.uploadStatus}>{uploadStatus}</Text>}
+
+        {avatarUri && (
+          <View style={styles.avatarCard}>
+            <Text style={styles.avatarTitle}>Your Avatar</Text>
+            <Image
+              source={{ uri: avatarUri }}
+              style={styles.avatarImage}
+              resizeMode="cover"
+            />
+          </View>
+        )}
       </View>
-
-      {imageUri && (
-        <View style={styles.imageCard}>
-          <Image
-            source={{ uri: imageUri }}
-            style={styles.image}
-            resizeMode="cover"
-          />
-        </View>
-      )}
-
-      <TouchableOpacity
-        style={[styles.uploadButton, loading && styles.uploadButtonLoading]}
-        onPress={uploadImage}
-        disabled={loading}
-      >
-        <Text style={styles.uploadButtonText}>
-          {loading ? 'Uploading...' : 'Upload Image'}
-        </Text>
-      </TouchableOpacity>
-
-      {uploadStatus && <Text style={styles.uploadStatus}>{uploadStatus}</Text>}
-
-      {avatarUri && (
-        <View style={styles.avatarCard}>
-          <Text style={styles.avatarTitle}>Your Avatar</Text>
-          <Image
-            source={{ uri: avatarUri }}
-            style={styles.avatarImage}
-            resizeMode="cover"
-          />
-        </View>
-      )}
-    </View>
+    </ScrollView>
   );
 };
 

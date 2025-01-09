@@ -9,10 +9,10 @@ const ConversationScreen = () => {
     return(
         
         <View>
-            <Text style={styles.main}>
-                <Text style={styles.mainText}>AI 대화 연습</Text>               
-            </Text>
             <Text style={styles.top}>
+                <Text style={styles.topText}>AI 대화 연습</Text>               
+            </Text>
+            <Text style={styles.main}>
                 AI와 대화를 시작하기 전에 {'\n'}
                 나의 이상형을 만드세요!
             </Text>
@@ -21,10 +21,6 @@ const ConversationScreen = () => {
             </Text>
 
             <View style={styles.square} />
-            
-            {/* <Text style={styles.bottom}>
-                나의 이상형 생성
-            </Text> */}
 
             <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("IdealTypeImg")}>
                 <Text style={styles.buttonText}>
@@ -37,7 +33,7 @@ const ConversationScreen = () => {
 
 const styles = StyleSheet.create({
   
-    main: { backgroundColor: '#FFF0F0', 
+    top: { backgroundColor: '#FFF0F0', 
         alignSelf: 'center',
         marginBottom: 30, 
         fontSize:26, 
@@ -47,20 +43,19 @@ const styles = StyleSheet.create({
         height: 70,
     },
 
-    mainText: { 
+    topText: { 
         color : 'black',
         alignSelf: 'center',
         fontSize:26,        
         textAlign:'center',        
     },
     
-    top: { fontSize: 24,
+    main: { fontSize: 24,
         height: 90, 
         fontWeight: 'bold', 
         marginBottom: 10, 
         color : '#FFB89A', 
         textAlign:'center', 
-        fontWeight: 'bold',
         alignSelf: 'center' 
     },
     
