@@ -27,28 +27,30 @@ def get_partner_id():
     return partner_id
 
 # 스레드 키 생성 및 관리
-def get_or_create_thread_and_summary(username):
+def get_or_create_thread_and_summary(username, selected_chatbot="hana"):
     """
     새로운 스레드 키를 생성하거나 기존 스레드 키를 반환합니다.
     """
     conn = sqlite3.connect('users.db')
     cursor = conn.cursor()
     
-    # 현재 사용자에 대한 스레드 키 확인
+    # 현재 사용자에 대한 thread_key 확인
     cursor.execute("SELECT thread_key FROM users WHERE username = ?", (username,))
     result = cursor.fetchone()
     
-    if result and result[0]:  # 기존 스레드 키가 존재하는 경우
+    if result:
+        thread_key = result[0]
+        if not thread_key:
+            # 새로운 스레드 키 생성
+            thread_key = str(uuid.uuid4())
+            cursor.execute("UPDATE users SET thread_key = ? WHERE username = ?", (thread_key, username))
+            conn.commit()
         conn.close()
-        return result[0]
-    
-    # 새 스레드 키 생성
-    new_thread_key = str(uuid.uuid4())
-    cursor.execute("UPDATE users SET thread_key = ? WHERE username = ?", (new_thread_key, username))
-    conn.commit()
+        return thread_key
+
+    # 사용자 정보가 없으면 예외 발생
     conn.close()
-    
-    return new_thread_key
+    raise Exception(f"User {username} not found.")
 
 # 메시지 전송 함수
 def send_message(thread_id, content):
