@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { View, Button, Image, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Button, Image, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import * as FileSystem from 'expo-file-system';
+import * as MediaLibrary from 'expo-media-library';
 import axios from 'axios';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -99,31 +101,49 @@ const AvatarScreen = () => {
     }
   };
 
+  // 아바타 저장 기능
+  const saveAvatar = async () => {
+    if (!avatarUri) {
+      Alert.alert('No avatar to save', 'Please generate an avatar before saving.');
+      return;
+    }
+  
+    try {
+      const { status } = await MediaLibrary.requestPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission Denied', 'Gallery access is required to save the avatar.');
+        return;
+      }
+  
+      const localUri = FileSystem.documentDirectory + 'avatar.jpg';
+      await FileSystem.downloadAsync(avatarUri, localUri);
+  
+      const asset = await MediaLibrary.createAssetAsync(localUri);
+      await MediaLibrary.createAlbumAsync('Avatar Gallery', asset, false);
+  
+      Alert.alert('Success', 'Avatar saved to your gallery!');
+    } catch (error) {
+      console.error('Error saving avatar:', error);
+      Alert.alert('Error', `Failed to save avatar. Details: ${error.message}`);
+    }
+  };
+
   return (
     <ScrollView>
     <View style={styles.container}>
       <Text style={styles.title}>Upload Your Avatar</Text>
 
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={takePhoto}>
-            <Ionicons name="camera" size={24} color="white" />
-            <Text style={styles.buttonText}>Take Photo</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={chooseImage}>
-            <Ionicons name="image" size={24} color="white" />
-            <Text style={styles.buttonText}>Choose Image</Text>
-          </TouchableOpacity>
-        </View>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.button} onPress={takePhoto}>
+          <Ionicons name="camera" size={24} color="white" />
+          <Text style={styles.buttonText}>Take Photo</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={chooseImage}>
+          <Ionicons name="image" size={24} color="white" />
+          <Text style={styles.buttonText}>Choose Image</Text>
+        </TouchableOpacity>
+      </View>
 
-        {imageUri && (
-          <View style={styles.imageCard}>
-            <Image
-              source={{ uri: imageUri }}
-              style={styles.image}
-              resizeMode="cover"
-            />
-          </View>
-        )}
       {imageUri && (
         <View style={styles.imageCard}>
           <Image
@@ -161,7 +181,7 @@ const AvatarScreen = () => {
 
       
 
-        {uploadStatus && <Text style={styles.uploadStatus}>{uploadStatus}</Text>}
+      {uploadStatus && <Text style={styles.uploadStatus}>{uploadStatus}</Text>}
 
       {avatarUri && (
         <View style={styles.avatarCard}>
@@ -171,6 +191,10 @@ const AvatarScreen = () => {
             style={styles.avatarImage}
             resizeMode="cover"
           />
+          <TouchableOpacity style={styles.button} onPress={saveAvatar}>
+              <Ionicons name="save" size={24} color="white" />
+              <Text style={styles.buttonText}>Save Avatar</Text>
+            </TouchableOpacity>
         </View>
       )}
     </View>
