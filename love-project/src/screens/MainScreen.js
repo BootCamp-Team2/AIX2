@@ -11,7 +11,7 @@ const MainScreen = () => {
   return (
   <ScrollView>
     <View style={styles.container}>
-      <View style={styles.top}>
+      <View style={styles.header}>
         <Image source={require('../../assets/MainScreen/cc.jpg')} 
                 style={{width : 50, 
                         height : 50,
@@ -22,7 +22,7 @@ const MainScreen = () => {
         />
 
 
-        <Text style={styles.topText}>임재현{'\n'}
+        <Text style={styles.headerText}>임재현{'\n'}
           <Text style={styles.topText2}>VIP고객</Text>
         </Text>
       </View>
@@ -54,10 +54,11 @@ const MainScreen = () => {
                       }}
           />
         </View>
-        
-        <Text style={styles.buttonText}>소개팅 매칭{'\n'}
-        <Text style={styles.empty}>{'\n'}</Text>  
-        <Text style={styles.bottom}>새로운 사람을 만나보세요!</Text>
+        <Text style={styles.textStyle}>
+          <Text style={styles.buttonText}>소개팅 매칭{'\n'}
+          <Text style={styles.empty}>{'\n'}</Text>  
+          <Text style={styles.bottom}>새로운 사람을 만나보세요!</Text>
+        </Text>
         </Text>
       </TouchableOpacity>
 
@@ -72,10 +73,11 @@ const MainScreen = () => {
                       }}
           />
         </View>
-        
-        <Text style={styles.buttonText}>AI 대화 연습{'\n'}
-        <Text style={styles.empty}>{'\n'}</Text>
-        <Text style={styles.bottom}>대화 스킬을 키워보세요!</Text>
+        <Text style={styles.textStyle}>
+          <Text style={styles.buttonText}>AI 대화 연습{'\n'}
+          <Text style={styles.empty}>{'\n'}</Text>
+          <Text style={styles.bottom}>대화 스킬을 키워보세요!</Text>
+        </Text>
         </Text>
       </TouchableOpacity>
 
@@ -90,10 +92,11 @@ const MainScreen = () => {
                       }}
           />
         </View>
-        
-        <Text style={styles.buttonText}>AI 스타일 코디{'\n'}
-        <Text style={styles.empty}>{'\n'}</Text>
-        <Text style={styles.bottom}>어울리는 스타일을 찾아보세요!</Text>
+        <Text style={styles.textStyle}>
+          <Text style={styles.buttonText}>AI 스타일 코디{'\n'}
+          <Text style={styles.empty}>{'\n'}</Text>
+          <Text style={styles.bottom}>어울리는 스타일을 찾아보세요!</Text>
+        </Text>
         </Text>
       </TouchableOpacity>
     </View>
@@ -111,22 +114,22 @@ const styles = StyleSheet.create({
     padding: 30,
   },
 
-  top:{width: '100%',
+  header:{width: '100%',
     height: 70,
     flexDirection: 'row',
     marginRight : 30,
     marginLeft : 5,
     marginBottom : 1,
-    marginTop: 40
+    marginTop: 30
   },
 
-  topText: {color : 'gray', 
+  headerText: {color : 'gray', 
     fontSize : 15, 
     height: 50,
-    marginTop: 10   
+    marginTop: 5   
   },
   
-  topText2: {color : 'silver', 
+  headerText2: {color : 'silver', 
     fontSize : 14, 
     height: 50,   
   },
@@ -134,7 +137,7 @@ const styles = StyleSheet.create({
   main: {
     backgroundColor: '#FF9AAB',
     alignSelf: 'center',
-    padding: 30,
+    paddingTop: 40,
     borderRadius: 30,
     width: '100%',
     height: 200,
@@ -158,6 +161,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'silver', // Line color
     marginVertical: 10, // Space above and below the line
   },
+
+  textStyle: {
+    paddingTop: 12,
+
+  },
   
   button: {
     backgroundColor: '#FF9AAB',
@@ -166,7 +174,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 25,
     width: '100%',
-    marginBottom: 15,
+    marginBottom: 10,
     flexDirection: 'row',
     },
   
@@ -178,7 +186,7 @@ const styles = StyleSheet.create({
   },
 
   empty: {
-    fontSize: 2,
+    fontSize: 3,
   },
 
   bottom: {color : 'white', 
