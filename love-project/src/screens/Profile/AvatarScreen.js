@@ -9,6 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 const AvatarScreen = () => {
   const [imageUri, setImageUri] = useState(null);
   const [avatarUri, setAvatarUri] = useState(null); // 아바타 이미지 URI
+  const [profilePhotoUri, setProfilePhotoUri] = useState(null); // 프로필 사진 URI
   const [loading, setLoading] = useState(false);
   const [uploadStatus, setUploadStatus] = useState('');
   const [gender, setGender] = useState(null); // 성별 상태 추가
@@ -128,6 +129,15 @@ const AvatarScreen = () => {
     }
   };
 
+  const applyAvatarToProfile = () => {
+    if (!avatarUri) {
+      Alert.alert('No avatar to apply', 'Please generate an avatar before applying.');
+      return;
+    }
+    setProfilePhotoUri(avatarUri);
+    Alert.alert('Success', 'Avatar applied to profile!');
+  };
+
   return (
     <ScrollView>
     <View style={styles.container}>
@@ -192,9 +202,13 @@ const AvatarScreen = () => {
             resizeMode="cover"
           />
           <TouchableOpacity style={styles.button} onPress={saveAvatar}>
-              <Ionicons name="save" size={24} color="white" />
-              <Text style={styles.buttonText}>Save Avatar</Text>
-            </TouchableOpacity>
+            <Ionicons name="save" size={24} color="white" />
+            <Text style={styles.buttonText}>Save Avatar</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={applyAvatarToProfile}>
+            <Ionicons name="checkmark-circle" size={24} color="white" />
+            <Text style={styles.buttonText}>Apply to Profile</Text>
+          </TouchableOpacity>
         </View>
       )}
     </View>
@@ -235,6 +249,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 6,
     elevation: 3,
+    marginTop: 20
   },
   buttonText: {
     color: '#fff',
