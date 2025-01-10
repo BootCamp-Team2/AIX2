@@ -50,13 +50,13 @@ const ConversationScreen = () => {
     >
         <ScrollView>       
             <View style={styles.container}>
-                <Text style={styles.top}>
+                <Text style={styles.header}>
 
                     
                     <Icon name="menu" size={40} color="black" />
                 
                 
-                    <Text style={styles.topText}>           AI 대화 연습           </Text>  
+                    <Text style={styles.headerText}>           AI 대화 연습           </Text>  
 
 
                     <Icon name="check" size={40} color="black" />
@@ -73,8 +73,8 @@ const ConversationScreen = () => {
 
                 <TextInput style={styles.square}
                     
-                    placeholder="텍스트를 입력하세요
-                        (텍스트 입력후 이상형 이미지를 생성하는데 3분 정도 걸려요)"
+                    // placeholder="텍스트를 입력하세요
+                    // (텍스트 입력후 이상형 이미지를 생성하는데 3분 정도 걸려요)"
                     
                     value={inputValue}
                     onChangeText={(inputValue) => setInputValue(inputValue)} // 텍스트 변경 시 상태 업데이트
@@ -100,13 +100,15 @@ const ConversationScreen = () => {
 
 const styles = StyleSheet.create({
 
-    container: { flex: 1, 
+    container: { 
+        flex: 1, // 전체 화면을 가득 채움
+        flexDirection: 'column', // 세로 방향으로 배치
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#fff',    
       },
 
-    top: { backgroundColor: '#FFF0F0',
+    header: { backgroundColor: '#FFF0F0',
         marginBottom: 30, 
         fontSize:26, 
         paddingTop:15, 
@@ -118,7 +120,7 @@ const styles = StyleSheet.create({
         textAlign:'center', 
     },
 
-    topText: {
+    headerText: {
         textAlign: 'center', // Center text horizontally within its space
         flex: 1, // Take up remaining space between the icons 
         color : 'black',
@@ -145,24 +147,22 @@ const styles = StyleSheet.create({
     },
 
     square: {
-        // alignSelf: 'center',
-        // justifyContent: 'center',
-        // alignItems: 'center',
-        borderRadius: 35,
-        marginBottom: 30,
+        textAlign:'center',
         width: 300,   
-        height: 300, 
+        height: 300,
+        borderRadius: 35,
+        marginBottom: 30, 
         borderWidth: 2,
         borderColor: '#FFB89A', // Color of the square border
         backgroundColor: 'transparent',  // Transparent inside the square
-              
+        fontSize: 23,      
         paddingHorizontal: 10,
         },
 
 
-    button: {padding:10,
+    button: {paddingTop:15,
         backgroundColor: '#FFB89A',
-        borderRadius: 25, 
+        borderRadius: 23, 
         width: '85%',
         height: 60, 
         alignItems: 'center', 

@@ -115,14 +115,15 @@ const styles = StyleSheet.create({
     height: 70,
     flexDirection: 'row',
     marginRight : 30,
-    marginLeft : 20,
-    marginBottom : 5,
+    marginLeft : 5,
+    marginBottom : 1,
     marginTop: 40
   },
 
   topText: {color : 'gray', 
     fontSize : 15, 
-    height: 50,   
+    height: 50,
+    marginTop: 10   
   },
   
   topText2: {color : 'silver', 
@@ -133,21 +134,22 @@ const styles = StyleSheet.create({
   main: {
     backgroundColor: '#FF9AAB',
     alignSelf: 'center',
-    margin: 5,
-    padding: 15,
+    padding: 30,
     borderRadius: 30,
     width: '100%',
     height: 200,
     alignItems: 'center',
-    marginBottom: 10, 
+    marginBottom: 10,
+ 
   },  
   
-  mainText: { color: 'white',
+  mainText: { 
+    color: 'white',
     height: 180, 
     fontSize: 18, 
     fontWeight: 'bold', 
     textAlign: 'center',
-    alignSelf: 'center' 
+    alignSelf: 'center', 
   },
 
   horizontalLine: {

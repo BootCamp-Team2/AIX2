@@ -11,15 +11,15 @@ const IdealTypeImg = () => {
     return(
     <ScrollView>
         <View>
-            <Text style={styles.top}>
-                <Text style={styles.topText}>AI 대화 연습</Text>               
+            <Text style={styles.header}>
+                <Text style={styles.headerText}>AI 대화 연습</Text>               
             </Text>
             <Text style={styles.main}>
                 나의 이상형이 생성되었어요!
             </Text>
 
             {simUri && (
-                <View style={styles.circle}>
+                <View style={styles.square}>
                     <Image
                         source={{uri:simUri}}
                         style={styles.image}
@@ -51,17 +51,17 @@ const IdealTypeImg = () => {
 
 const styles = StyleSheet.create({
   
-    top: { backgroundColor: '#FFF0F0', 
+    header: { backgroundColor: '#FFF0F0', 
         alignSelf: 'center',
         marginBottom: 30, 
         fontSize:26, 
-        padding:15, 
+        paddingTop:18, 
         textAlign:'center', 
         width: '100%',  
         height: 70,
     },
 
-    topText: { 
+    headerText: { 
         color : 'black',
         alignSelf: 'center',
         fontSize:26, 
@@ -70,39 +70,36 @@ const styles = StyleSheet.create({
     
 
     main: { fontSize: 25,
-        marginBottom: 35, 
-        fontWeight: 'bold',  
+        marginBottom: 35,   
         color : '#FFB89A', 
         textAlign:'center',  
-        fontWeight: 'bold',
         alignSelf: 'center' 
     },
 
-    circle: {marginBottom: 30,
+    square: {
+        width: 300,   
+        height: 300,
+        borderRadius: 30,
+        marginBottom: 30,
         backgroundColor: '#D9D9D9',
         alignSelf: 'center',
-        borderRadius: 200,
         justifyContent: 'center',
-        alignItems: 'center',
-        width: 300,  
-        height: 300,  
+        alignItems: 'center',  
         borderColor: 'gray', 
         },
     
     image: {
-        width: 250,
-        height: 250,
-        borderRadius: 10,
+        width: 300,
+        height: 300,
+        borderRadius: 30,
         borderWidth: 2,
         borderColor: '#ddd',
         },
 
-    middle: { fontSize: 24, 
-        fontWeight: 'bold', 
+    middle: { fontSize: 24,  
         marginBottom: 20, 
         color : '#FFB89A', 
         textAlign:'center',  
-        fontWeight: 'bold',
         alignSelf: 'center'
     },
 
@@ -111,29 +108,27 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         backgroundColor: '#FFB89A', 
         color : 'white',
-        padding: 12, 
+        paddingTop: 18, 
         borderRadius: 25, 
         width: '70%',
         height: 60, 
         alignItems: 'center',  
         textAlign:'center', 
-        fontWeight: 'bold',
         alignSelf: 'center'
     },
 
     return: { 
-        fontSize:18,
+        fontSize:21,
         marginBottom: 15,
         backgroundColor: '#D9D9D9', 
         color : 'white',
-        padding: 12, 
+        paddingTop: 16, 
         borderRadius: 25, 
         width: '70%',
         height: 60, 
         alignItems: 'center', 
         marginBottom: 10, 
         textAlign:'center', 
-        fontWeight: 'bold',
         alignSelf: 'center'
     },
   });

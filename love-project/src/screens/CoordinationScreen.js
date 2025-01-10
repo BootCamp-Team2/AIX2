@@ -89,7 +89,7 @@ const CoordinationScreen = () => {
             },            
         
             img: {
-                padding:10,
+                paddingTop:20,
                 backgroundColor: 'transparent',
                 borderRadius: 30, 
                 width: '80%',
@@ -114,7 +114,7 @@ const CoordinationScreen = () => {
             },
 
             cloth: {
-                padding:10,
+                paddingTop: 25,
                 backgroundColor: 'transparent',
                 borderRadius: 30, 
                 width: '80%',
@@ -139,11 +139,11 @@ const CoordinationScreen = () => {
             },
 
             button: {
-                padding:10,
+                paddingTop:10,
                 backgroundColor: '#3EB265',
-                borderRadius: 30, 
+                borderRadius: 25, 
                 width: '80%',
-                height: 70, 
+                height: 60, 
                 alignItems: 'center', 
                 marginBottom: 20, 
                 textAlign:'center', 
