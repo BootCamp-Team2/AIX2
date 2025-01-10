@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dating Coaching</title>
+</head>
+<body>
+    <h1>Dating Coaching</h1>
+    <div>
+        <h2>Coaching Result</h2>
+        <p>{{ coaching_response }}</p>
+    </div>
+    <div>
+        <h2>Emotion Analysis</h2>
+        <ul>
+            {% for emotion in emotions %}
+                <li>{{ emotion }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <a href="/chat">Back to Chat</a>
+</body>
+</html>
