@@ -8,7 +8,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const ConversationScreen = () => {
     const navigation = useNavigation();
-    const [text, setText] = useState('');
+    const [inputValue, setInputValue, text, setText] = useState('');
     
     return(
     <ScrollView>       
@@ -38,7 +38,7 @@ const ConversationScreen = () => {
             <TextInput style={styles.square}
                 placeholder="텍스트를 입력하세요"
                 value={text}
-                onChangeText={(value) => setText(value)} // 텍스트 변경 시 상태 업데이트
+                onChangeText={(text) => setInputValue(text)} // 텍스트 변경 시 상태 업데이트
             />
 
             <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("IdealTypeImg")}>
@@ -99,18 +99,17 @@ const styles = StyleSheet.create({
     },
 
     square: {marginBottom: 30,
-        alignSelf: 'center',
+        // alignSelf: 'center',
         borderRadius: 35,
-        justifyContent: 'center',
-        alignItems: 'center',
+        // justifyContent: 'center',
+        // alignItems: 'center',
         width: 300,   
         height: 300, 
         borderWidth: 2,
         borderColor: '#FFB89A', // Color of the square border
         backgroundColor: 'transparent',  // Transparent inside the square
-
               
-        paddingHorizontal: 8,
+        paddingHorizontal: 10,
         },
 
 
