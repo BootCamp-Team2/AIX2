@@ -19,6 +19,7 @@
     "axios": "^1.7.9",
     "expo": "~52.0.23",
     "expo-image-picker": "~16.0.3",
+    "expo-media-library": "^17.0.4",
     "expo-status-bar": "~2.0.0",
     "react": "18.3.1",
     "react-native": "0.76.5",
