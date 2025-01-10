@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
 import { View, Button, Image, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
@@ -7,8 +8,9 @@ import axios from 'axios';
 import { Ionicons } from '@expo/vector-icons';
 
 const AvatarScreen = () => {
+  const navigation = useNavigation();
   const [imageUri, setImageUri] = useState(null);
-  const [avatarUri, setAvatarUri] = useState(null); // 아바타 이미지 URI
+  const [avatarUri, setAvatarUri] = useState(null); // 생성된 아바타 URI
   const [profilePhotoUri, setProfilePhotoUri] = useState(null); // 프로필 사진 URI
   const [loading, setLoading] = useState(false);
   const [uploadStatus, setUploadStatus] = useState('');
@@ -143,8 +145,15 @@ const AvatarScreen = () => {
       Alert.alert('No avatar to apply', 'Please generate an avatar before applying.');
       return;
     }
-    setProfilePhotoUri(avatarUri);
+    navigation.navigate('ProfileScreen', { avatarUri });
     Alert.alert('Success', 'Avatar applied to profile!');
+  };
+
+  // "Apply to Profile" 버튼 핸들러
+  const handleApplyToProfile = () => {
+    if (avatarUri) {
+      navigation.navigate('ProfileScreen', { avatarUri }); // ProfileScreen으로 데이터 전달
+    }
   };
 
   return (
@@ -214,7 +223,7 @@ const AvatarScreen = () => {
             <Ionicons name="save" size={24} color="white" />
             <Text style={styles.buttonText}>Save Avatar</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={applyAvatarToProfile}>
+          <TouchableOpacity style={styles.button} onPress={handleApplyToProfile}>
             <Ionicons name="checkmark-circle" size={24} color="white" />
             <Text style={styles.buttonText}>Apply to Profile</Text>
           </TouchableOpacity>
