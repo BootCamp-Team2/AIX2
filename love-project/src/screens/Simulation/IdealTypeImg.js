@@ -1,7 +1,8 @@
-import { View, Text, TouchableOpacity, StyleSheet, Platform, Modal } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Platform, Modal, ScrollView } from 'react-native';
 
 const IdealTypeImg = () => {
     return(
+    <ScrollView>
         <View>
             <Text style={styles.top}>
                 <Text style={styles.topText}>AI 대화 연습</Text>               
@@ -24,6 +25,7 @@ const IdealTypeImg = () => {
                 이상형 다시 만들기
             </Text>
         </View>
+    </ScrollView>
     );
 };
 
