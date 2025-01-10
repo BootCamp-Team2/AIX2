@@ -1,7 +1,9 @@
 import { View, Text, TouchableOpacity, StyleSheet, Platform, Modal, ScrollView, Image } from 'react-native';
 import { useRoute } from '@react-navigation/native'
+import { useNavigation } from '@react-navigation/native';
 
 const IdealTypeImg = () => {
+    const navigation = useNavigation();
     const route = useRoute();
     const { simUri } = route.params;
     console.log(simUri)
@@ -34,9 +36,14 @@ const IdealTypeImg = () => {
                 대화 시작하기
             </Text>
 
-            <Text style={styles.return}>
-                이상형 다시 만들기
-            </Text>
+            <TouchableOpacity onPress={() => navigation.navigate("ConversationScreen")}>
+                <Text style={styles.return}>
+                    이상형 다시 만들기
+                </Text>
+
+            </TouchableOpacity>
+
+            
         </View>
     </ScrollView>
     );
@@ -115,7 +122,7 @@ const styles = StyleSheet.create({
     },
 
     return: { 
-        fontSize:21,
+        fontSize:18,
         marginBottom: 15,
         backgroundColor: '#D9D9D9', 
         color : 'white',

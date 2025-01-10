@@ -72,7 +72,10 @@ const ConversationScreen = () => {
                 </Text>
 
                 <TextInput style={styles.square}
-                    placeholder="텍스트를 입력하세요"
+                    
+                    placeholder="텍스트를 입력하세요
+                        (텍스트 입력후 이상형 이미지를 생성하는데 3분 정도 걸려요)"
+                    
                     value={inputValue}
                     onChangeText={(inputValue) => setInputValue(inputValue)} // 텍스트 변경 시 상태 업데이트
                 />
@@ -87,6 +90,8 @@ const ConversationScreen = () => {
                         {loading == null ? "나의 이상형 생성!" : loading ? "나의 이상형 생성중..." : "생성완료!"}
                     </Text>
                 </TouchableOpacity>
+
+                
             </View>
         </ScrollView>
     </KeyboardAvoidingView>
@@ -98,8 +103,7 @@ const styles = StyleSheet.create({
     container: { flex: 1, 
         justifyContent: 'center',
         alignItems: 'center',
-        padding: 16,
-        backgroundColor: '#f5f5f5',    
+        backgroundColor: '#fff',    
       },
 
     top: { backgroundColor: '#FFF0F0',
@@ -140,11 +144,12 @@ const styles = StyleSheet.create({
         alignSelf: 'center'
     },
 
-    square: {marginBottom: 30,
+    square: {
         // alignSelf: 'center',
-        borderRadius: 35,
         // justifyContent: 'center',
         // alignItems: 'center',
+        borderRadius: 35,
+        marginBottom: 30,
         width: 300,   
         height: 300, 
         borderWidth: 2,
@@ -157,8 +162,8 @@ const styles = StyleSheet.create({
 
     button: {padding:10,
         backgroundColor: '#FFB89A',
-        borderRadius: 30, 
-        width: '80%',
+        borderRadius: 25, 
+        width: '85%',
         height: 60, 
         alignItems: 'center', 
         marginBottom: 10, 
