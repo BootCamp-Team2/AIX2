@@ -33,7 +33,7 @@ spec = importlib.util.spec_from_file_location(module_name, module_path)
 idealType_module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(idealType_module)
     
-@app.post("/sim/create/")
+@app.post("/sim/create")
 async def createMyLover(ideal_type: str = Form(...)):
     # 고객 uuid 대체용 임시 테스트
     personal_uuid = uuid.uuid4()
@@ -62,7 +62,7 @@ async def createMyLover(ideal_type: str = Form(...)):
     
     return {
         "message": "Your Requested prompt successfully",
-        "simUrl": f"http://192.168.1.2:8002/output/{personal_uuid}/mySimulator.jpg"
+        "simUrl": f"http://192.168.1.2:1000/output/{personal_uuid}/mySimulator.jpg"
     }
 
 if __name__ == "__main__":

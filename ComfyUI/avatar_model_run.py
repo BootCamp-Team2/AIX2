@@ -6,6 +6,7 @@ import importlib.util
 import os
 import uuid
 import shutil
+import httpx
 
 import os
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
@@ -36,7 +37,7 @@ spec = importlib.util.spec_from_file_location(module_name, module_path)
 avatar_module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(avatar_module)
 
-@app.post("/avatar/uploads/")
+@app.post("/avatar/uploads")
 async def createMyAvatar(img: UploadFile = File(...), gender: str = Form(...)):
     # 고객 uuid 대체용 임시 테스트
     personal_uuid = uuid.uuid4()
@@ -65,13 +66,21 @@ async def createMyAvatar(img: UploadFile = File(...), gender: str = Form(...)):
         
         shutil.move(result_path, new_file_path)
         
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                "http://192.168.1.2:1000/update-status", 
+                json={"server_ip": "http://192.168.1.2:8001", "status": False}
+            )
+            if response.status_code != 200:
+                raise HTTPException(status_code=response.status_code, detail=f"Error: {response.text}")
+        
     except Exception as e:
         return JSONResponse({"error": str(e)}, status_code=500)
     
     return {
         "message": "Images uploaded successfully",
         "result_path": new_file_path,
-        "avatarUrl": f"http://192.168.1.2:8002/output/{personal_uuid}/myAvatar.jpg"
+        "avatarUrl": f"http://192.168.1.2:1000/output/{personal_uuid}/myAvatar.jpg"
     }
     
 def allowed_file(filename):
