@@ -25,7 +25,7 @@ const ConversationScreen = () => {
 
         try {
             setLoading(true);
-            const response = await axios.post('http://192.168.1.2:8000/sim/create/', formData, {
+            const response = await axios.post('http://192.168.1.2:8000/sim/create', formData, {
               headers: {
                 'Content-Type': 'multipart/form-data',
               },

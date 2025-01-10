@@ -81,7 +81,15 @@ const AvatarScreen = () => {
     try {
       setLoading(true);
       setUploadStatus('');
-      const response = await axios.post('http://192.168.1.2:8001/avatar/uploads/', formData, {
+      const select_r = await axios.get("http://192.168.1.2:1000/select-server")
+      if (select_r.data)
+        if (select_r.data.server_ip == "") {
+          Alert.alert("서버가 혼잡합니다. 잠시 후에 다시 시도해주세요.")
+          return;
+        }
+      
+      console.log("사용가능한 서버: ", select_r.data.server_ip)
+      const response = await axios.post(`${select_r.data.server_ip}/avatar/uploads`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -91,15 +99,16 @@ const AvatarScreen = () => {
         console.log(response.data.avatarUrl)
         setAvatarUri(response.data.avatarUrl); // 서버에서 반환된 아바타 URL 저장
         setUploadStatus('Avatar generated successfully');
+
       } else {
         setUploadStatus('Failed to generate avatar');
       }
     } catch (error) {
       console.error('Upload failed:', error.message);
       setUploadStatus('Upload failed');
-    } finally {
-      setLoading(false);
     }
+
+    setLoading(false);
   };
 
   // 아바타 저장 기능
