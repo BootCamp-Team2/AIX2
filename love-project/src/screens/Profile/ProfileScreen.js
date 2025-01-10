@@ -318,7 +318,7 @@ const handleEditButtonPress = () => {
                         ))}
                     </View>
 
-                    {/* 나머지 프로필 정보 */}
+                    {/* 나머지 기본 프로필 정보 */}
                     {Object.entries(profileData).map(([key, value]) => (
                         key !== 'MBTI' && key !== '나이' && key !== '지역' && (
                             <View style={styles.hobbyBox}>
@@ -498,10 +498,10 @@ const styles = StyleSheet.create({
     editButton: {
         marginLeft: 10,
     },
-    editButtonText: {
-        marginTop: 50,
-        fontSize: 24,
-    },
+    // editButtonText: {
+    //     marginTop: 50,
+    //     fontSize: 24,
+    // },
     photoContainer: {
         alignItems: 'center',
         flexDirection: 'row',
@@ -574,6 +574,7 @@ const styles = StyleSheet.create({
     },
     infoText: {
         fontSize: 18,            // 더 큰 폰트 크기
+        lineHeight: 22, // 텍스트 간 여백 추가
         color: '#333',           // 텍스트 색상 변경 (조금 더 어두운 색상)
         textAlign: 'left',       // 왼쪽 정렬
         marginBottom: 10,        // 항목 간 간격 추가
@@ -594,7 +595,7 @@ const styles = StyleSheet.create({
     },
     editButtonText: {
         color: '#9AAEFF',
-        fontSize: 14,
+        fontSize: 24,
         textAlign: 'center',
         marginTop: 5,
     },
