@@ -17,8 +17,8 @@ const ProfileScreen = () => {
         MBTI: 'ENFP',
         나이: '25',
         지역: '서울',
-        취미: '독서',
-        좋아하는동물: '고양이',
+        직업: '학생',
+        자기소개: '저는 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~',
     });
 
     const [newInfo, setNewInfo] = useState({ title: '', value: '' });
@@ -230,7 +230,7 @@ const handleSaveEdit = (title, value) => {
                         setShowEditButtons(!showEditButtons);
                         handleEditButtonPress();
                     }}>
-                        <Icon2 style={styles.editButtonText} name="edit-3" size={24} color="#9AAEFF" />
+                        <Icon2 style={styles.editButton} name="edit-3" size={24} color="#9AAEFF" />
                     </TouchableOpacity>
                 </View>
 
@@ -323,11 +323,11 @@ const handleSaveEdit = (title, value) => {
                                 )}
                                 {showEditButtons && (
                                     editMode === key ? (
-                                        <TouchableOpacity onPress={() => { handleSaveEdit(key, profileData[key]); handleCloseEditMode(); }}>
+                                        <TouchableOpacity onPress={() => { handleSaveEdit(key, profileData[key]); handleCloseEditMode(); }} style={styles.informationEditButton}>
                                             <Text style={styles.editButtonText}>저장</Text>
                                         </TouchableOpacity>
                                     ) : (
-                                        <TouchableOpacity onPress={() => setEditMode(key)}>
+                                        <TouchableOpacity onPress={() => setEditMode(key)} style={styles.informationEditButton}>
                                             <Text style={styles.editButtonText}>수정</Text>
                                         </TouchableOpacity>
                                     )
@@ -348,17 +348,17 @@ const handleSaveEdit = (title, value) => {
                                     />
                                 ) : (
                                     <Text style={styles.infoText}>
-                                        <Text style={styles.keyText}>{key} : {'\n'}</Text>
+                                        <Text style={styles.keyText}>{key}{'\n'}</Text>
                                         <Text style={styles.valueText}> {value}</Text>
                                     </Text>
                                 )}
                                 {showEditButtons && (
                                     editMode === key ? (
-                                        <TouchableOpacity onPress={() => setEditMode(null)}>
+                                        <TouchableOpacity onPress={() => setEditMode(null)} style={styles.informationEditButton}>
                                             <Text style={styles.editButtonText}>저장</Text>
                                         </TouchableOpacity>
                                     ) : (
-                                        <TouchableOpacity onPress={() => setEditMode(key)}>
+                                        <TouchableOpacity onPress={() => setEditMode(key)} style={styles.informationEditButton}>
                                             <Text style={styles.editButtonText}>수정</Text>
                                         </TouchableOpacity>
                                     )
@@ -368,28 +368,32 @@ const handleSaveEdit = (title, value) => {
                     ))}
                             
                     {/* 추가 정보 수정 UI */}
-            {additionalInfo.map((item, index) => (
-                <View key={index} style={styles.hobbyBox}>
-                    <Text style={styles.hobbyText}>
-                        <Text style={styles.keyText}>{item.title}:</Text>
-                        <Text style={styles.valueText}> {item.value}</Text>
-                    </Text>
-                    <TouchableOpacity onPress={() => handleEdit(index)} style={styles.editButton}>
-                        <Text style={styles.editButtonText}>수정</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => handleDeleteInfo(index)} style={styles.deleteButton}>
-                        <Text style={styles.deleteButtonText}>삭제</Text>
-                    </TouchableOpacity>
-                </View>
-            ))}
-            {/* 수정 모달 */}
-            <EditProfileModal
-                visible={editProfileModalVisible}
-                onClose={() => setEditProfileModalVisible(false)}
-                onSave={handleSaveEdit} // 수정 저장 처리
-                editItem={editItem}
-                setEditItem={setEditItem}
-            />
+                    {additionalInfo.map((item, index) => (
+                        <View key={index} style={styles.hobbyBox}>
+                            <Text style={styles.hobbyText}>
+                                <Text style={styles.keyText}>{item.title}{'\n'}</Text>
+                                <Text style={styles.valueText}> {item.value}</Text>
+                            </Text>
+                            {showEditButtons && selectedIndex === 0 && (
+                                <>
+                                    <TouchableOpacity onPress={() => handleEdit(index)} style={styles.informationEditButton}>
+                                        <Text style={styles.editButtonText}>수정</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity onPress={() => handleDeleteInfo(index)} style={styles.deleteButton}>
+                                        <Text style={styles.deleteButtonText}>삭제</Text>
+                                    </TouchableOpacity>
+                                </>
+                            )}
+                        </View>
+                    ))}
+                    {/* 수정 모달 */}
+                    <EditProfileModal
+                        visible={editProfileModalVisible}
+                        onClose={() => setEditProfileModalVisible(false)}
+                        onSave={handleSaveEdit} // 수정 저장 처리
+                        editItem={editItem}
+                        setEditItem={setEditItem}
+                    />
 
                     {/* 새 정보 추가 입력 필드 */}
                     {showEditButtons && (
@@ -497,7 +501,10 @@ const styles = StyleSheet.create({
         color: '#9AAEFF',
     },
     editButton: {
-        marginLeft: 10,
+        color: '#9AAEFF',
+        fontSize: 24,
+        textAlign: 'center',
+        marginTop: 5,
     },
     // editButtonText: {
     //     marginTop: 50,
@@ -594,15 +601,17 @@ const styles = StyleSheet.create({
         paddingBottom: 10,       // 구분선과 내용 사이 여백
     },
     editButtonText: {
-        color: '#9AAEFF',
-        fontSize: 24,
-        textAlign: 'center',
-        marginTop: 5,
+        color: '#FFFFFF', // 텍스트 흰색
+        fontSize: 14, // 텍스트 크기
+        fontWeight: '600', // 텍스트 굵기
+        letterSpacing: 0.5, // 텍스트 간격
     },
     hobbyText: {
-        fontSize: 16,
+        fontSize: 18,
         color: '#444',
         textAlign: 'left',
+        marginBottom: 10,        // 항목 간 간격 추가
+        lineHeight: 22, // 텍스트 간 여백 추가
     },
     basicHobbyBox: {
         width: 100
@@ -634,7 +643,7 @@ const styles = StyleSheet.create({
     deleteButton: {
         marginTop: 5,
         backgroundColor: '#FF6F61',
-        borderRadius: 5,
+        borderRadius: 8,
         padding: 5,
         alignItems: 'center',
     },
@@ -745,6 +754,19 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
+    informationEditButton: {
+        backgroundColor: '#9AAEFF', // 녹색 배경
+        borderRadius: 8, // 모서리 둥글게
+        padding: 6,
+        alignItems: 'center', // 텍스트 중앙 정렬
+        justifyContent: 'center', // 내용 중앙 정렬
+        // shadowColor: '#000', // 그림자 색상
+        // shadowOffset: { width: 0, height: 2 }, // 그림자 오프셋
+        // shadowOpacity: 0.2, // 그림자 투명도
+        // shadowRadius: 4, // 그림자 반경
+        // elevation: 5, // 안드로이드 그림자
+        marginTop: 8, // 상단 여백
+    },  
     
 });
 

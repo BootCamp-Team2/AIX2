@@ -18,10 +18,13 @@ const EditProfileModal = ({ visible, onClose, onSave, editItem, setEditItem }) =
                         onChangeText={(text) => setEditItem({ ...editItem, title: text })}
                     />
                     <TextInput
-                        style={styles.input}
+                        style={styles.textArea}
                         placeholder="내용을 작성해주세요."
                         value={editItem?.value}
                         onChangeText={(text) => setEditItem({ ...editItem, value: text })}
+                        multiline={true} // 줄바꿈 허용
+                        numberOfLines={4} // 기본 높이 설정
+                        textAlignVertical="top" // 텍스트 정렬 (위쪽 정렬)
                     />
                     <TouchableOpacity style={styles.addButton} onPress={() => onSave(editItem.title, editItem.value)}>
                         <Text style={styles.addButtonText}>저장</Text>
@@ -60,6 +63,14 @@ const styles = StyleSheet.create({
         borderColor: '#ccc',
         marginBottom: 10,
         borderRadius: 5,
+    },
+    textArea: {
+        borderWidth: 1,
+        borderColor: '#ccc',
+        padding: 10,
+        marginBottom: 15,
+        borderRadius: 5,
+        height: 100, // 기본 높이 설정
     },
     addButton: {
         backgroundColor: '#9AAEFF',
