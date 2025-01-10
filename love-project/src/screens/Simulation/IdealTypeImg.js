@@ -1,6 +1,11 @@
-import { View, Text, TouchableOpacity, StyleSheet, Platform, Modal, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Platform, Modal, ScrollView, Image } from 'react-native';
+import { useRoute } from '@react-navigation/native'
 
 const IdealTypeImg = () => {
+    const route = useRoute();
+    const { simUri } = route.params;
+    console.log(simUri)
+
     return(
     <ScrollView>
         <View>
@@ -10,8 +15,16 @@ const IdealTypeImg = () => {
             <Text style={styles.main}>
                 나의 이상형이 생성되었어요!
             </Text>
-        
-            <View style={styles.circle} />
+
+            {simUri && (
+                <View style={styles.circle}>
+                    <Image
+                        source={{uri:simUri}}
+                        style={styles.image}
+                        resizeMode="cover"
+                    />
+                </View>
+            )}
 
             <Text style={styles.middle}>
                 이제 AI와 대화를 해볼까요? 
@@ -67,6 +80,14 @@ const styles = StyleSheet.create({
         width: 300,  
         height: 300,  
         borderColor: 'gray', 
+        },
+    
+    image: {
+        width: 250,
+        height: 250,
+        borderRadius: 10,
+        borderWidth: 2,
+        borderColor: '#ddd',
         },
 
     middle: { fontSize: 24, 

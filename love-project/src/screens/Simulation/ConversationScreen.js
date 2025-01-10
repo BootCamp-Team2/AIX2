@@ -1,53 +1,95 @@
 import React, { useState }  from 'react';
 
-import {  TextInput, View, Text, TouchableOpacity, StyleSheet, LogBox, ScrollView} from 'react-native';
+import {  KeyboardAvoidingView, Platform, TextInput, View, Text, TouchableOpacity, StyleSheet, ScrollView} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-
-
+import axios from 'axios';
 
 const ConversationScreen = () => {
     const navigation = useNavigation();
-    const [inputValue, setInputValue, text, setText] = useState('');
+    const [simulatorUri, setSimulatorUri] = useState(null);
+    const [loading, setLoading] = useState(null);
+    const [inputValue, setInputValue] = useState('');
+
+    const CreateMySim = async () => {
+        if(inputValue == '') {
+            alert('이상형을 입력해주세요.');
+            return;
+        }
+
+
+        const formData = new FormData();
+        formData.append("ideal_type", inputValue);
+        
+        console.log(`Your Input idealType: ${inputValue}`)
+
+        try {
+            setLoading(true);
+            const response = await axios.post('http://192.168.1.2:8000/sim/create/', formData, {
+              headers: {
+                'Content-Type': 'multipart/form-data',
+              },
+            });
+      
+            if (response.data && response.data.simUrl) {
+              console.log(response.data.simUrl)
+              setSimulatorUri(response.data.simUrl); // 서버에서 반환된 아바타 URL 저장
+            }
+        } catch (error) {
+            console.error('request failed:', error.message);
+        } finally {
+            setLoading(false);
+        }
+    };
     
     return(
-    <ScrollView>       
-        <View style={styles.container}>
-            <Text style={styles.top}>
+    <KeyboardAvoidingView 
+        style={styles.container} 
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // iOS와 Android에 따라 키보드 회피 방식 설정
+        keyboardVerticalOffset={50} // 키보드로 인해 뷰가 올라가는 정도 조정
+    >
+        <ScrollView>       
+            <View style={styles.container}>
+                <Text style={styles.top}>
+
+                    
+                    <Icon name="menu" size={40} color="black" />
+                
+                
+                    <Text style={styles.topText}>           AI 대화 연습           </Text>  
+
+
+                    <Icon name="check" size={40} color="black" />
+                </Text>
 
                 
-                <Icon name="menu" size={40} color="black" />
-               
-            
-                <Text style={styles.topText}>           AI 대화 연습           </Text>  
-
-               
-                <Icon name="check" size={40} color="black" />
-                        
-            </Text>
-
-            
-            <Text style={styles.main}>
-                AI와 대화를 시작하기 전에 {'\n'}
-                나의 이상형을 만드세요!
-            </Text>
-            <Text style={styles.middle}>
-                나의 이상형을 입력하세요
-            </Text>
-
-            <TextInput style={styles.square}
-                placeholder="텍스트를 입력하세요"
-                value={text}
-                onChangeText={(text) => setInputValue(text)} // 텍스트 변경 시 상태 업데이트
-            />
-
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("IdealTypeImg")}>
-                <Text style={styles.buttonText}>
-                    나의 이상형 생성
+                <Text style={styles.main}>
+                    AI와 대화를 시작하기 전에 {'\n'}
+                    나의 이상형을 만드세요!
                 </Text>
-            </TouchableOpacity>
-        </View>
-    </ScrollView>
+                <Text style={styles.middle}>
+                    나의 이상형을 입력하세요
+                </Text>
+
+                <TextInput style={styles.square}
+                    placeholder="텍스트를 입력하세요"
+                    value={inputValue}
+                    onChangeText={(inputValue) => setInputValue(inputValue)} // 텍스트 변경 시 상태 업데이트
+                />
+
+                <TouchableOpacity style={styles.button} onPress={() =>  {
+                        if(loading == null) {CreateMySim();}
+                        else { if(!loading) {
+                            navigation.navigate("IdealTypeImg", {simUri: simulatorUri});} 
+                        }
+                    }} disabled={loading}>
+                    <Text style={styles.buttonText}>
+                        {loading == null ? "나의 이상형 생성!" : loading ? "나의 이상형 생성중..." : "생성완료!"}
+                    </Text>
+                </TouchableOpacity>
+            </View>
+        </ScrollView>
+    </KeyboardAvoidingView>
     );
 };
 
