@@ -8,6 +8,7 @@ import Icon3 from 'react-native-vector-icons/Ionicons';
 import Icon4 from 'react-native-vector-icons/FontAwesome5';
 import Icon5 from 'react-native-vector-icons/MaterialCommunityIcons';
 import AddProfileModal from '../../components/Modal/AddProfileModal';
+import EditProfileModal from '../../components/Modal/EditProfileModal';
 
 const ProfileScreen = () => {
     const navigation = useNavigation();
@@ -22,7 +23,8 @@ const ProfileScreen = () => {
 
     const [newInfo, setNewInfo] = useState({ title: '', value: '' });
     const [nickname, setNickname] = useState('OOO');
-    const [additionalInfo, setAdditionalInfo] = useState([]);
+    const [additionalInfo, setAdditionalInfo] = useState([{ title: '취미', value: '독서' },
+        { title: '특기', value: '요리' },]);
     const [showInput, setShowInput] = useState(false); // 추가 정보 입력 필드 보이기 상태
     const [showEditButtons, setShowEditButtons] = useState(false); // 수정 버튼 보이기 상태
     const [isCircleFront, setIsCircleFront] = useState(false);
@@ -31,6 +33,10 @@ const ProfileScreen = () => {
     const [mediaList, setMediaList] = useState([]); // 업로드된 미디어 리스트 상태
     const [numColumns, setNumColumns] = useState(2); // numColumns 상태 관리
     const [modalVisible, setModalVisible] = useState(false); // 모달 상태
+    const [editItem, setEditItem] = useState(null); // 편집할 항목 데이터
+    const [addProfileModalVisible, setAddProfileModalVisible] = useState(false); // 추가 모달 상태
+    const [editProfileModalVisible, setEditProfileModalVisible] = useState(false); // 수정 모달 상태
+
 
     useFocusEffect(
         React.useCallback(() => {
@@ -54,19 +60,22 @@ const ProfileScreen = () => {
       );
 
     // 수정 버튼을 눌렀을 때 저장 처리
-    const handleSaveEdit = (key, value, isTitle = false) => {
-        if (key in profileData) {
-            setProfileData({ ...profileData, [key]: value }); // 기본 프로필 데이터 수정
-        } else {
-            const updatedInfo = [...additionalInfo];
-            if (isTitle) {
-                updatedInfo[editMode].title = value; // 제목 수정
-            } else {
-                updatedInfo[editMode].value = value; // 값 수정
-            }
-            setAdditionalInfo(updatedInfo); // 수정된 추가 정보 저장
-        }
-    };
+const handleSaveEdit = (title, value) => {
+    if (editMode !== null) {
+        // 수정 모드일 때
+        const updatedInfo = [...additionalInfo];
+        updatedInfo[editMode] = { title, value }; // 수정된 항목 업데이트
+        setAdditionalInfo(updatedInfo);
+    } else {
+        // 새 항목 추가 모드일 때
+        setAdditionalInfo([
+            ...additionalInfo,
+            { title, value }, // 새로운 항목 추가
+        ]);
+    }
+    setEditProfileModalVisible(false); // 수정 모달 닫기
+    setAddProfileModalVisible(false); // 추가 정보 모달 닫기
+};
     
     
 
@@ -95,11 +104,12 @@ const ProfileScreen = () => {
         }
     };
 
+    // 추가 정보 모달 열기
     const handleAddInfo = () => {
         if (newInfo.title && newInfo.value) {
             setAdditionalInfo([...additionalInfo, { title: newInfo.title, value: newInfo.value }]);
             console.log(newInfo);
-            setModalVisible(false); // 모달 닫기
+            setAddProfileModalVisible(false); // 추가 후 모달 닫기
             setNewInfo({ title: '', value: '' }); // 입력 필드 초기화
         } else {
             Alert.alert("오류", "모든 필드를 입력해주세요.");
@@ -122,13 +132,13 @@ const ProfileScreen = () => {
     };
 
     // 수정 버튼 클릭 핸들러
-const handleEditButtonPress = () => {
-    if (editMode !== null) {
-        setEditMode(null); // 수정 중인 항목이 있으면 수정 취소
-    } else {
-        setShowEditButtons(!showEditButtons); // 수정 버튼 상태 토글
-    }
-};
+    const handleEditButtonPress = () => {
+        if (editMode !== null) {
+            setEditMode(null); // 수정 중인 항목이 있으면 수정 취소
+        } else {
+            setShowEditButtons(!showEditButtons); // 수정 버튼 상태 토글
+        }
+    };
 
 
     // 수정 모드를 종료하는 함수
@@ -182,17 +192,25 @@ const handleEditButtonPress = () => {
     };
 
     
-        const selectVideo = async () => {
-          const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Videos, // 동영상만 선택
-          });
-      
-          if (!result.canceled) {
-            console.log('Video URI:', result.assets[0].uri);
-          } else {
-            console.log('User cancelled video picker');
-          }
-        };
+    const selectVideo = async () => {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Videos, // 동영상만 선택
+      });
+  
+      if (!result.canceled) {
+        console.log('Video URI:', result.assets[0].uri);
+      } else {
+        console.log('User cancelled video picker');
+      }
+    };
+
+    // 수정 모달 열기
+    const handleEdit = (index) => {
+        setEditItem({ ...additionalInfo[index] }); // 편집할 항목 설정
+        setEditMode(index); // 수정할 항목 인덱스 설정
+        setEditProfileModalVisible(true); // 수정 모달 열기
+    };
+
 
 
     return (
@@ -350,65 +368,48 @@ const handleEditButtonPress = () => {
                     ))}
                             
                     {/* 추가 정보 수정 UI */}
-                    {additionalInfo.map((item, index) => (
-                        <View key={index} style={styles.hobbyBox}>
-                            {editMode === index ? (
-                                <>
-                                    <TextInput
-                                        style={styles.input}
-                                        value={item.title}
-                                        onChangeText={(text) => handleSaveEdit(index, text, true)} // 제목 수정
-                                    />
-                                    <TextInput
-                                        style={styles.input}
-                                        value={item.value}
-                                        onChangeText={(text) => handleSaveEdit(index, text)} // 값 수정
-                                    />
-                                </>
-                            ) : (
-                                <>
-                                    <Text style={styles.hobbyText}>
-                                        <Text style={styles.keyText}>{item.title} : {'\n'}</Text>
-                                        <Text style={styles.valueText}> {item.value}</Text>
-                                    </Text>
-                                </>
-                            )}
-                            {showEditButtons && (
-                                editMode === index ? (
-                                    <TouchableOpacity onPress={() => setEditMode(null)}>
-                                        <Text style={styles.editButtonText}>저장</Text>
-                                    </TouchableOpacity>
-                                ) : (
-                                    <TouchableOpacity onPress={() => setEditMode(index)}>
-                                        <Text style={styles.editButtonText}>수정</Text>
-                                    </TouchableOpacity>
-                                )
-                            )}
-                            {showEditButtons && (
-                                <TouchableOpacity onPress={() => handleDeleteInfo(index)} style={styles.deleteButton}>
-                                    <Text style={styles.deleteButtonText}>삭제</Text>
-                                </TouchableOpacity>
-                            )}
-                        </View>
-                    ))}
+            {additionalInfo.map((item, index) => (
+                <View key={index} style={styles.hobbyBox}>
+                    <Text style={styles.hobbyText}>
+                        <Text style={styles.keyText}>{item.title}:</Text>
+                        <Text style={styles.valueText}> {item.value}</Text>
+                    </Text>
+                    <TouchableOpacity onPress={() => handleEdit(index)} style={styles.editButton}>
+                        <Text style={styles.editButtonText}>수정</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => handleDeleteInfo(index)} style={styles.deleteButton}>
+                        <Text style={styles.deleteButtonText}>삭제</Text>
+                    </TouchableOpacity>
+                </View>
+            ))}
+            {/* 수정 모달 */}
+            <EditProfileModal
+                visible={editProfileModalVisible}
+                onClose={() => setEditProfileModalVisible(false)}
+                onSave={handleSaveEdit} // 수정 저장 처리
+                editItem={editItem}
+                setEditItem={setEditItem}
+            />
 
                     {/* 새 정보 추가 입력 필드 */}
                     {showEditButtons && (
                         <TouchableOpacity
-                            style={styles.addProfileBtn}
-                            onPress={() => setModalVisible(true)}
+                        style={styles.addProfileBtn}
+                        onPress={() => {
+                            setAddProfileModalVisible(true); // 추가 모달을 열기 위한 코드
+                        }}
                         >
                             <Icon3 style={styles.switchText} name="add-circle-outline" size={35} color="#9AAEFF" />
                         </TouchableOpacity>
                     )}
 
-                    {/* CustomModal 사용 */}
+                    {/* 추가 정보 모달 */}
                     <AddProfileModal
-                        visible={modalVisible}
-                        onClose={handleCloseModal} // 취소 버튼 동작 정의
-                        onAdd={handleAddInfo}
-                        newInfo={newInfo}
-                        setNewInfo={setNewInfo}
+                        visible={addProfileModalVisible}  // 여기에 visible 상태 전달
+                        onClose={() => setAddProfileModalVisible(false)}  // 모달 닫기 함수
+                        onAdd={handleAddInfo}  // 새로운 정보 추가 함수
+                        newInfo={newInfo}  // 새 정보 상태
+                        setNewInfo={setNewInfo}  // 새 정보 업데이트 함수
                     />
 
                     <View style={styles.appeal}>
@@ -556,9 +557,9 @@ const styles = StyleSheet.create({
         flex: 1,  // 부모 컨테이너에서 공간을 고르게 나누기
         justifyContent: 'center',  // 수직 중앙 정렬
         alignItems: 'center',  // 수평 중앙 정렬
+        paddingVertical: 15,       // 상하 여백을 추가
         backgroundColor: '#FFFFFF',
         borderRadius: 10,
-        padding: 10,
         borderWidth: 1,
         borderColor: '#E0E0E0',
         shadowColor: '#000',
@@ -569,8 +570,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 4,
         elevation: 2,
-        flex: 1,
-        marginHorizontal: 5,
+        marginHorizontal: 3,
     },
     infoText: {
         fontSize: 18,            // 더 큰 폰트 크기
@@ -613,13 +613,12 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
     input: {
-        width: '100%',
+        width: '90%',
         borderWidth: 1,
         borderColor: '#E0E0E0',
         borderRadius: 5,
         padding: 10,
         flex: 1,
-        marginRight: 10,
     },
     addButton: {
         backgroundColor: '#FF6F61',

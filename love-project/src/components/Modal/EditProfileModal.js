@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, Text, Modal, StyleSheet } from 'react-native';
+import React from 'react';
+import { Modal, View, TextInput, TouchableOpacity, Text, StyleSheet } from 'react-native';
 
 const EditProfileModal = ({ visible, onClose, onSave, editItem, setEditItem }) => {
     return (
@@ -23,7 +23,7 @@ const EditProfileModal = ({ visible, onClose, onSave, editItem, setEditItem }) =
                         value={editItem?.value}
                         onChangeText={(text) => setEditItem({ ...editItem, value: text })}
                     />
-                    <TouchableOpacity style={styles.addButton} onPress={() => onSave(editItem)}>
+                    <TouchableOpacity style={styles.addButton} onPress={() => onSave(editItem.title, editItem.value)}>
                         <Text style={styles.addButtonText}>저장</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.cancelButton} onPress={onClose}>
