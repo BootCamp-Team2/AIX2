@@ -96,6 +96,10 @@ def search_users(userUID):
     others_vector_list = [feature for i, feature in enumerate(feature_list) if i % 2 == 0]
     # print(f"other_vector: {others_vector_list}")
     
+    # db = [mbti, 남의키, 남이 원하는 키]
+    # query = [내가원하는 mbti, 내가 원하는 키, 나의키]
+    
+    
     ## 벡터 결합
     user_combined_vectors = np.array([np.concatenate([user_df[col].iloc[i] for col in user_vector_list], axis=None) for i in range(len(user_df))], dtype=np.float32)
     others_combined_vectors = np.array([np.concatenate([others_df[col].iloc[i] for col in others_vector_list], axis=None) for i in range(len(others_df))], dtype=np.float32)
@@ -115,6 +119,7 @@ def search_users(userUID):
     
     #### 주의!! 회원 수가 적어서 추천해줄 수 있는 인원이 적은 경우 indices 값에 "-1" 들어있을 수 있습니다.
     valid_indices = [i for i in indices[0] if i != -1]
+    
     
     ## 순서 재정렬
     # user_height = user_df["myHeight"].iloc[0]
@@ -140,13 +145,13 @@ def search_users(userUID):
 
 # 임시로 유저UID 다음과 같이 지정
 def main(userUID):
-    # try:
+    try:
         process_data()
         recommend_result = search_users(userUID)
         print(f"추천된 사용자들: {recommend_result}")
         return recommend_result
-    # except Exception as e:
-    #     print(f"오류: {e}")
+    except Exception as e:
+        print(f"오류: {e}")
 if __name__ == "__main__":
     main("0009759695")
     # main("김시현") ## 존재하지 않는 userUID 테스트
