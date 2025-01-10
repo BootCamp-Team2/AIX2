@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Image, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Image, View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 
@@ -9,6 +9,7 @@ const MainScreen = () => {
   const navigation = useNavigation();
 
   return (
+  <ScrollView>
     <View style={styles.container}>
       <View style={styles.top}>
         <Image source={require('../../assets/MainScreen/cc.jpg')} 
@@ -96,6 +97,7 @@ const MainScreen = () => {
         </Text>
       </TouchableOpacity>
     </View>
+  </ScrollView>
   );
 };
 

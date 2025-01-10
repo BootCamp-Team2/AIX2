@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState }  from 'react';
 
-import { View, Text, TouchableOpacity, StyleSheet, LogBox} from 'react-native';
+import {  TextInput, View, Text, TouchableOpacity, StyleSheet, LogBox, ScrollView} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -8,8 +8,10 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const ConversationScreen = () => {
     const navigation = useNavigation();
+    const [text, setText] = useState('');
     
-    return(       
+    return(
+    <ScrollView>       
         <View style={styles.container}>
             <Text style={styles.top}>
 
@@ -33,7 +35,11 @@ const ConversationScreen = () => {
                 나의 이상형을 입력하세요
             </Text>
 
-            <View style={styles.square} />
+            <TextInput style={styles.square}
+                placeholder="텍스트를 입력하세요"
+                value={text}
+                onChangeText={(value) => setText(value)} // 텍스트 변경 시 상태 업데이트
+            />
 
             <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("IdealTypeImg")}>
                 <Text style={styles.buttonText}>
@@ -41,12 +47,17 @@ const ConversationScreen = () => {
                 </Text>
             </TouchableOpacity>
         </View>
+    </ScrollView>
     );
 };
 
 const styles = StyleSheet.create({
 
-    container: { flex: 1,     
+    container: { flex: 1, 
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 16,
+        backgroundColor: '#f5f5f5',    
       },
 
     top: { backgroundColor: '#FFF0F0',
@@ -97,6 +108,9 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderColor: '#FFB89A', // Color of the square border
         backgroundColor: 'transparent',  // Transparent inside the square
+
+              
+        paddingHorizontal: 8,
         },
 
 
