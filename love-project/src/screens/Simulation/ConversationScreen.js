@@ -34,6 +34,9 @@ const ConversationScreen = () => {
             if (response.data && response.data.simUrl) {
               console.log(response.data.simUrl)
               setSimulatorUri(response.data.simUrl); // 서버에서 반환된 아바타 URL 저장
+              
+              // 이미지 생성 완료 후 자동으로 다음 페이지로 이동
+              navigation.navigate("IdealTypeImg", { simUri: response.data.simUrl });
             }
         } catch (error) {
             console.error('request failed:', error.message);
