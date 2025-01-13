@@ -25,7 +25,23 @@ const ConversationScreen = () => {
 
         try {
             setLoading(true);
-            const response = await axios.post('http://192.168.1.2:8000/sim/create', formData, {
+
+            const sel_formData = new FormData();
+            sel_formData.append("type", "sim");
+            const select_r = await axios.post("http://192.168.1.4:1000/select-server", sel_formData, {
+                headers: {
+                'Content-Type': 'multipart/form-data',
+                },
+            });
+            if (select_r.data)
+                if (select_r.data.server_ip == "") {
+                Alert.alert("서버가 혼잡합니다. 잠시 후에 다시 시도해주세요.")
+                setLoading(false);
+                return;
+                }
+            
+            console.log("사용가능한 서버: ", select_r.data.server_ip)
+            const response = await axios.post(`${select_r.data.server_ip}/sim/create`, formData, {
               headers: {
                 'Content-Type': 'multipart/form-data',
               },

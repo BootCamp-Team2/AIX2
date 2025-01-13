@@ -83,7 +83,14 @@ const AvatarScreen = () => {
     try {
       setLoading(true);
       setUploadStatus('');
-      const select_r = await axios.get("http://192.168.1.4:1000/select-server")
+
+      const sel_formData = new FormData();
+      sel_formData.append("type", "avatar");
+      const select_r = await axios.post("http://192.168.1.4:1000/select-server", sel_formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
       if (select_r.data)
         if (select_r.data.server_ip == "") {
           Alert.alert("서버가 혼잡합니다. 잠시 후에 다시 시도해주세요.")
