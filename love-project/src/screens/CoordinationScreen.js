@@ -99,7 +99,7 @@ const CoordinationScreen = () => {
                 alignSelf: 'center',
                 alignItems: 'center',
                 justifyContent: 'center',
-                borderColor: '#3EB265',
+                borderColor: '#81C999',
                 borderWidth: 2,                
             },
         
@@ -124,7 +124,7 @@ const CoordinationScreen = () => {
                 alignSelf: 'center',
                 alignItems: 'center',
                 justifyContent: 'center',
-                borderColor: '#3EB265',
+                borderColor: '#81C999',
                 borderWidth: 2,
             },
         
@@ -140,7 +140,7 @@ const CoordinationScreen = () => {
 
             button: {
                 paddingTop:10,
-                backgroundColor: '#3EB265',
+                backgroundColor: '#81C999',
                 borderRadius: 25, 
                 width: '80%',
                 height: 60, 
@@ -173,7 +173,7 @@ const CoordinationScreen = () => {
                 alignSelf: 'center',
                 alignItems: 'center',
                 justifyContent: 'center',
-                borderColor: '#3EB265',
+                borderColor: '#81C999',
                 borderWidth: 2,
             },
 
@@ -189,7 +189,7 @@ const CoordinationScreen = () => {
                 fontWeight: 'bold',
                 alignSelf: 'center',
                 borderWidth: 2,
-                borderColor: '#3EB265',                
+                borderColor: '#81C999',                
             },
         
             downText: {

@@ -50,18 +50,11 @@ const ConversationScreen = () => {
     >
         <ScrollView>       
             <View style={styles.container}>
-                <Text style={styles.header}>
-
-                    
-                    <Icon name="menu" size={40} color="black" />
-                
-                
+                <Text style={styles.header}>                    
+                    <Icon name="menu" size={40} color="black" />                
                     <Text style={styles.headerText}>           AI 대화 연습           </Text>  
-
-
                     <Icon name="check" size={40} color="black" />
                 </Text>
-
                 
                 <Text style={styles.main}>
                     AI와 대화를 시작하기 전에 {'\n'}
@@ -71,11 +64,9 @@ const ConversationScreen = () => {
                     나의 이상형을 입력하세요
                 </Text>
 
-                <TextInput style={styles.square}
-                    
-                    // placeholder="텍스트를 입력하세요
-                    // (텍스트 입력후 이상형 이미지를 생성하는데 3분 정도 걸려요)"
-                    
+                <TextInput style={styles.square}          
+                placeholder="텍스트를 입력하세요
+                    (텍스트 입력후 이상형 이미지를 생성하는데 3분 정도 걸려요)"                    
                     value={inputValue}
                     onChangeText={(inputValue) => setInputValue(inputValue)} // 텍스트 변경 시 상태 업데이트
                 />
@@ -155,10 +146,9 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderColor: '#FFB89A', // Color of the square border
         backgroundColor: 'transparent',  // Transparent inside the square
-        fontSize: 23,      
+        fontSize: 21,      
         paddingHorizontal: 10,
         },
-
 
     button: {paddingTop:15,
         backgroundColor: '#FFB89A',
@@ -183,7 +173,5 @@ const styles = StyleSheet.create({
         alignSelf: 'center'
     },
   });
-
-
 
 export default ConversationScreen
