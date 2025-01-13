@@ -12,7 +12,7 @@ const MainScreen = () => {
   <ScrollView>
     <View style={styles.container}>
       <View style={styles.header}>
-        <Image source={require('../../assets/MainScreen/cc.jpg')} 
+        <Image source={require('../../assets/MainScreen/ima.jpg')} 
                 style={{width : 50, 
                         height : 50,
                         borderRadius: 30,
@@ -23,7 +23,7 @@ const MainScreen = () => {
 
 
         <Text style={styles.headerText}>임재현{'\n'}
-          <Text style={styles.topText2}>VIP고객</Text>
+          <Text style={styles.headerText2}>VIP고객</Text>
         </Text>
       </View>
       <TouchableOpacity style={styles.main} onPress={() => navigation.navigate("MatchingScreen")}>
@@ -45,7 +45,7 @@ const MainScreen = () => {
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("MatchingScreen")}>
         
         <View>
-          <Image source={require('../../assets/MainScreen/cc.jpg')} 
+          <Image source={require('../../assets/MainScreen/mat.jpg')} 
               style={{width : 70, 
                       height : 70,
                       borderRadius: 10,
@@ -64,7 +64,7 @@ const MainScreen = () => {
 
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("ConversationScreen")}>
       <View>
-          <Image source={require('../../assets/MainScreen/mario.png')} 
+          <Image source={require('../../assets/MainScreen/couple.jpg')} 
               style={{width : 70, 
                       height : 70,
                       borderRadius: 10,
@@ -83,7 +83,7 @@ const MainScreen = () => {
 
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("CoordinationScreen")}>
         <View>
-          <Image source={require('../../assets/MainScreen/cc.jpg')} 
+          <Image source={require('../../assets/MainScreen/coor.jpg')} 
               style={{width : 70, 
                       height : 70,
                       borderRadius: 10,
@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
   headerText: {color : 'gray', 
     fontSize : 15, 
     height: 50,
-    marginTop: 5   
+    marginTop: 3   
   },
   
   headerText2: {color : 'silver', 
