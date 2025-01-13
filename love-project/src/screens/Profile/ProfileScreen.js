@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, Alert, TextInput, ScrollView, KeyboardAvoidingView, Platform, FlatList, Modal } from 'react-native';
-import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import { useNavigation, useFocusEffect, useRoute } from "@react-navigation/native";
 import { MaterialIcons } from '@expo/vector-icons'; // Expo Icons 추가
 import * as ImagePicker from 'expo-image-picker'; // ImagePicker 추가
 import Icon2 from 'react-native-vector-icons/Feather';
@@ -23,12 +23,10 @@ const ProfileScreen = () => {
 
     const [newInfo, setNewInfo] = useState({ title: '', value: '' });
     const [nickname, setNickname] = useState('OOO');
-    const [additionalInfo, setAdditionalInfo] = useState([{ title: '취미', value: '독서' },
-        { title: '특기', value: '요리' },]);
+    const [additionalInfo, setAdditionalInfo] = useState([]);
     const [showInput, setShowInput] = useState(false); // 추가 정보 입력 필드 보이기 상태
     const [showEditButtons, setShowEditButtons] = useState(false); // 수정 버튼 보이기 상태
-    const [isCircleFront, setIsCircleFront] = useState(false);
-    const [profilePhotoUri, setProfilePhotoUri] = useState(null); // 프로필 사진 URI 상태
+    //const [isCircleFront, setIsCircleFront] = useState(false);
     const [editMode, setEditMode] = useState(null); // 수정 모드 (수정 중인 항목의 인덱스를 저장)
     const [mediaList, setMediaList] = useState([]); // 업로드된 미디어 리스트 상태
     const [numColumns, setNumColumns] = useState(2); // numColumns 상태 관리
@@ -36,6 +34,10 @@ const ProfileScreen = () => {
     const [editItem, setEditItem] = useState(null); // 편집할 항목 데이터
     const [addProfileModalVisible, setAddProfileModalVisible] = useState(false); // 추가 모달 상태
     const [editProfileModalVisible, setEditProfileModalVisible] = useState(false); // 수정 모달 상태
+    const [avatarUri, setAvatarUri] = useState(null);
+    const route = useRoute();
+    const [profilePhotoUri, setProfilePhotoUri] = useState(null); // 프로필 사진 URI
+    const isCircleFront = true; // 예제 값, 실제 로직에 따라 변경
 
 
     useFocusEffect(
@@ -59,23 +61,30 @@ const ProfileScreen = () => {
         }, [])
       );
 
+      useEffect(() => {
+        if (route.params?.avatarUri) {
+          setProfilePhotoUri(route.params.avatarUri); // 전달받은 avatarUri 저장
+          navigation.setParams({ avatarUri: null }); // params 초기화
+        }
+      }, [route.params]);
+
     // 수정 버튼을 눌렀을 때 저장 처리
-const handleSaveEdit = (title, value) => {
-    if (editMode !== null) {
-        // 수정 모드일 때
-        const updatedInfo = [...additionalInfo];
-        updatedInfo[editMode] = { title, value }; // 수정된 항목 업데이트
-        setAdditionalInfo(updatedInfo);
-    } else {
-        // 새 항목 추가 모드일 때
-        setAdditionalInfo([
-            ...additionalInfo,
-            { title, value }, // 새로운 항목 추가
-        ]);
-    }
-    setEditProfileModalVisible(false); // 수정 모달 닫기
-    setAddProfileModalVisible(false); // 추가 정보 모달 닫기
-};
+    const handleSaveEdit = (title, value) => {
+        if (editMode !== null) {
+            // 수정 모드일 때
+            const updatedInfo = [...additionalInfo];
+            updatedInfo[editMode] = { title, value }; // 수정된 항목 업데이트
+            setAdditionalInfo(updatedInfo);
+        } else {
+            // 새 항목 추가 모드일 때
+            setAdditionalInfo([
+                ...additionalInfo,
+                { title, value }, // 새로운 항목 추가
+            ]);
+        }
+        setEditProfileModalVisible(false); // 수정 모달 닫기
+        setAddProfileModalVisible(false); // 추가 정보 모달 닫기
+    };
     
     
 
@@ -253,7 +262,7 @@ const handleSaveEdit = (title, value) => {
                     <Image
                         source={
                             profilePhotoUri
-                            ? { uri: profilePhotoUri } // 적용된 아바타 URI 사용
+                            ? { uri: avatarUri } // 적용된 아바타 URI 사용
                             : { uri: 'https://example.com/profile.jpg' } // 기본 이미지
                         }
                         style={[
