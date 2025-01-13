@@ -1,6 +1,6 @@
 import React, { useState }  from 'react';
 
-import {  KeyboardAvoidingView, Platform, TextInput, View, Text, TouchableOpacity, StyleSheet, ScrollView} from 'react-native';
+import { ActivityIndicator, KeyboardAvoidingView, Platform, TextInput, View, Text, TouchableOpacity, StyleSheet, ScrollView} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import axios from 'axios';
@@ -25,7 +25,7 @@ const ConversationScreen = () => {
 
         try {
             setLoading(true);
-            const response = await axios.post('http://192.168.1.2:8000/sim/create', formData, {
+            const response = await axios.post('http://192.168.1.4:9001/sim/create', formData, {
               headers: {
                 'Content-Type': 'multipart/form-data',
               },
@@ -44,7 +44,7 @@ const ConversationScreen = () => {
     
     return(
     <KeyboardAvoidingView 
-        style={styles.container} 
+        // style={styles.container} 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // iOS와 Android에 따라 키보드 회피 방식 설정
         keyboardVerticalOffset={50} // 키보드로 인해 뷰가 올라가는 정도 조정
     >
@@ -52,7 +52,7 @@ const ConversationScreen = () => {
             <View style={styles.container}>
                 <Text style={styles.header}>                    
                     <Icon name="menu" size={40} color="black" />                
-                    <Text style={styles.headerText}>           AI 대화 연습           </Text>  
+                    <Text style={styles.headerText}>            AI 대화 연습            </Text>  
                     <Icon name="check" size={40} color="black" />
                 </Text>
                 
@@ -65,8 +65,7 @@ const ConversationScreen = () => {
                 </Text>
 
                 <TextInput style={styles.square}          
-                placeholder="텍스트를 입력하세요
-                    (텍스트 입력후 이상형 이미지를 생성하는데 3분 정도 걸려요)"                    
+                    placeholder="텍스트를 입력하세요"                    
                     value={inputValue}
                     onChangeText={(inputValue) => setInputValue(inputValue)} // 텍스트 변경 시 상태 업데이트
                 />
@@ -80,9 +79,11 @@ const ConversationScreen = () => {
                     <Text style={styles.buttonText}>
                         {loading == null ? "나의 이상형 생성!" : loading ? "나의 이상형 생성중..." : "생성완료!"}
                     </Text>
-                </TouchableOpacity>
+                </TouchableOpacity>  
 
-                
+                 {loading && ( // loading이 true일 때 로딩 인디케이터 표시
+                        <ActivityIndicator size="large" color="#FFB89A" style={styles.loader} />
+                    )}              
             </View>
         </ScrollView>
     </KeyboardAvoidingView>
@@ -91,15 +92,19 @@ const ConversationScreen = () => {
 
 const styles = StyleSheet.create({
 
+    loader: {
+        marginTop: 20,
+    },
+
     container: { 
         flex: 1, // 전체 화면을 가득 채움
         flexDirection: 'column', // 세로 방향으로 배치
         justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#fff',    
+        alignItems: 'center',    
       },
 
-    header: { backgroundColor: '#FFF0F0',
+    header: { 
+        backgroundColor: '#FFF0F0',
         marginBottom: 30, 
         fontSize:26, 
         paddingTop:15, 
