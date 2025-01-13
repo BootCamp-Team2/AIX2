@@ -81,10 +81,11 @@ const AvatarScreen = () => {
     try {
       setLoading(true);
       setUploadStatus('');
-      const select_r = await axios.get("http://192.168.1.2:1000/select-server")
+      const select_r = await axios.get("http://192.168.1.4:1000/select-server")
       if (select_r.data)
         if (select_r.data.server_ip == "") {
           Alert.alert("서버가 혼잡합니다. 잠시 후에 다시 시도해주세요.")
+          setLoading(false);
           return;
         }
       
