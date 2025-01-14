@@ -16,6 +16,7 @@ import IdealTypeImg from './src/screens/Simulation/IdealTypeImg';
 import IdealTypeSet from './src/screens/Simulation/IdealTypeSet';
 import MyCharacter from './src/screens/Profile/MyCharacter';
 import TabBar from './src/components/TabBar';
+import MatchingList from './src/screens/Matching/MatchingList';
 
 const Stack = createStackNavigator(); // 스택 내비게이션 생성
 
@@ -64,6 +65,11 @@ const MainNavigator = () => {
           name="SettingScreen"
           component={SettingScreen}
           options={{ headerTitle: '설정 화면', headerTitleAlign: 'center' }}
+        />
+        <Stack.Screen
+          name="MatchingList"
+          component={MatchingList}
+          options={{ headerTitle: '매칭 화면', headerTitleAlign: 'center' }}
         />
         <Stack.Screen
           name="MatchingScreen"
