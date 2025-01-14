@@ -1,10 +1,12 @@
+from fastapi.staticfiles import StaticFiles
 import mysql.connector
 import json
 from fastapi import FastAPI, HTTPException, Form
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
-import faiss_main
+import faiss_main2
+import pandas as pd
 
 app = FastAPI()
 
@@ -16,8 +18,25 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+ASSETS_FOLDER = "./assets"
+app.mount("/assets", StaticFiles(directory=ASSETS_FOLDER), name="assets")
+
+df = None
+df_origin = None
+feature_list = None
+
+# 서버 시작 시 데이터 준비
+@app.on_event("startup")
+async def startup_event():
+    global df, df_origin, feature_list
+    df_origin, df, feature_list = faiss_main2.process_data()  # 데이터 로드
+    
+    if df is None or df.empty:
+        raise Exception("Initial data load failed.")
+
 class idealType(BaseModel):
     userUID: str
+    profileImg: str
     myGender: str
     myMBTI: str
     myHeight: str
@@ -84,17 +103,17 @@ def create_or_update_mbti(idealType: idealType):
         
         # userUID 통해서 데이터가 이미 존재한다면, 수정
         if existing_record:
-            cursor.execute("""UPDATE idealTable SET myGender = %s, myMBTI = %s, recommendGender = %s, recommendMBTI = %s,
+            cursor.execute("""UPDATE idealTable SET profileImg = %s, myGender = %s, myMBTI = %s, recommendGender = %s, recommendMBTI = %s,
                            myHeight = %s, favoriteHeight = %s, myAppearance = %s, favoriteAppearance = %s WHERE userUID = %s""",
-                           (idealType.myGender, idealType.myMBTI, recommendGender, recommendMBTI_json, idealType.myHeight, 
+                           (idealType.profileImg, idealType.myGender, idealType.myMBTI, recommendGender, recommendMBTI_json, idealType.myHeight, 
                             idealType.favoriteHeight, myAppearance_JSON, favoriteAppearance_JSON, idealType.userUID))
             message = "Data Updated Successfully"
             
         # 없다면, 생성
         else:
-            cursor.execute("""INSERT INTO idealTable (userUID, myGender, myMBTI, recommendGender, recommendMBTI, 
-                           myHeight, favoriteHeight, myAppearance, favoriteAppearance) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)""",
-                           (idealType.userUID, idealType.myGender, idealType.myMBTI, recommendGender, recommendMBTI_json, 
+            cursor.execute("""INSERT INTO idealTable (userUID, profileImg, myGender, myMBTI, recommendGender, recommendMBTI, 
+                           myHeight, favoriteHeight, myAppearance, favoriteAppearance) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+                           (idealType.userUID, idealType.profileImg, idealType.myGender, idealType.myMBTI, recommendGender, recommendMBTI_json, 
                             idealType.myHeight, idealType.favoriteHeight, myAppearance_JSON, favoriteAppearance_JSON))
             message = "Data Inserted Successfully"
             
@@ -109,13 +128,45 @@ def create_or_update_mbti(idealType: idealType):
         cursor.close()
         conn.close()
         
-@app.post("/recommend/")
+@app.post("/recommend")
 async def recommendUser(uid: str = Form(...)):
-    resultUID = faiss_main.main(uid)
+    result = faiss_main2.main(df_origin, df, feature_list, uid)
     return {
-        f"Result Recommend UID: {resultUID}"
+        "recommend": result
     }
+    
+@app.post("/getMyInfo")
+async def getMyInfo(uid: str = Form(...)):
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    
+    try:
+        cursor.execute("SELECT * FROM idealTable WHERE userUID = %s", (uid, ))
+        find_user = cursor.fetchone()
         
+        # JSON 컬럼 변환
+        for key, value in find_user.items():
+            # JSON 형식일 가능성이 있는 값을 처리
+            if isinstance(value, str) and value.startswith("[") or value.startswith("{"):
+                try:
+                    find_user[key] = json.loads(value)
+                except json.JSONDecodeError:
+                    pass  # JSON으로 파싱되지 않으면 그대로 둡니다
+        
+        find_user_json = json.dumps(find_user, ensure_ascii=False)
+        
+        if not find_user:
+            raise HTTPException(status_code=400, detail=f"Not UserData: {e}")
+        
+        return {"userInfo": find_user_json}
+        
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Error: {e}")
+    
+    finally:
+        cursor.close()
+        conn.close()
+            
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("database:app", host="192.168.1.2", port=8002)
+    uvicorn.run("database:app", host="192.168.1.4", port=2000)
