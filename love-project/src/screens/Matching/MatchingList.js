@@ -1,19 +1,16 @@
 import React, { useState }  from 'react';
-import {Image, FlatList, View, Text, TouchableOpacity, StyleSheet, Platform, Modal, ScrollView } from 'react-native';
+import {Image, FlatList, View, Text, TouchableOpacity, StyleSheet, Platform, Modal, ScrollView, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useNavigation } from '@react-navigation/native';
-
-const data = [
-    { id: '1', title: '이름' }, 
-    { id: '2', title: 'MBTI' },
-    { id: '3', title: '지역' },
-    { id: '4', title: '외모' },
-    { id: '5', title: '키' },
-  ];
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 const MatchingList = () => {
     const navigation = useNavigation();
-    const [liked, setLiked] = useState(false);   
+    const [liked, setLiked] = useState(false);
+
+    const route = useRoute();
+    const { recommend } = route.params;
+
+    // console.log(recommend)
 
     return(
     <ScrollView style={styles.container}>
@@ -25,38 +22,32 @@ const MatchingList = () => {
                               
             <Icon name="check" size={40} color="black" />               
         </Text>
-
-        <Text  >
-            <View style={styles.img}>
-                <Image source={require('../../../assets/MainScreen/cc.jpg')} 
-                          style={{width : 50, 
-                                  height : 50,
-                                  borderRadius: 10,
-                                  marginRight: 20,
-                                  marginLeft: 7 
-                                  }}
-                      />
-            </View>
         <FlatList     
-            data={data}
-            keyExtractor={(item) => item.id}
+            data={recommend}
+            keyExtractor={(item) => item.uid}
             renderItem={({ item }) => (
-                <View style={styles.item}>
-                    <Text>{item.title}</Text>
+                <View style={styles.card}>
+                    <View style={styles.profile}>
+                        <Image
+                            source={{uri: item.profileImg}} // 인터넷에서 이미지 불러올때
+                            // source={require(item.profileImg)} // 이미지 경로 수정 필요
+                            // source={item.profileImg}
+                            style={styles.profileImg}
+                            defaultSource={require('../../../assets/MainScreen/cc.jpg')} // 인터넷에서 이미지 불러오기 전까지 보여줄 이미지
+                        />
+                        <Text style={styles.name}>{item.name??"홍길동"}</Text>
+                    </View>
+                    <View style={styles.info}>
+                        <Text>성별: {item.myGender}</Text>
+                        <Text>MBTI: {item.myMBTI}</Text>
+                        <Text>키: {item.myHeight}</Text>
+                        <Text>외모: {item.myAppearance}</Text>
+                    </View>
                 </View>
             )}
             ItemSeparatorComponent={() => <View style={styles.separator} />}
-            horizontal={true} // 수평으로 배열
-            />
-        </Text>
-
-
-
-
-
-
-
-                                   
+            horizontal={false} // 수평으로 배열
+        />                        
     </View>
     </ScrollView>
     );
@@ -101,18 +92,45 @@ const styles = StyleSheet.create({
         backgroundColor: '#FF9AAB',
         borderRadius: 8,
         marginRight: 2
-        
-        
-        },
+    },
+
     separator: {
+        marginTop: 5,
+        marginBottom: 5,
         height: 1,
         backgroundColor: '#ccc',
-        
-        },
-    
-        
+    },
 
-        
+    profile: {
+        flexDirection: "column",
+        alignItems: "center",
+        marginLeft: 30,
+        marginRight: 30,
+    },
+
+    card: {
+        flexDirection: 'row', // 세로 방향 정렬
+        alignItems: 'center', // 가로 중앙 정렬
+        backgroundColor: '#FFE4E4',
+        borderRadius: 10,
+        padding: 10,
+        marginHorizontal: 10, // 좌우 간격
+    },
+
+    profileImg: {
+        width: 60,
+        height: 60,
+        borderRadius: 40, // 동그란 이미지
+        marginBottom: 12,
+    },
+    info: {
+        alignItems: 'flex-start', // 텍스트 중앙 정렬
+    },
+    name: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 4,
+    },
 });
 
 export default MatchingList;
