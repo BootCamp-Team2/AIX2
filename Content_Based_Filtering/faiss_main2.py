@@ -4,15 +4,12 @@ import faiss
 import numpy as np
 import json
 
-df = None
-feature_list = None
-
 ## 원핫인코딩 리스트
 gender_types = ["남성", "여성"]
 
 mbti_types = [
     "INTJ", "INFP", "ENTP", "ESFP", "ISTJ", "ENFJ", "INFJ", "ISFP",
-    "ENTJ", "ESFJ", "INTP", "ESTP", "ISFJ", "ESTJ", "ENFP", "INFE"
+    "ENTJ", "ESFJ", "INTP", "ESTP", "ISFJ", "ESTJ", "ENFP", "INFJ"
 ]
 
 height_types = ["작음", "평균", "큼"]
@@ -51,7 +48,7 @@ def fetch_mbti_data():
     # for row in results_others:
     #     print(row)
     
-    df = pd.DataFrame(results_others, columns=["userUID", "myGender", "recommendGender", "myMBTI", "recommendMBTI", 
+    df = pd.DataFrame(results_others, columns=["userUID", "profileImg", "myGender", "recommendGender", "myMBTI", "recommendMBTI", 
                                                   "myHeight", "favoriteHeight", "myAppearance", "favoriteAppearance"])
     
     ## 타입이 JSON인 feature 이름 가져오기
@@ -64,25 +61,27 @@ def fetch_mbti_data():
     return df, list(set(json_columns))
 
 def process_data():
-    global df, feature_list
     df, json_columns = fetch_mbti_data()
+    df_copy = df.copy()
     # print(user_df.head()); print(others_df.head())
     # print(json_columns)
     
     for feature in json_columns:
-        df[feature] = df[feature].apply(lambda x: json.loads(x))
+        df_copy[feature] = df_copy[feature].apply(lambda x: json.loads(x))
     # print(user_df.head()); print(others_df.head())
     
-    feature_list = df.columns[df.columns != "userUID"]
+    feature_list = df.columns[(df.columns != "userUID") & (df.columns != "profileImg")]
     type_list = [gender_types, mbti_types, height_types, appearance_types]
     for i, feature in enumerate(feature_list):
-        if not isinstance(df[feature][0], list):
-            df[feature] = df[feature].apply(lambda x: to_one_hot(x, type_list[i // 2]))
+        if not isinstance(df_copy[feature][0], list):
+            df_copy[feature] = df_copy[feature].apply(lambda x: to_one_hot(x, type_list[i // 2]))
         else:
-            df[feature] = df[feature].apply(lambda x: list_to_multiply_hot(x, type_list[i // 2]))
+            df_copy[feature] = df_copy[feature].apply(lambda x: list_to_multiply_hot(x, type_list[i // 2]))
     # print(df.head())
     
-def search_users(userUID):        
+    return df, df_copy, feature_list
+    
+def search_users(df_origin, df, feature_list, userUID):        
     if not userUID in df["userUID"].values:
         raise f"이용하실 수 없는 유저입니다. uid: {userUID}"
     
@@ -136,22 +135,28 @@ def search_users(userUID):
     
     adjusted_scores.sort(key=lambda x: x[1])
     sorted_indices = [x[0] for x in adjusted_scores]
-
-    ## 최종결과 - 인덱스로 userUID 매핑
-    similar_userUIDs = [others_df["userUID"].iloc[i] for i in sorted_indices]
-    # print("유사한 userUIDs:", similar_userUIDs)
     
-    return similar_userUIDs[0:5]
+    df_origin = df_origin[df_origin['userUID'] != userUID]
+    
+    ## 최종결과를 JSON 형식으로 반환
+    similar_users_data = df_origin.iloc[sorted_indices].to_dict(orient="records")
+    
+    return similar_users_data[:10] if len(similar_users_data) >= 10 else similar_users_data
+
+    # ## 최종결과 - 인덱스로 userUID 매핑
+    # similar_userUIDs = [others_df["userUID"].iloc[i] for i in sorted_indices]
+    # # print("유사한 userUIDs:", similar_userUIDs)
+    
+    # return similar_userUIDs[0:10]
 
 # 임시로 유저UID 다음과 같이 지정
-def main(userUID):
+def main(df_origin, df, feature_list, userUID):
     try:
-        process_data()
-        recommend_result = search_users(userUID)
-        print(f"추천된 사용자들: {recommend_result}")
+        recommend_result = search_users(df_origin, df, feature_list, userUID)
+        # print(f"추천된 사용자들: {recommend_result}")
         return recommend_result
     except Exception as e:
         print(f"오류: {e}")
 if __name__ == "__main__":
-    main("0009759695")
+    main("0026469667")
     # main("김시현") ## 존재하지 않는 userUID 테스트

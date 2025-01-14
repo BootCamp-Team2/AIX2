@@ -37,6 +37,7 @@ recommend_MBTI = {
 def generate_user_data():
     userUID = "".join([str(random.randint(0, 9)) for _ in range(10)])
     myGender = random.choice(gender_types)
+    profileImg = "http://192.168.1.4:2000/assets/male_avatar.png" if myGender == "남성" else "http://192.168.1.4:2000/assets/female_avatar.png"
     recommendGender = "여성" if myGender == "남성" else "남성"
     myMBTI = random.choice(mbti_types)
     recommendMBTI = recommend_MBTI.get(myMBTI, "")
@@ -46,6 +47,7 @@ def generate_user_data():
     favoriteAppearance = random.sample(appearance_types, random.randint(1, 3))
     return (
         userUID,
+        profileImg,
         myGender,
         recommendGender,
         myMBTI,
@@ -63,6 +65,7 @@ user_data = [generate_user_data() for _ in range(500)]
 table_name = "idealTable"
 columns = (
     "userUID",
+    "profileImg",
     "myGender",
     "recommendGender",
     "myMBTI",
@@ -74,8 +77,8 @@ columns = (
 )
 insert_statements = [
     f"INSERT INTO {table_name} ({', '.join(columns)}) VALUES "
-    f"('{row[0]}', '{row[1]}', '{row[2]}', '{row[3]}', JSON_ARRAY({row[4]}), "
-    f"'{row[5]}', '{row[6]}', JSON_ARRAY({row[7]}), JSON_ARRAY({row[8]}));"
+    f"('{row[0]}', '{row[1]}', '{row[2]}', '{row[3]}', '{row[4]}', JSON_ARRAY({row[5]}), "
+    f"'{row[6]}', '{row[7]}', JSON_ARRAY({row[8]}), JSON_ARRAY({row[9]}));"
     for row in user_data
 ]
 
