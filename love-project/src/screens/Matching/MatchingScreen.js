@@ -1,15 +1,42 @@
 import React, { useState }  from 'react';
 import { Animated, View, Text, TouchableOpacity, StyleSheet, Platform, Modal, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome'; 
-
+import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
-  
-  
 
 const MatchingScreen = () => {
     const navigation = useNavigation();
     const [liked, setLiked] = useState(false);
     const scaleValue = new Animated.Value(1);
+    const [loading, setLoading] = useState(false);
+
+    const loadMatching = async () => {
+        const formData = new FormData();
+        formData.append("uid", "0026469667")
+
+        try {
+            setLoading(true);
+            const response = await axios.post("http://192.168.1.4:2000/recommend", formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+
+            if(!response.data) {
+                Alert.alert("추천 유저가 없거나, 오류가 발생했습니다.")
+                setLoading(false);
+                return;
+            }
+
+            // console.log(response.data.recommend);
+            navigation.navigate("MatchingList", { recommend: response.data.recommend });
+
+        } catch (error) {
+            console.error('request failed:', error.message);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handlePress = () => {
         setLiked(!liked);
@@ -26,35 +53,31 @@ const MatchingScreen = () => {
     <ScrollView>
     <View style={styles.container}>
             <Text style={styles.top}>
-                {/* <Icon name="menu" size={40} color="black" />                                       */}
+                {/* <Icon name="menu" size={40} color="black" />*/}
                             
-                <Text style={styles.topText}>               소개팅 매칭             </Text>                       
+                <Text style={styles.topText}>소개팅 매칭</Text>                       
                                 
-                {/* <Icon name="check" size={40} color="black" />                */}
+                {/* <Icon name="check" size={40} color="black" />*/}
             </Text>
             <Text style={styles.main}>
                 나와 맞는 사람을{'\n'}만나보세요!
             </Text>
             
-            <TouchableOpacity style={styles.heartBox} onPress={() => navigation.navigate("MatchingList")}>
+            <TouchableOpacity style={styles.heartBox} onPress={() => {loadMatching();}}>
             <Animated.View style={{ transform: [{ scale: scaleValue }] }}>
-                
                 <Icon style={styles.heart}                    
                 name={liked ? 'heart' : 'heart-o'} 
                 size={250} 
                 color={liked ? 'red' : 'black'} 
                 />
             </Animated.View>
-                
-                
-                
                 <Text style={styles.heartText}>
                 매칭잡기!
                 </Text>
             </TouchableOpacity>                
 
 
-            <TouchableOpacity style={styles.information} onPress={() => navigation.navigate("MatchingList")}>
+            <TouchableOpacity style={styles.information}>
                 <Text style={styles.informationText}>
                     나의 정보
                 </Text>
