@@ -18,7 +18,7 @@ const MatchingList = () => {
         <Text style={styles.top}>
             <Icon name="menu" size={40} color="black" />                                      
                          
-            <Text style={styles.topText}>             소개팅 리스트           </Text>                       
+            <Text style={styles.topText}>                소개팅 리스트              </Text>                       
                               
             <Icon name="check" size={40} color="black" />               
         </Text>
