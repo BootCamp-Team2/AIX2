@@ -7,11 +7,15 @@
     - torochvisioon
     - torchaudio
     - requirements.txt 참조
+### npm 설치 목록 npm_requirements.txt 참조
 ### .env 파일 목록
     - OpenAI API Key
     - Chat Bot Key 2 가지
     - Dating Coach Key
-
+### 수정사항
+    - flask 서버 삭제
+    - chatbot_server.py -> chatbot_database.py
+    
 ## !! ComfyUI 필독 !!
 ### 시스템 환경
 - Python 3.12.7
