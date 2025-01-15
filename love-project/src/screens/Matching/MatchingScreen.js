@@ -1,8 +1,10 @@
 import React, { useState }  from 'react';
 import { Animated, View, Text, TouchableOpacity, StyleSheet, Platform, Modal, ScrollView } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome'; 
+import Font from 'react-native-vector-icons/FontAwesome'; 
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+
 
 const MatchingScreen = () => {
     const navigation = useNavigation();
@@ -53,11 +55,11 @@ const MatchingScreen = () => {
     <ScrollView>
     <View style={styles.container}>
             <Text style={styles.top}>
-                {/* <Icon name="menu" size={40} color="black" />*/}
-                            
-                <Text style={styles.topText}>소개팅 매칭</Text>                       
+                <Icon name="menu" size={40} color="black" />
+                             
+                <Text style={styles.topText}>                   소개팅 매칭                  </Text>                       
                                 
-                {/* <Icon name="check" size={40} color="black" />*/}
+                <Icon name="check" size={40} color="black" />
             </Text>
             <Text style={styles.main}>
                 나와 맞는 사람을{'\n'}만나보세요!
@@ -65,7 +67,7 @@ const MatchingScreen = () => {
             
             <TouchableOpacity style={styles.heartBox} onPress={() => {loadMatching();}}>
             <Animated.View style={{ transform: [{ scale: scaleValue }] }}>
-                <Icon style={styles.heart}                    
+                <Font style={styles.heart}                    
                 name={liked ? 'heart' : 'heart-o'} 
                 size={250} 
                 color={liked ? 'red' : 'black'} 
@@ -99,19 +101,17 @@ const MatchingScreen = () => {
 const styles = StyleSheet.create({
 
     container:{
-        flex:1,
-        
+        flex:1,        
     },
     
     top: {
         backgroundColor: '#FFF0F0', 
         alignSelf: 'center',
         marginBottom: 30,  
-        padding:15, 
+        padding:10, 
         textAlign:'center', 
         width: '100%',  
         height: 70,
-
         flexDirection: 'row', // Arrange children in a row
         alignItems: 'center', // Vertically center all items
         justifyContent: 'space-between',
@@ -141,17 +141,17 @@ const styles = StyleSheet.create({
         borderRadius: 30, 
         width: '80%',
         height: 300,  
-        marginBottom: 20, 
+        marginBottom: 5, 
         textAlign:'center', 
         alignSelf: 'center',
         alignItems: 'center',
         justifyContent: 'center',
-        borderColor: '#FFF',
+        borderColor: 'transparent',
         borderWidth: 2,                
     },
 
     heart: {
-        color : '#FF9AAB',               
+        color : '#FF9AAB',            
     },
 
     heartText: {
