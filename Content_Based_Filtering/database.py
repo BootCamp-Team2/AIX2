@@ -79,7 +79,7 @@ def generate_recommend(userIdeal):
 # MySQL Server 연결
 def get_db_connection():
     return mysql.connector.connect(
-        host="localhost",
+        host="192.168.1.4",
         user="root",
         password="AIX2_1234",
         database="idealDatabase"
