@@ -1,6 +1,6 @@
 import React, { useState }  from 'react';
 
-import { ActivityIndicator, KeyboardAvoidingView, Platform, TextInput, View, Text, TouchableOpacity, StyleSheet, ScrollView} from 'react-native';
+import { ActivityIndicator, KeyboardAvoidingView, Platform, TextInput, View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import axios from 'axios';
@@ -31,13 +31,13 @@ const ConversationScreen = () => {
             sel_formData.append("type", "sim");
             const select_r = await axios.post("http://192.168.1.4:1000/select-server", sel_formData, {
                 headers: {
-                'Content-Type': 'multipart/form-data',
+                    'Content-Type': 'multipart/form-data',
                 },
             });
             if (select_r.data)
                 if (select_r.data.server_ip == "") {
                 Alert.alert("서버가 혼잡합니다. 잠시 후에 다시 시도해주세요.")
-                setLoading(false);
+                setLoading(null);
                 return;
                 }
             
@@ -57,6 +57,7 @@ const ConversationScreen = () => {
             }
         } catch (error) {
             console.error('request failed:', error.message);
+            setLoading(null);
         } finally {
             setLoading(false);
         }

@@ -29,16 +29,16 @@ const MatchingList = () => {
                 <View style={styles.card}>
                     <View style={styles.profile}>
                         <Image
-                            source={{uri: item.profileImg}} // 인터넷에서 이미지 불러올때
-                            // source={require(item.profileImg)} // 이미지 경로 수정 필요
-                            // source={item.profileImg}
+                            // source={{uri: item.profileImg}} // 인터넷에서 이미지 불러올때
+                            source={item.myGender == "남성" 
+                                ? require('../../../assets/default-profile-male.png') 
+                                : require('../../../assets/default-profile-female.png')}
                             style={styles.profileImg}
-                            defaultSource={require('../../../assets/MainScreen/cc.jpg')} // 인터넷에서 이미지 불러오기 전까지 보여줄 이미지
+                            defaultSource={require('../../../assets/default-profile.png')} // 인터넷에서 이미지 불러오기 전까지 보여줄 이미지
                         />
-                        <Text style={styles.name}>{item.name??"홍길동"}</Text>
+                        <Text style={styles.name}>{item.name??"ㅇㅇㅇ"}</Text>
                     </View>
                     <View style={styles.info}>
-                        <Text>성별: {item.myGender}</Text>
                         <Text>MBTI: {item.myMBTI}</Text>
                         <Text>키: {item.myHeight}</Text>
                         <Text>외모: {item.myAppearance}</Text>
