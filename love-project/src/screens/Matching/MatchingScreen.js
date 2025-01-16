@@ -15,6 +15,16 @@ const MatchingScreen = () => {
     const loadMatching = async () => {
         const formData = new FormData();
         formData.append("uid", "0026469667")
+        // 성별: 여성
+        // MBTI: INTP - reMBTI: ["ENTJ", "ESTJ"]
+        // Height: 작음 - reHeight: 큼
+        // Appearance: ["매력적"] - reAppearance: ["미소", "귀여움", "단아함"]
+        
+        // formData.append("uid", "0177490123")
+        // 성별: 남성
+        // MBTI: ESTP - reMBTI: ["ISFJ", "ISTJ"]
+        // Height: 작음 - reHeight: 큼
+        // Appearance: ["활기참"] - reAppearance: ["카리스마", "귀여움"]
 
         try {
             setLoading(true);
