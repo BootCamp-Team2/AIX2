@@ -8,7 +8,7 @@ const CoordinationScreen = () => {
                     <Text style={styles.top}>
                        <Icon name="menu" size={40} color="black" />                                      
                                    
-                        <Text style={styles.topText}>            AI 스타일 코디           </Text>                       
+                        <Text style={styles.topText}>               AI 스타일 코디              </Text>                       
                                       
                         <Icon name="check" size={40} color="black" />               
                     </Text>

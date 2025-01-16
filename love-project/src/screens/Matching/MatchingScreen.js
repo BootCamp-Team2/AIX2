@@ -1,9 +1,9 @@
 import React, { useState }  from 'react';
 import { Animated, View, Text, TouchableOpacity, StyleSheet, Platform, Modal, ScrollView } from 'react-native';
-import Font from 'react-native-vector-icons/FontAwesome'; 
+import Font from 'react-native-vector-icons/FontAwesome';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 
 const MatchingScreen = () => {
@@ -86,8 +86,7 @@ const MatchingScreen = () => {
                 <Text style={styles.heartText}>
                 매칭잡기!
                 </Text>
-            </TouchableOpacity>                
-
+            </TouchableOpacity>
 
             <TouchableOpacity style={styles.information}>
                 <Text style={styles.informationText}>
@@ -216,8 +215,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         marginVertical: 5,
     },
-
                 
-        });
+});
 
 export default MatchingScreen;

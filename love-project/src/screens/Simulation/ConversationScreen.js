@@ -73,7 +73,7 @@ const ConversationScreen = () => {
             <View style={styles.container}>
                 <Text style={styles.header}>                    
                     <Icon name="menu" size={40} color="black" />                
-                    <Text style={styles.headerText}>            AI 대화 연습            </Text>  
+                    <Text style={styles.headerText}>               AI 대화 연습               </Text>  
                     <Icon name="check" size={40} color="black" />
                 </Text>
                 

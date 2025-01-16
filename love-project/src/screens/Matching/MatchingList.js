@@ -18,7 +18,7 @@ const MatchingList = () => {
         <Text style={styles.top}>
             <Icon name="menu" size={40} color="black" />                                      
                          
-            <Text style={styles.topText}>             소개팅 리스트           </Text>                       
+            <Text style={styles.topText}>                소개팅 리스트              </Text>                       
                               
             <Icon name="check" size={40} color="black" />               
         </Text>
@@ -38,11 +38,21 @@ const MatchingList = () => {
                         />
                         <Text style={styles.name}>{item.name??"ㅇㅇㅇ"}</Text>
                     </View>
-                    <View style={styles.info}>
-                        <Text>MBTI: {item.myMBTI}</Text>
-                        <Text>키: {item.myHeight}</Text>
-                        <Text>외모: {item.myAppearance}</Text>
+
+                    <View style={styles.box}>
+                        <Text style={styles.boxText}>
+                            자연스러운 만남을 추구합니다~ 서로 얘기 나누며 친해져 가요~~
+                        </Text>
                     </View>
+
+
+
+                    {/* <View style={styles.info}>
+                        <Text>{item.myGender}</Text> 
+                        <Text>{item.myMBTI}</Text>
+                        <Text>{item.myHeight}</Text>
+                        <Text>{item.myAppearance}</Text>
+                    </View> */}
                 </View>
             )}
             ItemSeparatorComponent={() => <View style={styles.separator} />}
@@ -57,19 +67,30 @@ const styles = StyleSheet.create({
 
     container:{
         flex: 1,
+    }, 
+
+    img:{},
+
+    box:{
+        // backgroundColor: 'white',
+        width : '68%',
+        height: 100, 
+        textAlign:'center',
+        justifyContent: 'center',
 
     },    
 
-    img:{
+    boxText:{
+        // color:'white'
+        fontSize: 17,
         
-
     },
     
     top: {
-        backgroundColor: '#FFF0F0', 
+        backgroundColor: '#B2E0F9', 
         alignSelf: 'center',
         marginBottom: 30,  
-        padding:15, 
+        padding:10, 
         textAlign:'center', 
         width: '100%',  
         height: 70,
@@ -111,7 +132,7 @@ const styles = StyleSheet.create({
     card: {
         flexDirection: 'row', // 세로 방향 정렬
         alignItems: 'center', // 가로 중앙 정렬
-        backgroundColor: '#FFE4E4',
+        backgroundColor: '#B2E0F9',
         borderRadius: 10,
         padding: 10,
         marginHorizontal: 10, // 좌우 간격
