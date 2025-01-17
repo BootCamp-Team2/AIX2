@@ -1,3 +1,30 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:5125abae97c3a7498580553a99fc12629871cdba96920bee4e13e32dd0f7aea7
-size 716
+import { View, Text, TouchableOpacity, StyleSheet, Platform, Modal } from 'react-native';
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
+
+const SettingScreen = () => {
+    const navigation = useNavigation();
+
+    return(
+        <View style={[styles.container]}>
+            <View style={styles.content}>
+                <Text>
+                    설정 화면
+                </Text>
+            </View>
+        </View>
+    );
+};
+
+const styles = StyleSheet.create({ 
+    container: { 
+        flex: 1, 
+        justifyContent: 'flex-start', 
+    }, 
+    content: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+});
+
+export default SettingScreen;

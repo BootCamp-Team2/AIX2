@@ -1,3 +1,12 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:76d61363bab613497410eb8b3381f5124e79cfd2812b25a698c738eebccf3e0e
-size 278
+import { View, Text, TouchableOpacity, StyleSheet, Platform, Modal } from 'react-native';
+
+const MyCharacter = () => {
+    return(
+        <View>
+            <Text>
+                캐릭터 생성 화면
+            </Text>
+        </View>
+    );
+};
+export default MyCharacter;
