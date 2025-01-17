@@ -1,0 +1,14 @@
+C:\Users\ADDINEDU\mypython\love_chat_3\src\main\java\com\example\love_chat\config\AppConfig.java
+C:\Users\ADDINEDU\mypython\love_chat_3\src\main\java\com\example\love_chat\config\ChatWebSocketHandler.java
+C:\Users\ADDINEDU\mypython\love_chat_3\src\main\java\com\example\love_chat\config\CorsConfig.java
+C:\Users\ADDINEDU\mypython\love_chat_3\src\main\java\com\example\love_chat\config\WebSocketConfig.java
+C:\Users\ADDINEDU\mypython\love_chat_3\src\main\java\com\example\love_chat\config\WebSocketHandshakeInterceptor.java
+C:\Users\ADDINEDU\mypython\love_chat_3\src\main\java\com\example\love_chat\controller\ChatController.java
+C:\Users\ADDINEDU\mypython\love_chat_3\src\main\java\com\example\love_chat\controller\MessageController.java
+C:\Users\ADDINEDU\mypython\love_chat_3\src\main\java\com\example\love_chat\LoveChatApplication.java
+C:\Users\ADDINEDU\mypython\love_chat_3\src\main\java\com\example\love_chat\model\Message.java
+C:\Users\ADDINEDU\mypython\love_chat_3\src\main\java\com\example\love_chat\model\User.java
+C:\Users\ADDINEDU\mypython\love_chat_3\src\main\java\com\example\love_chat\repository\MessageRepository.java
+C:\Users\ADDINEDU\mypython\love_chat_3\src\main\java\com\example\love_chat\service\ChatService.java
+C:\Users\ADDINEDU\mypython\love_chat_3\src\main\java\com\example\love_chat\service\MessageService.java
+C:\Users\ADDINEDU\mypython\love_chat_3\src\main\java\com\example\love_chat\service\OpenAIService.java
