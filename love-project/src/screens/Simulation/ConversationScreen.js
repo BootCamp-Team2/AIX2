@@ -82,10 +82,27 @@ const ConversationScreen = () => {
                     나의 이상형을 만드세요!
                 </Text>
                 <Text style={styles.middle}>
+                    이상형 성별을 선택해 주세요!!
+                </Text>
+                
+                <View style={styles.selectBox}>
+                <TouchableOpacity style={styles.select}>
+                    <Text style={styles.selectText}>
+                        남성
+                    </Text>            
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.select}>
+                    <Text style={styles.selectText}>
+                         여성
+                    </Text>            
+                </TouchableOpacity>
+                </View>
+
+                <Text style={styles.middle}>
                     나의 이상형을 입력하세요
                 </Text>
 
-                <TextInput style={styles.square}          
+                <TextInput style={styles.textBox}          
                     placeholder="텍스트를 입력하세요"                    
                     value={inputValue}
                     onChangeText={(inputValue) => setInputValue(inputValue)} // 텍스트 변경 시 상태 업데이트
@@ -104,7 +121,15 @@ const ConversationScreen = () => {
 
                  {loading && ( // loading이 true일 때 로딩 인디케이터 표시
                         <ActivityIndicator size="large" color="#FFB89A" style={styles.loader} />
-                    )}              
+                    )}
+
+                <TouchableOpacity style={styles.button2} onPress={() => navigation.navigate("")}>
+                    <Text style={styles.button2Text}>
+                                AI 대화 바로가기
+                    </Text>            
+                </TouchableOpacity>
+
+                              
             </View>
         </ScrollView>
     </KeyboardAvoidingView>
@@ -126,7 +151,7 @@ const styles = StyleSheet.create({
 
     header: { 
         backgroundColor: '#FFF0F0',
-        marginBottom: 30, 
+        marginBottom: 20, 
         fontSize:26, 
         paddingTop:15, 
         width: '100%',  
@@ -146,27 +171,53 @@ const styles = StyleSheet.create({
     },
     
     main: { fontSize: 24,
-        height: 90, 
+        height: 70, 
         fontWeight: 'bold', 
         marginBottom: 10, 
         color : '#FFB89A', 
         textAlign:'center', 
         alignSelf: 'center' 
     },
-    
+     
     middle: { fontSize: 24, 
         fontWeight: 'bold', 
-        marginBottom: 30, 
+        marginBottom: 20, 
         color : '#FFB89A', 
         textAlign:'center', 
         fontWeight: 'bold',
         alignSelf: 'center'
     },
+    selectBox:{
+        flexDirection: 'row',
+    },
 
-    square: {
+    select:{paddingTop:10,
+        backgroundColor: '#FFB89A',
+        borderRadius: 23, 
+        width: '35%',
+        height: 55, 
+        alignItems: 'center', 
+        marginBottom: 10, 
+        textAlign:'center', 
+        fontWeight: 'bold',
+        alignSelf: 'center',
+        marginHorizontal:15
+    },
+    selectText:{
+        fontSize:20,
+        color : 'white', 
+        width: '80%',
+        height: 50, 
+        alignItems: 'center', 
+        textAlign:'center', 
+        fontWeight: 'bold',
+        alignSelf: 'center'
+    },
+
+    textBox: {
         textAlign:'center',
         width: 300,   
-        height: 300,
+        height: 200,
         borderRadius: 35,
         marginBottom: 30, 
         borderWidth: 2,
@@ -179,7 +230,7 @@ const styles = StyleSheet.create({
     button: {paddingTop:15,
         backgroundColor: '#FFB89A',
         borderRadius: 23, 
-        width: '85%',
+        width: '75%',
         height: 60, 
         alignItems: 'center', 
         marginBottom: 10, 
@@ -192,6 +243,29 @@ const styles = StyleSheet.create({
         fontSize:25,
         color : 'white', 
         width: '80%',
+        height: 50, 
+        alignItems: 'center', 
+        textAlign:'center', 
+        fontWeight: 'bold',
+        alignSelf: 'center'
+    },
+
+    button2: {paddingTop:15,
+        backgroundColor: '#FFB89A',
+        borderRadius: 23, 
+        width: '70%',
+        height: 60, 
+        alignItems: 'center', 
+        marginBottom: 10, 
+        textAlign:'center', 
+        fontWeight: 'bold',
+        alignSelf: 'center'
+    },
+
+    button2Text: {
+        fontSize:25,
+        color : 'white', 
+        width: '65%',
         height: 50, 
         alignItems: 'center', 
         textAlign:'center', 
