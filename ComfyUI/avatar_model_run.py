@@ -87,7 +87,7 @@ async def createMyAvatar(img: UploadFile = File(...), gender: str = Form(...)):
         async with httpx.AsyncClient() as client:
             response = await client.post(
                 "http://192.168.1.4:1000/update-status", 
-                json={"server_ip": f"http://{SERVER_HOST}:{SERVER_PORT}", "status": False}
+                json={"server_ip": f"http://{SERVER_HOST}:{SERVER_PORT}", "status": False, "type": "avatar"}
             )
             if response.status_code != 200:
                 raise HTTPException(status_code=response.status_code, detail=f"Error: {response.text}")
