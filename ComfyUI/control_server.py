@@ -28,25 +28,33 @@ avatar_server_status: Dict[str, bool] = {
 
 sim_server_status: Dict[str, bool] = {
     "http://192.168.1.4:9001": False,
-    "http://192.168.1.4:9001": False,
+    "http://192.168.1.4:9002": False,
 }
 
 class ServerStatus(BaseModel):
     server_ip: str
     status: bool
+    type: str
 
 @app.get("/check-server")
-async def check_server(server_ip: str):
-    status = avatar_server_status.get(server_ip, None)
+async def check_server(server_ip: str, type: str):
+    if type == "avatar":
+        status = avatar_server_status.get(server_ip, None)
+    elif type == "sim":
+        status = sim_server_status.get(server_ip, None)
+        
     if status is None:
         return {"error": "Server not found"}
     return {"server_name": server_ip, "status": status}
 
 @app.post("/update-status")
-async def update_status(status: ServerStatus):    
-    avatar_server_status[status.server_ip] = status.status
+async def update_status(status: ServerStatus):
+    if status.type == "avatar": 
+        avatar_server_status[status.server_ip] = status.status
+    elif status.type == "sim":
+        sim_server_status[status.server_ip] = status.status
+        
     return {"message": f"Server {status.server_ip} status updated to {status.status}"}
-
 
 @app.post("/select-server")
 async def select_server(type: str = Form(...)):

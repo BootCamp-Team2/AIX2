@@ -42,8 +42,8 @@ app.mount("/input", StaticFiles(directory=INPUT_FOLDER), name="input")
 app.mount("/output", StaticFiles(directory=OUTPUT_FOLDER), name="output")
 
 # detail_sim_model 모델 불러오기
-module_name = "detail_sim_model"
-module_path = os.path.join("custom_nodes", "ComfyUI-to-Python-Extension", "nodes", "detail_sim_model.py")
+module_name = "detail_sim_model_v2"
+module_path = os.path.join("custom_nodes", "ComfyUI-to-Python-Extension", "nodes", "detail_sim_model_v2.py")
 spec = importlib.util.spec_from_file_location(module_name, module_path)
 idealType_module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(idealType_module)
@@ -53,7 +53,7 @@ def getServerIP():
     return {"server-ip": f"{SERVER_HOST}", "server-port": f"{SERVER_PORT}"}
 
 @app.post("/sim/create")
-async def createMyLover(ideal_type: str = Form(...)):
+async def createMyLover(ideal_type: str = Form(...), gender: str = Form(...)):
     # 고객 uuid 대체용 임시 테스트
     personal_uuid = uuid.uuid4()
     censor_list = ["노출", "호텔", "모텔", "알몸" , "야한얼굴", "야하다", "에로", "선정적", "음란"
@@ -65,7 +65,7 @@ async def createMyLover(ideal_type: str = Form(...)):
             if word in ideal_type:
                 raise HTTPException(status_code=400, detail="금지 단어가 포함되어 있습니다.")
             
-        idealType_module.main(ideal_type, personal_uuid)
+        idealType_module.main(ideal_type, gender, personal_uuid)
         result_path = f"./output/idealType_{personal_uuid}_00001_.jpg"
             
         new_file_director = f"./output/{personal_uuid}"
@@ -77,7 +77,7 @@ async def createMyLover(ideal_type: str = Form(...)):
         async with httpx.AsyncClient() as client:
             response = await client.post(
                 "http://192.168.1.4:1000/update-status", 
-                json={"server_ip": f"http://{SERVER_HOST}:{SERVER_PORT}", "status": False}
+                json={"server_ip": f"http://192.168.1.4:{SERVER_PORT}", "status": False, "type": "sim"}
             )
             if response.status_code != 200:
                 raise HTTPException(status_code=response.status_code, detail=f"Error: {response.text}")
