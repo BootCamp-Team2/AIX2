@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, ScrollView, StyleSheet, Alert } from 'react-native';
-import { sendMessage, activateAssistant, waitForCompletion, getMessages } from 'chatbot/chatbot';
 
 const ConversationScreen = ({ route }) => {
-    const { assistantId } = route.params;
+    const { assistantId, threadKey } = route.params;
     const [messages, setMessages] = useState([]);
     const [userMessage, setUserMessage] = useState('');
-    const [threadId, setThreadId] = useState(`thread-${Date.now()}`); // 임시로 생성된 스레드 ID
 
     const handleSendMessage = async () => {
         if (!userMessage.trim()) {
@@ -15,23 +13,32 @@ const ConversationScreen = ({ route }) => {
         }
 
         try {
-            // 메시지 전송
-            await sendMessage(threadId, userMessage);
+            const response = await fetch('http://192.168.0.68:5000/chat', { // Flask 서버 IP
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    thread_id: threadKey,
+                    content: userMessage,
+                    partner_id: assistantId,
+                }),
+            });
 
-            // 어시스턴트 활성화
-            const runId = await activateAssistant(threadId, assistantId);
+            if (!response.ok) {
+                throw new Error('Failed to send message');
+            }
 
-            // 응답 대기
-            await waitForCompletion(threadId, runId);
-
-            // 메시지 가져오기
-            const updatedMessages = await getMessages(threadId);
-
-            setMessages(updatedMessages);
+            const data = await response.json();
+            setMessages((prevMessages) => [
+                ...prevMessages,
+                { role: 'user', content: userMessage },
+                { role: 'assistant', content: data.response },
+            ]);
             setUserMessage('');
         } catch (error) {
             console.error('Error during conversation:', error);
-            Alert.alert('Error', '대화 중 오류가 발생했습니다.');
+            Alert.alert('Error', '메시지를 전송하는 동안 오류가 발생했습니다.');
         }
     };
 

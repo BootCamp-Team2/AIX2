@@ -1,38 +1,39 @@
 import React, { useState } from 'react';
 import { View, Text, Button, StyleSheet, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { createThread } from 'chatbot/chatbot';
 
-const ConversationSelect = ({ navigation, route }) => {
-    const { userId } = route.params || {};
+const ConversationSelect = ({ navigation }) => {
+    const userId = "12345"; // user_id를 고정
     const [selectedAssistant, setSelectedAssistant] = useState('');
 
-    // 어시스턴트 키 정의
-    const assistantIds = {
-        hana: process.env.REACT_APP_PARTNER_ID_HANA,
-        hwarang: process.env.REACT_APP_PARTNER_ID_HWARANG,
-    };
-
     const handleStartConversation = async () => {
-        console.log(selectedAssistant);
-        Alert.alert(selectedAssistant);
         if (!selectedAssistant) {
             Alert.alert('Error', '어시스턴트를 선택해주세요.');
             return;
         }
 
-        const assistant = assistantIds[selectedAssistant];
-        if (!assistant) {
-            Alert.alert('Error', '유효하지 않은 어시스턴트입니다.');
-            return;
-        }
-
         try {
-            // 스레드 생성
-            const threadKey = await createThread(userId, assistant);
+            const response = await fetch('http://192.168.0.68:5000/chat', { // Flask 서버 IP
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    user_id: userId,            // 고정된 user_id
+                    partner_id: selectedAssistant, // 선택된 어시스턴트
+                    content: ' ',                // 초기 메시지
+                }),
+            });
 
-            // 대화 화면으로 이동
-            navigation.navigate('ConversationScreen', { assistantId: assistant, threadKey });
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error || 'Failed to create a thread');
+            }
+
+            const data = await response.json();
+            const threadKey = data.thread_key || 'default_thread_key'; // 서버에서 반환된 스레드 키 사용
+
+            navigation.navigate('ConversationScreen', { assistantId: selectedAssistant, threadKey });
         } catch (error) {
             console.error('대화 시작 오류:', error);
             Alert.alert('Error', '대화를 시작할 수 없습니다.');
@@ -46,11 +47,10 @@ const ConversationSelect = ({ navigation, route }) => {
                 selectedValue={selectedAssistant}
                 onValueChange={setSelectedAssistant}
                 style={styles.picker}
-                console
             >
                 <Picker.Item label="선택하세요" value="" />
-                <Picker.Item label="Hana" value="hana" />
-                <Picker.Item label="Hwarang" value="hwarang" />
+                <Picker.Item label="Hana" value="HANA" />
+                <Picker.Item label="Hwarang" value="HWARANG" />
             </Picker>
             <Button title="대화 시작" onPress={handleStartConversation} />
         </View>
