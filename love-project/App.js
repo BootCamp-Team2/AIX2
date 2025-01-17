@@ -18,6 +18,7 @@ import MyCharacter from './src/screens/Profile/MyCharacter';
 import TabBar from './src/components/TabBar';
 import MatchingList from './src/screens/Matching/MatchingList';
 import AIchat from './src/screens/Simulation/AIchat';
+import Chatting from './src/screens/Simulation/Chatting';
 
 const Stack = createStackNavigator(); // 스택 내비게이션 생성
 
@@ -115,6 +116,11 @@ const MainNavigator = () => {
         <Stack.Screen
           name="AIchat"
           component={AIchat}
+          options={{ headerTitle: '아바타 생성', headerTitleAlign: 'center' }}
+        />
+        <Stack.Screen
+          name="Chatting"
+          component={Chatting}
           options={{ headerTitle: '아바타 생성', headerTitleAlign: 'center' }}
         />
         <Stack.Screen
