@@ -96,7 +96,7 @@ const MainScreen = () => {
         </Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("CoordinationScreen")}>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("ChattingList")}>
         <View>
           <Image source={require('../../assets/MainScreen/mat.jpg')} 
               style={{width : 70, 

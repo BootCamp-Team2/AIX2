@@ -18,6 +18,7 @@ import MyCharacter from './src/screens/Profile/MyCharacter';
 import TabBar from './src/components/TabBar';
 import MatchingList from './src/screens/Matching/MatchingList';
 import ChatchatScreen from './src/screens/Matching/ChatchatScreen'; // ChatchatScreen 임포트
+import ChattingList from './src/screens/ChattingList';
 
 const Stack = createStackNavigator(); // 스택 내비게이션 생성
 
@@ -124,7 +125,13 @@ const MainNavigator = () => {
           component={ChatchatScreen}
           options={{ headerTitle: '채팅 화면', headerTitleAlign: 'center' }}
         />
+        <Stack.Screen
+          name="ChattingList"
+          component={ChattingList}
+          options={{ headerTitle: '채팅 화면', headerTitleAlign: 'center' }}
+        />
       </Stack.Navigator>
+      
     </NavigationContainer>
   );
 };
