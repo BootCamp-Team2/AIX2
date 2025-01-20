@@ -1,3 +1,4 @@
+// WebSocketHandshakeInterceptor.java
 package com.example.love_chat.config;
 
 import org.springframework.http.server.ServerHttpRequest;
@@ -12,9 +13,13 @@ public class WebSocketHandshakeInterceptor implements HandshakeInterceptor {
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
             WebSocketHandler wsHandler, Map<String, Object> attributes) {
         // userUID를 추출하여 세션 속성에 저장
-        String userUID = request.getURI().getQuery().split("=")[1];
-        attributes.put("userUID", userUID);
-        return true;
+        String userUID = request.getURI().getQuery();
+        if (userUID != null && userUID.startsWith("userUID=")) {
+            userUID = userUID.split("=")[1];
+            attributes.put("userUID", userUID);
+            return true;
+        }
+        return false; // userUID가 없으면 핸드셰이크를 거부
     }
 
     @Override
