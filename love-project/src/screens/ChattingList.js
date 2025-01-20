@@ -1,36 +1,68 @@
 // src/ChatRoomList.js
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, FlatList } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 
 const ChattingList = () => {
-    const [rooms, setRooms] = useState(['General', 'Tech', 'Random']);
-    const [newRoom, setNewRoom] = useState('');
+    const [chatRooms] = useState([
+        { id: 1, name: '친구와의 대화', lastMessage: '안녕!', timestamp: '2025-01-20 16:30' },
+        { id: 2, name: '가족 그룹', lastMessage: '저녁 뭐 먹을까?', timestamp: '2025-01-20 15:45' },
+        { id: 3, name: '동아리', lastMessage: '다음 모임 일정', timestamp: '2025-01-19 18:00' },
+    ]);
 
-    const addRoom = () => {
-        if (newRoom.trim() !== '') {
-            setRooms([...rooms, newRoom]);
-            setNewRoom('');
-        }
+    const handleRoomClick = (room) => {
+        // 클릭 시 동작을 추가할 수 있습니다.
+        console.log(`Selected room: ${room.name}`);
     };
 
     return (
-        <View style={{ padding: 20 }}>
-            <Text style={{ fontSize: 24, fontWeight: 'bold' }}>채팅방 리스트</Text>
-            <FlatList
-                data={rooms}
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={({ item }) => <Text style={{ fontSize: 18 }}>{item}</Text>}
-            />
-            <TextInput
-                style={{ borderWidth: 1, borderColor: '#ccc', marginTop: 10, padding: 10 }}
-                value={newRoom}
-                onChangeText={setNewRoom}
-                placeholder="새 채팅방 이름"
-            />
-            <Button title="채팅방 추가" onPress={addRoom} />
+        <View style={styles.container}>
+            <View style={styles.roomList}>
+                <Text style={styles.title}>채팅방 목록</Text>
+                <FlatList
+                    data={chatRooms}
+                    keyExtractor={(item) => item.id.toString()}
+                    renderItem={({ item }) => (
+                        <TouchableOpacity
+                            onPress={() => handleRoomClick(item)}
+                            style={styles.roomItem}
+                        >
+                            <Text style={styles.roomName}>{item.name}</Text>
+                            <Text>{item.lastMessage}</Text>
+                            <Text style={styles.timestamp}>{item.timestamp}</Text>
+                        </TouchableOpacity>
+                    )}
+                />
+            </View>
         </View>
     );
 };
 
-export default ChattingList;
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+    },
+    roomList: {
+        padding: 10,
+    },
+    title: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 10,
+    },
+    roomItem: {
+        padding: 10,
+        borderWidth: 1,
+        borderColor: '#ddd',
+        marginVertical: 5,
+        backgroundColor: '#fff',
+    },
+    roomName: {
+        fontWeight: 'bold',
+    },
+    timestamp: {
+        color: '#888',
+        fontSize: 12,
+    },
+});
 
+export default ChattingList;
