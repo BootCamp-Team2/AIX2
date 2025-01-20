@@ -8,38 +8,40 @@ const ChatScreen = ({ route }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   const { partner } = route.params; // 추천 리스트에서 선택된 사람의 정보
-  const userID = 1; // 현재 사용자 ID (예: 로그인된 사용자 ID)
-  const partnerID = partner.userUID; // 선택된 파트너의 ID
+  const userID = partner.userUID; // 현재 사용자 ID (예: 로그인된 사용자 ID)
+  const partnerID = "1"; // 선택된 파트너의 ID
 
   useEffect(() => {
     console.log("Selected partner data:", partner); // partner 데이터 확인용
 
     // WebSocket 연결 설정
-    const serverIP = "192.168.x.x"; // 실제 서버 IP로 변경 필요
     const newSocket = new WebSocket(`ws://192.168.1.23:8080/ws/chat?userUID=${userID}`);
     setSocket(newSocket);
 
-    // WebSocket 메시지 수신 처리
-    newSocket.onmessage = (event) => {
-      const messageData = JSON.parse(event.data);
-      console.log("Received message:", messageData);
-
-      if (messageData.senderUID === partnerID || messageData.receiverUID === partnerID) {
-        const formattedMessage = {
-          _id: messageData.id || new Date().getTime(),
-          text: messageData.content,
-          createdAt: new Date(messageData.timestamp),
-          user: {
-            _id: messageData.senderUID,
-            name: messageData.senderUID === userID ? '나' : partner.name,
-          },
+      // WebSocket 메시지 수신 처리
+      newSocket.onmessage = (event) => {
+        const messageData = JSON.parse(event.data);
+        console.log("Received message:", messageData);
+  
+        if (messageData.senderUID === partnerID || messageData.receiverUID === partnerID) {
+                  const timestamp = messageData.timestamp
+              ? new Date(messageData.timestamp)
+              : new Date(); // timestamp가 없으면 현재 시간 사용
+  
+              const formattedMessage = {
+                  _id: messageData.id || new Date().getTime(),
+                  text: messageData.message,
+                  createdAt: timestamp, // 유효한 timestamp를 사용
+                  user: {
+                      _id: messageData.senderUID,
+                      name: messageData.senderUID === userID ? '나' : partner.userUID,
+                  },
+              };
+          setMessages((previousMessages) =>
+            GiftedChat.append(previousMessages, [formattedMessage])
+          );
         };
-
-        setMessages((previousMessages) =>
-          GiftedChat.append(previousMessages, [formattedMessage])
-        );
-      }
-    };
+      };
 
     // WebSocket 연결 상태 확인 후 로딩 종료
     newSocket.onopen = () => {
@@ -88,6 +90,7 @@ const ChatScreen = ({ route }) => {
       console.error("WebSocket is not open. Message not sent.");
     }
 
+    print("checking: ", newMessages);
     setMessages((previousMessages) => GiftedChat.append(previousMessages, newMessages));
   };
 
