@@ -95,6 +95,25 @@ const MainScreen = () => {
           </Text>
         </Text>
       </TouchableOpacity>
+
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("CoordinationScreen")}>
+        <View>
+          <Image source={require('../../assets/MainScreen/coor.jpg')} 
+              style={{width : 70, 
+                      height : 70,
+                      borderRadius: 10,
+                      marginRight: 20,
+                      marginLeft: 7  
+                      }}
+          />
+        </View>
+          <Text style={styles.textStyle}>
+            <Text style={styles.buttonText}>채팅 리스트{'\n'}
+            <Text style={styles.empty}>{'\n'}</Text>
+            <Text style={styles.bottom}>원하는 이상형을 찾아 서로 대화해 보세요!</Text>
+          </Text>
+        </Text>
+      </TouchableOpacity>
     </View>
   </ScrollView>
   );
