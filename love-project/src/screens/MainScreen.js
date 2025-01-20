@@ -98,7 +98,7 @@ const MainScreen = () => {
 
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("CoordinationScreen")}>
         <View>
-          <Image source={require('../../assets/MainScreen/coor.jpg')} 
+          <Image source={require('../../assets/MainScreen/mat.jpg')} 
               style={{width : 70, 
                       height : 70,
                       borderRadius: 10,
@@ -110,7 +110,7 @@ const MainScreen = () => {
           <Text style={styles.textStyle}>
             <Text style={styles.buttonText}>채팅 리스트{'\n'}
             <Text style={styles.empty}>{'\n'}</Text>
-            <Text style={styles.bottom}>원하는 이상형을 찾아 서로 대화해 보세요!</Text>
+            <Text style={styles.bottom}>매칭상대와 서로 대화해 보세요!</Text>
           </Text>
         </Text>
       </TouchableOpacity>
