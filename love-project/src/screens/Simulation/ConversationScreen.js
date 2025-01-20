@@ -11,6 +11,7 @@ const ConversationScreen = () => {
     const [simulatorUri, setSimulatorUri] = useState(null);
     const [loading, setLoading] = useState(null);
     const [inputValue, setInputValue] = useState('');
+    const [gender, setGender] = useState(null);
 
     const CreateMySim = async () => {
         if(inputValue == '') {
@@ -18,9 +19,14 @@ const ConversationScreen = () => {
             return;
         }
 
+        if(gender == null) {
+            alert("성별을 선택해주세요.");
+            return;
+        }
 
         const formData = new FormData();
         formData.append("ideal_type", inputValue);
+        formData.append("gender", gender);
         
         console.log(`Your Input idealType: ${inputValue}`)
 
@@ -36,9 +42,9 @@ const ConversationScreen = () => {
             });
             if (select_r.data)
                 if (select_r.data.server_ip == "") {
-                Alert.alert("서버가 혼잡합니다. 잠시 후에 다시 시도해주세요.")
-                setLoading(null);
-                return;
+                    Alert.alert("서버가 혼잡합니다. 잠시 후에 다시 시도해주세요.")
+                    setLoading(null);
+                    return;
                 }
             
             console.log("사용가능한 서버: ", select_r.data.server_ip)
@@ -56,11 +62,10 @@ const ConversationScreen = () => {
               navigation.navigate("IdealTypeImg", { simUri: response.data.simUrl });
             }
         } catch (error) {
-            console.error('request failed:', error.message);
             setLoading(null);
-        } finally {
-            setLoading(false);
-        }
+            console.error('request failed:', error.message);
+        } 
+        setLoading(false);
     };
     
     return(
@@ -92,12 +97,14 @@ const ConversationScreen = () => {
                 </Text>
                 
                 <View style={styles.selectBox}>
-                <TouchableOpacity style={styles.select}>
+                <TouchableOpacity style={[styles.select, gender === "male" && styles.buttonSelected]}
+                    onPress={() => setGender('male')}>
                     <Text style={styles.selectText}>
                         남성
                     </Text>            
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.select}>
+                <TouchableOpacity style={[styles.select, gender === "female" && styles.buttonSelected]}
+                    onPress={() => setGender('female')}>
                     <Text style={styles.selectText}>
                          여성
                     </Text>            
@@ -215,7 +222,7 @@ const styles = StyleSheet.create({
     },
 
     select:{paddingTop:10,
-        backgroundColor: '#FFB89A',
+        backgroundColor: '#ccc',
         borderRadius: 23, 
         width: '35%',
         height: 55, 
@@ -225,6 +232,9 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         alignSelf: 'center',
         marginHorizontal:15
+    },
+    buttonSelected:{
+        backgroundColor: '#FFB89A'
     },
     selectText:{
         marginTop:8,
