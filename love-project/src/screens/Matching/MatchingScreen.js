@@ -64,49 +64,51 @@ const MatchingScreen = () => {
     return(
     <ScrollView>
     <View style={styles.container}>
-            <View style={styles.header}>
-                <View style={styles.menu}>                   
-                <Icon name="menu" size={40} color="black"/>
-                </View> 
-                                
-                <Text style={styles.headerText}>소개팅 매칭</Text>  
-                
-                <View style={styles.check}>                    
-                <Icon name="check" size={40} color="black"/>
-                </View>
+        <View style={styles.header}>
+            <View style={styles.menu}>                   
+            <Icon name="menu" size={40} color="black"/>
+            </View> 
+                            
+            <Text style={styles.headerText}>소개팅 매칭</Text>  
+            
+            <View style={styles.check}>                    
+            <Icon name="check" size={40} color="black"/>
             </View>
+        </View>
 
-            <Text style={styles.main}>
-                나와 맞는 사람을{'\n'}만나보세요!
+        <Text style={styles.main}>
+            나와 맞는 사람을{'\n'}만나보세요!
+        </Text>
+        
+        <TouchableOpacity style={styles.heartBox} onPress={() => {loadMatching();}}>
+        <Animated.View style={{ transform: [{ scale: scaleValue }] }}>
+            <Font style={styles.heart}                    
+            name={liked ? 'heart' : 'heart-o'} 
+            size={250} 
+            color={liked ? 'red' : 'black'} 
+            />
+        </Animated.View>
+            
+            <Text style={styles.heartText}>
+            매칭잡기!
+            </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.information}>
+            <Text style={styles.informationText}>
+                나의 정보
             </Text>
             
-            <TouchableOpacity style={styles.heartBox} onPress={() => {loadMatching();}}>
-            <Animated.View style={{ transform: [{ scale: scaleValue }] }}>
-                <Font style={styles.heart}                    
-                name={liked ? 'heart' : 'heart-o'} 
-                size={250} 
-                color={liked ? 'red' : 'black'} 
-                />
-            </Animated.View>
-                <Text style={styles.heartText}>
-                매칭잡기!
-                </Text>
-            </TouchableOpacity>
+            <Text style={styles.informText}>
+                MBTI: ISTP{'\n'}
+                나이: 25{'\n'}
+                지역: 서울{'\n'}
+            </Text>
+        </TouchableOpacity>
 
-            <TouchableOpacity style={styles.information}>
-                <Text style={styles.informationText}>
-                    나의 정보
-                </Text>
-                <Text style={styles.informText}>
-                    MBTI: ISTP{'\n'}
-                    나이: 25{'\n'}
-                    지역: 서울{'\n'}
-                </Text>
-            </TouchableOpacity>
-
-            <Text style={styles.text}>
-                나의 정보를 바탕으로 매칭돼요!
-            </Text>                           
+        <Text style={styles.text}>
+            나의 정보를 바탕으로 매칭돼요!
+        </Text>                           
      </View>
     </ScrollView>
                 );
