@@ -1,0 +1,141 @@
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import MainScreen from './src/screens/MainScreen';
+import SplashScreenComponent from './src/screens/SplashScreen';
+import CoordinationScreen from './src/screens/CoordinationScreen';
+import ConversationScreen from './src/screens/Simulation/ConversationScreen';
+import LoginScreen from './src/screens/LoginScreen';
+import MatchingScreen from './src/screens/Matching/MatchingScreen';
+import MatchingChatScreen from './src/screens/Matching/MatchingChatScreen';
+import ProfileScreen from './src/screens/Profile/ProfileScreen';
+import AvatarScreen from './src/screens/Profile/AvatarScreen';
+import SettingScreen from './src/screens/SettingScreen';
+import SignUpScreen from './src/screens/SignUpScreen';
+import IdealTypeImg from './src/screens/Simulation/IdealTypeImg';
+import IdealTypeSet from './src/screens/Simulation/IdealTypeSet';
+import MyCharacter from './src/screens/Profile/MyCharacter';
+import TabBar from './src/components/TabBar';
+import MatchingList from './src/screens/Matching/MatchingList';
+import AIchat from './src/screens/Simulation/AIchat.js';
+import AssistantSelect from './src/screens/Simulation/AssistantSelect';
+import Login from './src/screens/Login.js';
+
+const Stack = createStackNavigator(); // 스택 내비게이션 생성
+
+const App = () => {
+  return (
+    <MainNavigator />
+  );
+};
+
+const MainNavigator = () => {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator
+        initialRouteName="SplashScreen" // 초기 화면을 스플래시 스크린으로 설정
+        screenOptions={{
+          headerShown: true, // 모든 화면에서 헤더 보이기
+        }}
+      >
+        <Stack.Screen
+          name="SplashScreen"
+          component={SplashScreenComponent} // 스플래시 스크린 추가
+          options={{ headerShown: false}} // 헤더 숨기기
+        />
+        <Stack.Screen
+          name="LoginScreen"
+          component={LoginScreen} // 로그인 화면 추가
+          options={{ headerShown: false}}
+        />
+        <Stack.Screen
+          name="Login"
+          component={Login} // 임시 로그인 화면 정식버전 삭제 할 것
+          options={{ headerShown: false}}
+        />
+        <Stack.Screen
+          name="SignUpScreen"
+          component={SignUpScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="MainScreen"
+          component={TabBar}
+          options={{ headerShown: false, headerTitle: '메인 화면', headerTitleAlign: 'center' }}
+        />
+        <Stack.Screen
+          name="ProfileScreen"
+          component={ProfileScreen}
+          options={{ headerShown: false}}
+        />
+        <Stack.Screen
+          name="SettingScreen"
+          component={SettingScreen}
+          options={{ headerTitle: '설정 화면', headerTitleAlign: 'center' }}
+        />
+        <Stack.Screen
+          name="MatchingList"
+          component={MatchingList}
+          options={{ headerTitle: '매칭 화면', headerTitleAlign: 'center' }}
+        />
+        <Stack.Screen
+          name="MatchingScreen"
+          component={MatchingScreen}
+          options={{ headerTitle: '매칭 화면', headerTitleAlign: 'center' }}
+        />
+        <Stack.Screen
+          name="MatchingChatScreen"
+          component={MatchingChatScreen}
+          options={{ headerTitle: '코디 화면', headerTitleAlign: 'center' }}
+        />
+        <Stack.Screen
+          name="ConversationScreen"
+          component={ConversationScreen}
+          options={{ headerTitle: 'AI 대화 시뮬레이션 화면', headerTitleAlign: 'center' }}
+        />
+        <Stack.Screen
+          name="CoordinationScreen"
+          component={CoordinationScreen}
+          options={{ headerTitle: '코디 화면', headerTitleAlign: 'center' }}
+        />
+        <Stack.Screen
+          name="IdealTypeImg"
+          component={IdealTypeImg}
+          options={{ headerTitle: '이상형 이미지 생성 화면', headerTitleAlign: 'center' }}
+        />
+        <Stack.Screen
+          name="IdealTypeSet"
+          component={IdealTypeSet}
+          options={{ headerTitle: '이상형 이미지 설정 화면', headerTitleAlign: 'center' }}
+        />
+        <Stack.Screen
+          name="MyCharacter"
+          component={MyCharacter}
+          options={{ headerTitle: '캐릭터 생성', headerTitleAlign: 'center' }}
+        />
+        <Stack.Screen
+          name="AvatarScreen"
+          component={AvatarScreen}
+          options={{ headerTitle: '아바타 생성', headerTitleAlign: 'center' }}
+        />
+        <Stack.Screen
+          name="AIchat"
+          component={AIchat}
+          options={{ headerTitle: '챗봇과 채팅', headerTitleAlign: 'center' }}
+        />
+        <Stack.Screen
+          name="AssistantSelect"
+          component={AssistantSelect}
+          options={{ headerTitle: '챗봇 선택', headerTitleAlign: 'center' }}
+        />
+        <Stack.Screen
+          name="TabBar"
+          component={TabBar}
+          options={{ headerTitle: '', headerTitleAlign: 'center' }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+};
+
+export default App;
