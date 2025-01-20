@@ -71,11 +71,17 @@ const ConversationScreen = () => {
     >
         <ScrollView>       
             <View style={styles.container}>
-                <Text style={styles.header}>                    
-                    <Icon name="menu" size={40} color="black" />                
-                    <Text style={styles.headerText}>               AI 대화 연습               </Text>  
-                    <Icon name="check" size={40} color="black" />
-                </Text>
+                <View style={styles.header}>
+                    <View style={styles.menu}>                   
+                    <Icon name="menu" size={40} color="black"/>
+                    </View> 
+                                   
+                    <Text style={styles.headerText}>AI 대화 연습</Text>  
+                    
+                    <View style={styles.check}>                    
+                    <Icon name="check" size={40} color="black"/>
+                    </View>
+                </View>
                 
                 <Text style={styles.main}>
                     AI와 대화를 시작하기 전에 {'\n'}
@@ -149,6 +155,20 @@ const styles = StyleSheet.create({
         alignItems: 'center',    
       },
 
+    menu: {
+        position: 'absolute', // 절대 위치 지정
+        top: 15, // 상단에서 50px
+        left: 10, // 왼쪽에서 20px
+        width:'20%'
+    },
+
+    check: {
+        position: 'absolute', // 절대 위치 지정
+        top: 15, // 상단에서 50px
+        right: -20, // 왼쪽에서 20px
+        width:'20%'
+    },
+
     header: { 
         backgroundColor: '#FFF0F0',
         marginBottom: 20, 
@@ -158,16 +178,20 @@ const styles = StyleSheet.create({
         height: 70,
         flexDirection: 'row', // Arrange children in a row
         alignItems: 'center', // Vertically center all items
-        justifyContent: 'space-between',
+        justifyContent: 'center',
         textAlign:'center', 
+        alignSelf: 'center',
     },
 
     headerText: {
+        position: 'absolute',
         textAlign: 'center', // Center text horizontally within its space
-        flex: 1, // Take up remaining space between the icons 
         color : 'black',
         alignSelf: 'center',
-        fontSize:26,       
+        justifyContent: 'center',
+        fontSize:26,  
+        width:'100%',
+        marginTop:15     
     },
     
     main: { fontSize: 24,
@@ -183,8 +207,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold', 
         marginBottom: 20, 
         color : '#FFB89A', 
-        textAlign:'center', 
-        fontWeight: 'bold',
+        textAlign:'center',
         alignSelf: 'center'
     },
     selectBox:{
@@ -204,6 +227,7 @@ const styles = StyleSheet.create({
         marginHorizontal:15
     },
     selectText:{
+        marginTop:8,
         fontSize:20,
         color : 'white', 
         width: '80%',
@@ -211,7 +235,8 @@ const styles = StyleSheet.create({
         alignItems: 'center', 
         textAlign:'center', 
         fontWeight: 'bold',
-        alignSelf: 'center'
+        alignSelf: 'center',
+        justifyContent: 'center',
     },
 
     textBox: {
@@ -253,7 +278,7 @@ const styles = StyleSheet.create({
     button2: {paddingTop:15,
         backgroundColor: '#FFB89A',
         borderRadius: 23, 
-        width: '70%',
+        width: '75%',
         height: 60, 
         alignItems: 'center', 
         marginBottom: 10, 
