@@ -1,8 +1,6 @@
 import React from 'react';
-
 import { Image, View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-
 
 const MainScreen = () => {
   
@@ -21,13 +19,12 @@ const MainScreen = () => {
                         }}
         />
 
-
         <Text style={styles.headerText}>임재현{'\n'}
           <Text style={styles.headerText2}>VIP고객</Text>
         </Text>
       </View>
-      <TouchableOpacity style={styles.main} onPress={() => navigation.navigate("MatchingScreen")}>
-              
+
+      <TouchableOpacity style={styles.main} onPress={() => navigation.navigate("MatchingScreen")}>             
         <Text style={styles.mainText}>임재현님 주변에{'\n'}
           300명의 사용자가 있습니다!{'\n'}{'\n'}
           클릭하시면{'\n'}
@@ -37,15 +34,13 @@ const MainScreen = () => {
       </TouchableOpacity>
            
       <View>
-        <Text style={styles.horizontalLine} >
-          
+        <Text style={styles.horizontalLine} >         
         </Text>
       </View>
 
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("MatchingScreen")}>
-        
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("MatchingScreen")}>      
         <View>
-          <Image source={require('../../assets/MainScreen/mat.jpg')} 
+          <Image source={require('../../assets/MainScreen/matching.jpg')} 
               style={{width : 70, 
                       height : 70,
                       borderRadius: 10,
