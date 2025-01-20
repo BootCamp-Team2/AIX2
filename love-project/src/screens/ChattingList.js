@@ -1,6 +1,6 @@
 // src/ChatRoomList.js
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
+import { ScrollView, View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 
 const ChattingList = () => {
     const [chatRooms] = useState([
@@ -15,25 +15,27 @@ const ChattingList = () => {
     };
 
     return (
-        <View style={styles.container}>
-            <View style={styles.roomList}>
-                <Text style={styles.title}>채팅방 목록</Text>
-                <FlatList
-                    data={chatRooms}
-                    keyExtractor={(item) => item.id.toString()}
-                    renderItem={({ item }) => (
-                        <TouchableOpacity
-                            onPress={() => handleRoomClick(item)}
-                            style={styles.roomItem}
-                        >
-                            <Text style={styles.roomName}>{item.name}</Text>
-                            <Text>{item.lastMessage}</Text>
-                            <Text style={styles.timestamp}>{item.timestamp}</Text>
-                        </TouchableOpacity>
-                    )}
-                />
+        <ScrollView>
+            <View style={styles.container}>
+                <View style={styles.roomList}>
+                    <Text style={styles.title}>채팅방 목록</Text>
+                    <FlatList
+                        data={chatRooms}
+                        keyExtractor={(item) => item.id.toString()}
+                        renderItem={({ item }) => (
+                            <TouchableOpacity
+                                onPress={() => handleRoomClick(item)}
+                                style={styles.roomItem}
+                            >
+                                <Text style={styles.roomName}>{item.name}</Text>
+                                <Text>{item.lastMessage}</Text>
+                                <Text style={styles.timestamp}>{item.timestamp}</Text>
+                            </TouchableOpacity>
+                        )}
+                    />
+                </View>
             </View>
-        </View>
+        </ScrollView>
     );
 };
 
