@@ -1,42 +1,45 @@
-import React, { useState }  from 'react';
-import {Image, FlatList, View, Text, TouchableOpacity, StyleSheet, Platform, Modal, ScrollView, Alert } from 'react-native';
+import React from 'react';
+import { Image, FlatList, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 
 const MatchingList = () => {
-    const navigation = useNavigation();
-    const [liked, setLiked] = useState(false);
+    const navigation = useNavigation(); // 화면 전환에 사용
+    const route = useRoute(); // 전달받은 추천 리스트
+    const { recommend } = route.params; // 추천 리스트 데이터 추출
 
-    const route = useRoute();
-    const { recommend } = route.params;
-
-    // console.log(recommend)
-
-    return(
-    <ScrollView style={styles.container}>
-    <View>
-        <Text style={styles.top}>
-            <Icon name="menu" size={40} color="black" />                                      
-                         
-            <Text style={styles.topText}>                소개팅 리스트              </Text>                       
-                              
-            <Icon name="check" size={40} color="black" />               
-        </Text>
-        <FlatList     
+    return (
+        <FlatList
             data={recommend}
-            keyExtractor={(item) => item.uid}
+            keyExtractor={(item) => item.uid ? item.uid.toString() : Math.random().toString()} // uid가 없으면 임의의 숫자를 사용
+            ListHeaderComponent={
+                <View style={styles.header}>
+                    <Text style={styles.top}>
+                        <Icon name="menu" size={40} color="black" />
+                        <Text style={styles.topText}>소개팅 리스트</Text>
+                        <Icon name="check" size={40} color="black" />
+                    </Text>
+                </View>
+            }
             renderItem={({ item }) => (
-                <View style={styles.card}>
+                <TouchableOpacity
+                    style={styles.card}
+                    onPress={() => {
+                        // 프로필 클릭 시 채팅 화면으로 이동
+                        navigation.navigate('ChatchatScreen', { partner: item });
+                    }}
+                >
                     <View style={styles.profile}>
                         <Image
-                            // source={{uri: item.profileImg}} // 인터넷에서 이미지 불러올때
-                            source={item.myGender == "남성" 
-                                ? require('../../../assets/default-profile-male.png') 
-                                : require('../../../assets/default-profile-female.png')}
+                            source={
+                                item.myGender === '남성'
+                                    ? require('../../../assets/default-profile-male.png')
+                                    : require('../../../assets/default-profile-female.png')
+                            }
                             style={styles.profileImg}
-                            defaultSource={require('../../../assets/default-profile.png')} // 인터넷에서 이미지 불러오기 전까지 보여줄 이미지
+                            defaultSource={require('../../../assets/default-profile.png')}
                         />
-                        <Text style={styles.name}>{item.name??"ㅇㅇㅇ"}</Text>
+                        <Text style={styles.name}>{item.name ?? 'ㅇㅇㅇ'}</Text>
                     </View>
 
                     <View style={styles.box}>
@@ -44,108 +47,68 @@ const MatchingList = () => {
                             자연스러운 만남을 추구합니다~ 서로 얘기 나누며 친해져 가요~~
                         </Text>
                     </View>
-
-
-
-                    {/* <View style={styles.info}>
-                        <Text>{item.myGender}</Text> 
-                        <Text>{item.myMBTI}</Text>
-                        <Text>{item.myHeight}</Text>
-                        <Text>{item.myAppearance}</Text>
-                    </View> */}
-                </View>
+                </TouchableOpacity>
             )}
             ItemSeparatorComponent={() => <View style={styles.separator} />}
-            horizontal={false} // 수평으로 배열
-        />                        
-    </View>
-    </ScrollView>
+            horizontal={false} // 수평 배열 비활성화
+        />
     );
 };
-            
+
 const styles = StyleSheet.create({
-
-    container:{
+    container: {
         flex: 1,
-    }, 
-
-    img:{},
-
-    box:{
-        // backgroundColor: 'white',
-        width : '68%',
-        height: 100, 
-        textAlign:'center',
-        justifyContent: 'center',
-
-    },    
-
-    boxText:{
-        // color:'white'
-        fontSize: 17,
-        
     },
-    
+    header: {
+        backgroundColor: '#B2E0F9',
+        padding: 10,
+        marginBottom: 30,
+    },
     top: {
-        backgroundColor: '#B2E0F9', 
-        alignSelf: 'center',
-        marginBottom: 30,  
-        padding:10, 
-        textAlign:'center', 
-        width: '100%',  
-        height: 70,
-
-        flexDirection: 'row', // Arrange children in a row
-        alignItems: 'center', // Vertically center all items
+        flexDirection: 'row',
+        alignItems: 'center',
         justifyContent: 'space-between',
-    },                
-
-    topText: { 
-        color : 'black',
-        alignSelf: 'center',
-        fontSize:24,        
-        textAlign:'center',                    
-        flex: 1, // Take up remaining space between the icons                             
     },
-
-    item: {
-        padding: 16,
-        backgroundColor: '#FF9AAB',
-        borderRadius: 8,
-        marginRight: 2
+    topText: {
+        color: 'black',
+        fontSize: 24,
+        textAlign: 'center',
+        flex: 1,
     },
-
+    box: {
+        width: '68%',
+        height: 100,
+        textAlign: 'center',
+        justifyContent: 'center',
+    },
+    boxText: {
+        fontSize: 17,
+    },
     separator: {
         marginTop: 5,
         marginBottom: 5,
         height: 1,
         backgroundColor: '#ccc',
     },
-
     profile: {
-        flexDirection: "column",
-        alignItems: "center",
+        flexDirection: 'column',
+        alignItems: 'center',
         marginLeft: 30,
         marginRight: 30,
     },
-
     card: {
-        flexDirection: 'row', // 세로 방향 정렬
-        alignItems: 'center', // 가로 중앙 정렬
+        flexDirection: 'row',
+        alignItems: 'center',
         backgroundColor: '#B2E0F9',
         borderRadius: 10,
         padding: 10,
-        marginHorizontal: 10, // 좌우 간격
+        marginHorizontal: 10,
     },
-
     profileImg: {
         width: 60,
         height: 60,
-        borderRadius: 40, // 동그란 이미지
+        borderRadius: 40,
         marginBottom: 12,
-    },
-    info: {
-        alignItems: 'flex-start', // 텍스트 중앙 정렬
     },
     name: {
         fontSize: 18,
