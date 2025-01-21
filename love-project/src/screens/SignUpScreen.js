@@ -58,99 +58,85 @@ const SignUpScreen = () => {
   const handleCheckDuplicate = async () => {
     try {
       const isDuplicate = await checkID(email);
-      setIsIDChecked(true); // 중복 확인 버튼이 클릭되었음을 표시
+      setIsIDChecked(true); // 중복 확인 버튼 클릭 표시
       setIsDuplicateID(isDuplicate); // 중복 여부 상태 업데이트
-      setEmailError(isDuplicateID);
-
+  
+      // 중복 여부에 따라 에러 메시지 설정
       if (isDuplicate) {
         setEmailError("중복된 ID입니다.");
       } else {
-        setEmailError("중복되지 않은 ID입니다."); // (수정) 나중에 초록색으로 출력
+        setEmailError("중복되지 않은 ID입니다."); // 나중에 초록색으로 출력
       }
     } catch (error) {
       setEmailError('ID 중복 확인 오류');
       console.error(error);
     }
   };
+  
 
-  const handleConfirmPassword = (text) => { // 비밀번호 일치 여부 즉시 확인
+const handleConfirmPassword = (text) => { // 비밀번호 일치 여부 즉시 확인
     setConfirmPassword(text);
-    if (text !== password) {
-      setConfirmPasswordError("비밀번호가 일치하지 않습니다.");
-    } else {
-      setConfirmPasswordError('');
-    }
-  };
+    setConfirmPasswordError(text !== password ? "비밀번호가 일치하지 않습니다." : '');
+};
 
-  const handleSignUp = async () => {  // 회원가입 버튼 핸들러
-    console.log("MBTI", MBTI);
+const handleSignUp = async () => {  // 회원가입 버튼 핸들러
+  if (!email || !password || !confirmPassword || !MBTI || !nickname || !hobby || !region || !birthDate) {
+     setFormError("모든 항목을 입력해 주세요.");
+     return;
+  }
+  
 
-    if (!email || !password || !confirmPassword || !MBTI || !nickname || !hobby || !region || !birthDate) {
-      setFormError("모든 항목을 입력해 주세요.");
-      return;
-    }
-
-    let hasError = false; // 유효성 검사 // 에러 상태 플러그
-    if (!emailRegex.test(email)) {
-      setEmailError("유효한 이메일 주소를 입력하세요.");
-      hasError = true; // 에러 발생
-    } else {
-      setEmailError('');
-    }
-    if (!passwordRegex.test(password)) {
-      setPasswordError("비밀번호는 8자 이상, 하나 이상의 숫자, 대소문자, 특수 문자를 포함해야 합니다.");
-      hasError = true;
-    } else {
-      setPasswordError('');
-    }
-
-    if (password !== confirmPassword) { // 비밀번호 재확인
-      setConfirmPasswordError('비밀번호가 일치하지 않습니다.');
-      hasError = true;
-    } else {
-      setConfirmPasswordError('');
-    }
-
-    if (!isIDChecked) { // ID 중복 확인 여부 체크
-      setEmailError("ID 중복 확인을 해주세요.");  // 중복 확인을 클릭하지 않은 경우 메시지 표시
-      return;
-    }
-
-    if (isDuplicateID) {// ID 중복된 경우 회원가입 불가
-      setEmailError("중복된 ID입니다. 다른 ID를 입력하세요.");  // 중복된 ID일 경우 메시지 표시
-      return;
-    }
-
-    if (hasError) {// 에러가 있으면 회원가입 처리 중단
-      return;
-    }
-    console.log(email);
-    
-    const formattedBirthDate = birthDate.toISOString().split('T')[0];// birthDate를 YYYY-MM-DD 형식으로 변환
-    console.log(formattedBirthDate);
-
-    try { // 서버로 회원가입 데이터 전송 후 응답 대기
-      const response = await SignUpUser(email, password, nickname, formattedBirthDate, MBTI, hobby, region);
-      console.log(response.success);
-
-      if (response.success) {
-        console.log('회원가입 성공');
-        setEmailError('');
-        setPasswordError('');
-        setFormError('');
-        setConfirmPasswordError('');
+  let hasError = false; // 유효성 검사 플래그
+  if (!emailRegex.test(email)) {
+     setEmailError("유효한 이메일 주소를 입력하세요.");
+     hasError = true;
+  } else {
+     setEmailError('');
+  }
+  if (!passwordRegex.test(password)) {
+     setPasswordError("비밀번호는 8자 이상, 하나 이상의 숫자, 대소문자, 특수 문자를 포함해야 합니다.");
+     hasError = true;
+  } else {
+     setPasswordError('');
+  }
+  
+  if (password !== confirmPassword) { // 비밀번호 재확인
+     setConfirmPasswordError('비밀번호가 일치하지 않습니다.');
+     hasError = true;
+  } else {
+     setConfirmPasswordError('');
+  }
+  
+  if (!isIDChecked) { // ID 중복 확인 여부 체크
+     setEmailError("ID 중복 확인을 해주세요.");  // 중복 확인을 클릭하지 않은 경우 메시지 표시
+     return;
+  }
+  
+  if (isDuplicateID) { // ID 중복된 경우 회원가입 불가
+     setEmailError("중복된 ID입니다. 다른 ID를 입력하세요.");  // 중복된 ID일 경우 메시지 표시
+     return;
+  }
+  
+  if (hasError) { // 에러가 있으면 회원가입 처리 중단
+     return;
+  }
+  
+  const formattedBirthDate = birthDate.toISOString().split('T')[0]; // birthDate를 YYYY-MM-DD 형식으로 변환
+  
+  try { // 서버로 회원가입 데이터 전송 후 응답 대기
+     const response = await SignUpUser(email, password, nickname, formattedBirthDate, MBTI, hobby, region);
+     if (response) {
         navigation.navigate("LoginScreen", { screen: 'LoginScreen' }); // 로그인 화면 이동
-      } else {
-        console.log(response.message);
-        if(response.success === false) {
-          setFormError(response.message); // 서버에서 받은 실패 메시지를 formError에 저장
-        } else setFormError('회원가입에 실패했습니다. 다시 시도해 주세요.');
-      }
-    } catch (error) {   // 오류 발생시 에러 메시지 출력
-      setFormError('회원가입 처리 중 오류가 발생했습니다.');
-      console.error(error);
-    }
+     } else {
+        setFormError(response.message || '회원가입에 실패했습니다. 다시 시도해 주세요.'); // 서버에서 받은 실패 메시지를 formError에 저장
+     }
+  } catch (error) { // 오류 발생시 에러 메시지 출력
+     setFormError('회원가입 처리 중 오류가 발생했습니다.');
+     console.error(error);
+  }
   };
+  
+
 
   const onChange = (event, selectedDate) => { // 날짜 선택기 핸들러
     const birthDate = selectedDate || birthDate;  // 선택된 날짜 또는 기존 날짜
