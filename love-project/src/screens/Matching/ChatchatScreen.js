@@ -19,7 +19,7 @@ const ChatScreen = ({ route }) => {
     setSocket(newSocket);
 
       // WebSocket 메시지 수신 처리
-      newSocket.onmessage = (event) => {
+      newSocket.onmessage = async (event) => {
         const messageData = JSON.parse(event.data);
         console.log("Received message:", messageData);
   
@@ -40,6 +40,14 @@ const ChatScreen = ({ route }) => {
           setMessages((previousMessages) =>
             GiftedChat.append(previousMessages, [formattedMessage])
           );
+
+          const chatData = new FormData();
+          chatData.append("userUID", userID);
+          chatData.append("partnerUID", partnerID);
+
+          const upChat = await axios.post("http://192.168.1.3:3000/update-chat", chatData, {
+            headers: { 'Content-Type': 'multipart/form-data', },
+          });
         };
       };
 
@@ -75,7 +83,7 @@ const ChatScreen = ({ route }) => {
     return () => clearTimeout(timeout);
   }, [isLoading]);
 
-  const onSend = (newMessages = []) => {
+  const onSend = async (newMessages = []) => {
     const message = newMessages[0];
     const messageToSend = {
       senderUID: userID,
@@ -92,6 +100,14 @@ const ChatScreen = ({ route }) => {
 
     print("checking: ", newMessages);
     setMessages((previousMessages) => GiftedChat.append(previousMessages, newMessages));
+
+    const chatData = new FormData();
+      chatData.append("userUID", userID);
+      chatData.append("partnerUID", partnerID);
+
+      const upChat = await axios.post("http://192.168.1.3:3000/update-chat", chatData, {
+        headers: { 'Content-Type': 'multipart/form-data', },
+    });
   };
 
   if (isLoading) {
