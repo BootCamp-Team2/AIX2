@@ -3,7 +3,7 @@ package com.example.love_chat.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import com.example.love_chat.model.Message;
+import com.example.love_chat.model.UserChatRecord;
 import com.example.love_chat.service.MessageService;
 
 import java.util.List;
@@ -22,7 +22,7 @@ public class MessageController {
      * @return 저장된 메시지
      */
     @PostMapping
-    public Message sendMessage(@RequestBody Message message) {
+    public UserChatRecord sendMessage(@RequestBody UserChatRecord message) {
         // 메시지 저장
         return messageService.saveMessage(message);
     }
@@ -34,7 +34,7 @@ public class MessageController {
      * @return 해당 사용자의 모든 메시지 목록
      */
     @GetMapping("/{userUID}")
-    public List<Message> getMessages(@PathVariable String userUID) {
+    public List<UserChatRecord> getMessages(@PathVariable String userUID) {
         // 해당 사용자의 메시지 목록 반환
         return messageService.getMessagesForUser(userUID);
     }
@@ -47,7 +47,7 @@ public class MessageController {
      * @return 두 사용자 간의 메시지 목록
      */
     @GetMapping("/{userUID}/chat/{recipientUID}")
-    public List<Message> getChatMessages(
+    public List<UserChatRecord> getChatMessages(
             @PathVariable String userUID,
             @PathVariable String recipientUID) {
         // 두 사용자 간의 메시지 반환

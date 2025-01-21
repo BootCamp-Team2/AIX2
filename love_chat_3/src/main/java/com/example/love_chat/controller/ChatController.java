@@ -1,6 +1,6 @@
 package com.example.love_chat.controller;
 
-import com.example.love_chat.model.Message;
+import com.example.love_chat.model.UserChatRecord;
 import com.example.love_chat.service.ChatService;
 import com.example.love_chat.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +26,7 @@ public class ChatController {
 
     // 사용자 메시지를 받아서 Flask 서버와 통신하고, 응답 메시지를 반환하는 메서드
     @PostMapping
-    public Message sendMessage(@RequestBody Message message) {
+    public UserChatRecord sendMessage(@RequestBody UserChatRecord message) {
         // 사용자 메시지 저장 (ChatService, MessageService 두 군데에 저장)
         chatService.saveMessage(message);
         messageService.saveMessage(message); // MessageService로 메시지 저장
@@ -50,7 +50,7 @@ public class ChatController {
             String aiResponse = response.getBody();
 
             // AI의 응답 메시지를 새로운 Message 객체에 담고 저장
-            Message aiMessage = new Message();
+            UserChatRecord aiMessage = new UserChatRecord();
             aiMessage.setContent(aiResponse); // AI 응답 설정
             aiMessage.setSender("AI"); // 응답 발신자 설정
             aiMessage.setReceiver("User"); // 응답 수신자 설정
@@ -62,7 +62,7 @@ public class ChatController {
 
         } catch (Exception e) {
             // Flask 서버와의 통신에 실패한 경우
-            Message errorMessage = new Message();
+            UserChatRecord errorMessage = new UserChatRecord();
             errorMessage.setContent("Error communicating with the chatbot server: " + e.getMessage());
             errorMessage.setSender("System"); // 오류 발생 시 발신자를 "System"으로 설정
             errorMessage.setReceiver("User"); // 오류 메시지 수신자 설정
@@ -73,7 +73,7 @@ public class ChatController {
 
     // 사용자 이름을 통해 해당 사용자의 메시지 목록을 불러오는 메서드
     @GetMapping("/{username}")
-    public List<Message> getMessages(@PathVariable String username) {
+    public List<UserChatRecord> getMessages(@PathVariable String username) {
         // 사용자의 메시지를 불러옴
         return chatService.getMessagesForUser(username);
     }

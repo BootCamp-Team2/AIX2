@@ -2,7 +2,7 @@ package com.example.love_chat.config;
 
 import java.util.Map;
 
-import com.example.love_chat.model.Message;
+import com.example.love_chat.model.UserChatRecord;
 import com.example.love_chat.service.MessageService;
 import com.fasterxml.jackson.databind.ObjectMapper; // JSON 변환을 위한 라이브러리
 
@@ -62,7 +62,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         String chatMessage = (String) map.get("content");// 채팅 내용
 
         // 메시지 저장
-        Message savedMessage = new Message();
+        UserChatRecord savedMessage = new UserChatRecord();
         savedMessage.setSender(senderUID);
         savedMessage.setReceiver(recipientUID);
         savedMessage.setContent(chatMessage);
