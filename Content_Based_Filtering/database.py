@@ -79,7 +79,7 @@ def generate_recommend(userIdeal):
 # MySQL Server 연결
 def get_db_connection():
     return mysql.connector.connect(
-        host="192.168.1.4",
+        host="192.168.1.3",
         user="root",
         password="AIX2_1234",
         database="idealDatabase"
@@ -169,4 +169,4 @@ async def getMyInfo(uid: str = Form(...)):
             
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("database:app", host="192.168.1.4", port=2000)
+    uvicorn.run("database:app", host="192.168.1.3", port=2000)
