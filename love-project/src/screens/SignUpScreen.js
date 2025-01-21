@@ -399,12 +399,14 @@ const Styles = StyleSheet.create({
     paddingLeft: 15,
     paddingRight: 15,
     borderRadius: 7,
-    backgroundColor: '#d5e3e2',
-    marginRight: '55%'
+    backgroundColor: '#fa9393',
+    marginRight: '55%',
+    marginTop: 10,
+    marginBottom: 15
   },
   dateText: {
     fontSize: 16,
-    color: '#2F4F4F',
+    color: '#fff',
   },
   iosBirthDateContainer: {
     flexDirection: 'row', 

@@ -16,6 +16,9 @@ import IdealTypeImg from './src/screens/Simulation/IdealTypeImg';
 import IdealTypeSet from './src/screens/Simulation/IdealTypeSet';
 import MyCharacter from './src/screens/Profile/MyCharacter';
 import TabBar from './src/components/TabBar';
+import MatchingList from './src/screens/Matching/MatchingList';
+import ChatchatScreen from './src/screens/Matching/ChatchatScreen'; // ChatchatScreen 임포트
+import ChattingList from './src/screens/ChattingList';
 
 const Stack = createStackNavigator(); // 스택 내비게이션 생성
 
@@ -42,7 +45,7 @@ const MainNavigator = () => {
         <Stack.Screen
           name="LoginScreen"
           component={LoginScreen} // 로그인 화면 추가
-          options={{ headerShown: false}}
+          options={{ headerShown: false }}
         />
         
         <Stack.Screen
@@ -58,12 +61,17 @@ const MainNavigator = () => {
         <Stack.Screen
           name="ProfileScreen"
           component={ProfileScreen}
-          options={{ headerShown: false}}
+          options={{ headerShown: false }}
         />
         <Stack.Screen
           name="SettingScreen"
           component={SettingScreen}
           options={{ headerTitle: '설정 화면', headerTitleAlign: 'center' }}
+        />
+        <Stack.Screen
+          name="MatchingList"
+          component={MatchingList}
+          options={{ headerTitle: '매칭 화면', headerTitleAlign: 'center' }}
         />
         <Stack.Screen
           name="MatchingScreen"
@@ -110,7 +118,20 @@ const MainNavigator = () => {
           component={TabBar}
           options={{ headerTitle: '', headerTitleAlign: 'center' }}
         />
+        
+        {/* ChatchatScreen을 네비게이터에 추가 */}
+        <Stack.Screen
+          name="ChatchatScreen"
+          component={ChatchatScreen}
+          options={{ headerTitle: '채팅 화면', headerTitleAlign: 'center' }}
+        />
+        <Stack.Screen
+          name="ChattingList"
+          component={ChattingList}
+          options={{ headerTitle: '채팅 화면', headerTitleAlign: 'center' }}
+        />
       </Stack.Navigator>
+      
     </NavigationContainer>
   );
 };

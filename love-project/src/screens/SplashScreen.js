@@ -28,7 +28,7 @@ const SplashScreenComponent = ({ navigation }) => {
     animateHeartBeat();
 
     const timer = setTimeout(() => {
-      navigation.replace('LoginScreen'); // 스플래시가 끝난 후 메인 화면으로 이동
+      navigation.replace('MainScreen'); // 스플래시가 끝난 후 메인 화면으로 이동
     }, 3000); // 시간 늘림
 
     return () => clearTimeout(timer);
