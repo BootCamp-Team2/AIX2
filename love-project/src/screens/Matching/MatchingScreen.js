@@ -28,7 +28,7 @@ const MatchingScreen = () => {
 
         try {
             setLoading(true);
-            const response = await axios.post("http://192.168.1.23:2000/recommend", formData, {
+            const response = await axios.post("http://192.168.1.3:2000/recommend", formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -40,7 +40,7 @@ const MatchingScreen = () => {
                 return;
             }
 
-            console.log(response.data.recommend);
+            // console.log(response.data.recommend);
             navigation.navigate("MatchingList", { recommend: response.data.recommend });
 
         } catch (error) {

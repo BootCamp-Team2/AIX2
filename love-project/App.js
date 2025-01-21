@@ -17,6 +17,10 @@ import IdealTypeSet from './src/screens/Simulation/IdealTypeSet';
 import MyCharacter from './src/screens/Profile/MyCharacter';
 import TabBar from './src/components/TabBar';
 import MatchingList from './src/screens/Matching/MatchingList';
+import AIchat from './src/screens/Simulation/AIchat.js';
+import AssistantSelect from './src/screens/Simulation/AssistantSelect';
+import Login from './src/screens/Login.js';
+import CoachingScreen from './src/screens/Simulation/CoachingScreen.js';
 import ChatchatScreen from './src/screens/Matching/ChatchatScreen'; // ChatchatScreen 임포트
 import ChattingList from './src/screens/ChattingList';
 
@@ -47,7 +51,6 @@ const MainNavigator = () => {
           component={LoginScreen} // 로그인 화면 추가
           options={{ headerShown: false }}
         />
-        
         <Stack.Screen
           name="SignUpScreen"
           component={SignUpScreen}
@@ -114,6 +117,21 @@ const MainNavigator = () => {
           options={{ headerTitle: '아바타 생성', headerTitleAlign: 'center' }}
         />
         <Stack.Screen
+          name="AIchat"
+          component={AIchat}
+          options={{ headerTitle: '챗봇과 채팅', headerTitleAlign: 'center' }}
+        />
+        <Stack.Screen
+          name="AssistantSelect"
+          component={AssistantSelect}
+          options={{ headerTitle: '챗봇 선택', headerTitleAlign: 'center' }}
+        />
+        <Stack.Screen
+          name="CoachingScreen"
+          component={CoachingScreen}
+          options={{ headerTitle: '연애 상담', headerTitleAlign: 'center' }}
+        />
+        <Stack.Screen
           name="TabBar"
           component={TabBar}
           options={{ headerTitle: '', headerTitleAlign: 'center' }}
@@ -131,7 +149,6 @@ const MainNavigator = () => {
           options={{ headerTitle: '채팅 화면', headerTitleAlign: 'center' }}
         />
       </Stack.Navigator>
-      
     </NavigationContainer>
   );
 };

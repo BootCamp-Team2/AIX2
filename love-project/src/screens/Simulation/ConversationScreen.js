@@ -87,7 +87,6 @@ const ConversationScreen = () => {
                     <Icon name="check" size={40} color="black"/>
                     </View>
                 </View>
-                
                 <Text style={styles.main}>
                     AI와 대화를 시작하기 전에 {'\n'}
                     나의 이상형을 만드세요!
@@ -136,9 +135,9 @@ const ConversationScreen = () => {
                         <ActivityIndicator size="large" color="#FFB89A" style={styles.loader} />
                     )}
 
-                <TouchableOpacity style={styles.button2} onPress={() => navigation.navigate("Chatting")}>
+                <TouchableOpacity style={styles.button2} onPress={() => navigation.navigate("AssistantSelect")}>
                     <Text style={styles.button2Text}>
-                                대화 바로가기
+                                AI 대화 바로가기
                     </Text>            
                 </TouchableOpacity>
 
@@ -233,9 +232,11 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         marginHorizontal:15
     },
+  
     buttonSelected:{
         backgroundColor: '#FFB89A'
     },
+  
     selectText:{
         marginTop:8,
         fontSize:20,

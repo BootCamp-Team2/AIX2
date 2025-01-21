@@ -34,3 +34,6 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+# useless
+chatbot\python_file\create_users_db.py

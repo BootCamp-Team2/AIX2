@@ -72,7 +72,6 @@ const SignUpScreen = () => {
       console.error(error);
     }
   };
-  
 
 const handleConfirmPassword = (text) => { // 비밀번호 일치 여부 즉시 확인
     setConfirmPassword(text);
@@ -136,8 +135,6 @@ const handleSignUp = async () => {  // 회원가입 버튼 핸들러
      console.error(error);
   }
   };
-  
-
 
   const onChange = (event, selectedDate) => { // 날짜 선택기 핸들러
     const birthDate = selectedDate || birthDate;  // 선택된 날짜 또는 기존 날짜
