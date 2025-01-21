@@ -12,6 +12,7 @@
     - OpenAI API Key
     - Chat Bot Key 2 가지
     - Dating Coach Key
+    - SECRET_KEY
 ### 수정사항
     - flask 서버 삭제
     - chatbot_server.py -> chatbot_database.py
