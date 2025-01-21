@@ -11,7 +11,7 @@ const SignUpScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [MBTI, setMBTI] = useState('');
+  const [mbti, setmbti] = useState('');
   const [nickname, setNickname] = useState('');
   const [hobby, sethobby] = useState('');
   const [region, setregion] = useState('');
@@ -33,7 +33,7 @@ const SignUpScreen = () => {
       setEmail('');
       setPassword('');
       setConfirmPassword('');
-      setMBTI('');
+      setmbti('');
       setNickname('');
       sethobby('');
       setregion('');
@@ -80,11 +80,12 @@ const handleConfirmPassword = (text) => { // 비밀번호 일치 여부 즉시 �
 };
 
 const handleSignUp = async () => {  // 회원가입 버튼 핸들러
-  if (!email || !password || !confirmPassword || !MBTI || !nickname || !hobby || !region || !birthDate) {
+  if (!email || !password || !confirmPassword || !mbti || !nickname || !hobby || !region || !birthDate) {
      setFormError("모든 항목을 입력해 주세요.");
      return;
   }
   
+ 
 
   let hasError = false; // 유효성 검사 플래그
   if (!emailRegex.test(email)) {
@@ -124,7 +125,7 @@ const handleSignUp = async () => {  // 회원가입 버튼 핸들러
   const formattedBirthDate = birthDate.toISOString().split('T')[0]; // birthDate를 YYYY-MM-DD 형식으로 변환
   
   try { // 서버로 회원가입 데이터 전송 후 응답 대기
-     const response = await SignUpUser(email, password, nickname, formattedBirthDate, MBTI, hobby, region);
+     const response = await SignUpUser(email, password, nickname, formattedBirthDate, hobby, mbti, region);
      if (response) {
         navigation.navigate("LoginScreen", { screen: 'LoginScreen' }); // 로그인 화면 이동
      } else {
@@ -226,10 +227,10 @@ const handleSignUp = async () => {  // 회원가입 버튼 핸들러
               <Text style={Styles.text}>MBTI</Text>
               <TextInput
                 style={Styles.TextInput}
-                onChangeText={setMBTI}
-                placeholder="MBTI"
+                onChangeText={setmbti}
+                placeholder="mbti"
                 placeholderTextColor="#D9D9D9"
-                value={MBTI}
+                value={mbti}
               />
 
               <Text style={Styles.text}>닉네임</Text>
