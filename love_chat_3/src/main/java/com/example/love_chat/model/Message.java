@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-public class UserChatRecord {
+public class Message {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,6 +21,9 @@ public class UserChatRecord {
 
     @Column(nullable = false)
     private LocalDateTime timestamp;
+
+    @Column(nullable = false)
+    private boolean delivered;  // 메시지가 전달되었는지 여부를 추적하는 필드
 
     // Getters and Setters
     public Long getId() {
@@ -61,6 +64,14 @@ public class UserChatRecord {
 
     public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public boolean isDelivered() {
+        return delivered;
+    }
+
+    public void setDelivered(boolean delivered) {
+        this.delivered = delivered;
     }
 
     // 자동으로 timestamp 값을 설정하는 메서드
