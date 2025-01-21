@@ -40,7 +40,7 @@ const MatchingScreen = () => {
                 return;
             }
 
-            console.log(response.data.recommend);
+            // console.log(response.data.recommend);
             navigation.navigate("MatchingList", { recommend: response.data.recommend });
 
         } catch (error) {

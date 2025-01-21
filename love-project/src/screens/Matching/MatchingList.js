@@ -84,12 +84,14 @@ const styles = StyleSheet.create({
     boxText: {
         fontSize: 17,
     },
+  
     separator: {
         marginTop: 5,
         marginBottom: 5,
         height: 1,
         backgroundColor: '#ccc',
     },
+
     profile: {
         flexDirection: 'column',
         alignItems: 'center',
@@ -110,6 +112,7 @@ const styles = StyleSheet.create({
         borderRadius: 40,
         marginBottom: 12,
     },
+  
     name: {
         fontSize: 18,
         fontWeight: 'bold',

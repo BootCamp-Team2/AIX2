@@ -49,7 +49,6 @@ const MainScreen = () => {
                       }}
           />
         </View>
-
           <Text style={styles.textStyle}>
             <Text style={styles.buttonText}>소개팅 매칭{'\n'}
             <Text style={styles.empty}>{'\n'}</Text>  
