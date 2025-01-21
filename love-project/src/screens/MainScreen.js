@@ -1,8 +1,6 @@
 import React from 'react';
-
 import { Image, View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-
 
 const MainScreen = () => {
   
@@ -21,13 +19,12 @@ const MainScreen = () => {
                         }}
         />
 
-
         <Text style={styles.headerText}>임재현{'\n'}
           <Text style={styles.headerText2}>VIP고객</Text>
         </Text>
       </View>
-      <TouchableOpacity style={styles.main} onPress={() => navigation.navigate("MatchingScreen")}>
-              
+
+      <TouchableOpacity style={styles.main} onPress={() => navigation.navigate("MatchingScreen")}>             
         <Text style={styles.mainText}>임재현님 주변에{'\n'}
           300명의 사용자가 있습니다!{'\n'}{'\n'}
           클릭하시면{'\n'}
@@ -37,15 +34,13 @@ const MainScreen = () => {
       </TouchableOpacity>
            
       <View>
-        <Text style={styles.horizontalLine} >
-          
+        <Text style={styles.horizontalLine} >         
         </Text>
       </View>
 
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("MatchingScreen")}>
-        
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("MatchingScreen")}>      
         <View>
-          <Image source={require('../../assets/MainScreen/mat.jpg')} 
+          <Image source={require('../../assets/MainScreen/matching.jpg')} 
               style={{width : 70, 
                       height : 70,
                       borderRadius: 10,
@@ -54,16 +49,16 @@ const MainScreen = () => {
                       }}
           />
         </View>
-        <Text style={styles.textStyle}>
-          <Text style={styles.buttonText}>소개팅 매칭{'\n'}
-          <Text style={styles.empty}>{'\n'}</Text>  
-          <Text style={styles.bottom}>새로운 사람을 만나보세요!</Text>
-        </Text>
+          <Text style={styles.textStyle}>
+            <Text style={styles.buttonText}>소개팅 매칭{'\n'}
+            <Text style={styles.empty}>{'\n'}</Text>  
+            <Text style={styles.bottom}>새로운 사람을 만나보세요!</Text>
+          </Text>
         </Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("ConversationScreen")}>
-      <View>
+        <View>
           <Image source={require('../../assets/MainScreen/couple.jpg')} 
               style={{width : 70, 
                       height : 70,
@@ -73,11 +68,11 @@ const MainScreen = () => {
                       }}
           />
         </View>
-        <Text style={styles.textStyle}>
-          <Text style={styles.buttonText}>AI 대화 연습{'\n'}
-          <Text style={styles.empty}>{'\n'}</Text>
-          <Text style={styles.bottom}>대화 스킬을 키워보세요!</Text>
-        </Text>
+          <Text style={styles.textStyle}>
+            <Text style={styles.buttonText}>AI 대화 연습{'\n'}
+            <Text style={styles.empty}>{'\n'}</Text>
+            <Text style={styles.bottom}>대화 스킬을 키워보세요!</Text>
+          </Text>
         </Text>
       </TouchableOpacity>
 
@@ -92,11 +87,30 @@ const MainScreen = () => {
                       }}
           />
         </View>
-        <Text style={styles.textStyle}>
-          <Text style={styles.buttonText}>AI 스타일 코디{'\n'}
-          <Text style={styles.empty}>{'\n'}</Text>
-          <Text style={styles.bottom}>어울리는 스타일을 찾아보세요!</Text>
+          <Text style={styles.textStyle}>
+            <Text style={styles.buttonText}>AI 스타일 코디{'\n'}
+            <Text style={styles.empty}>{'\n'}</Text>
+            <Text style={styles.bottom}>어울리는 스타일을 찾아보세요!</Text>
+          </Text>
         </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("ChattingList")}>
+        <View>
+          <Image source={require('../../assets/MainScreen/mat.jpg')} 
+              style={{width : 70, 
+                      height : 70,
+                      borderRadius: 10,
+                      marginRight: 20,
+                      marginLeft: 7  
+                      }}
+          />
+        </View>
+          <Text style={styles.textStyle}>
+            <Text style={styles.buttonText}>채팅 리스트{'\n'}
+            <Text style={styles.empty}>{'\n'}</Text>
+            <Text style={styles.bottom}>매칭상대와 서로 대화해 보세요!</Text>
+          </Text>
         </Text>
       </TouchableOpacity>
     </View>
@@ -104,17 +118,14 @@ const MainScreen = () => {
   );
 };
 
-const Tops = StyleSheet.create({
-  
-})
-
-
 const styles = StyleSheet.create({
-  container: { flex: 1,     
+  container: { 
+    flex: 1,     
     padding: 30,
   },
 
-  header:{width: '100%',
+  header:{
+    width: '100%',
     height: 70,
     flexDirection: 'row',
     marginRight : 30,
@@ -123,27 +134,28 @@ const styles = StyleSheet.create({
     marginTop: 30
   },
 
-  headerText: {color : 'gray', 
+  headerText: {
+    color : 'gray', 
     fontSize : 15, 
     height: 50,
     marginTop: 3   
   },
   
-  headerText2: {color : 'silver', 
+  headerText2: {
+    color : 'silver', 
     fontSize : 14, 
     height: 50,   
   },
 
   main: {
     backgroundColor: '#FF9AAB',
-    alignSelf: 'center',
+    marginBottom: 10,
     paddingTop: 40,
     borderRadius: 30,
     width: '100%',
     height: 200,
     alignItems: 'center',
-    marginBottom: 10,
- 
+    alignSelf: 'center', 
   },  
   
   mainText: { 
@@ -156,15 +168,14 @@ const styles = StyleSheet.create({
   },
 
   horizontalLine: {
-    width: '100%', // Width of the line
-    height: 1,    // Thickness of the line
-    backgroundColor: 'silver', // Line color
+    width: '100%', 
+    height: 1,  
+    backgroundColor: 'silver',
     marginVertical: 10, // Space above and below the line
   },
 
   textStyle: {
     paddingTop: 12,
-
   },
   
   button: {
@@ -178,7 +189,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     },
   
-  buttonText: { color: 'white', 
+  buttonText: { 
+    color: 'white', 
     fontSize: 17,
     height: 70, 
     fontWeight: 'bold',
@@ -189,7 +201,8 @@ const styles = StyleSheet.create({
     fontSize: 3,
   },
 
-  bottom: {color : 'white', 
+  bottom: {
+    color : 'white', 
     fontSize : 15,
     alignSelf: 'center',
     margin:3,

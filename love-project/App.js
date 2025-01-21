@@ -21,6 +21,8 @@ import AIchat from './src/screens/Simulation/AIchat.js';
 import AssistantSelect from './src/screens/Simulation/AssistantSelect';
 import Login from './src/screens/Login.js';
 import CoachingScreen from './src/screens/Simulation/CoachingScreen.js';
+import ChatchatScreen from './src/screens/Matching/ChatchatScreen'; // ChatchatScreen 임포트
+import ChattingList from './src/screens/ChattingList';
 
 const Stack = createStackNavigator(); // 스택 내비게이션 생성
 
@@ -47,12 +49,7 @@ const MainNavigator = () => {
         <Stack.Screen
           name="LoginScreen"
           component={LoginScreen} // 로그인 화면 추가
-          options={{ headerShown: false}}
-        />
-        <Stack.Screen
-          name="Login"
-          component={Login} // 임시 로그인 화면 정식버전 삭제 할 것
-          options={{ headerShown: false}}
+          options={{ headerShown: false }}
         />
         <Stack.Screen
           name="SignUpScreen"
@@ -67,7 +64,7 @@ const MainNavigator = () => {
         <Stack.Screen
           name="ProfileScreen"
           component={ProfileScreen}
-          options={{ headerShown: false}}
+          options={{ headerShown: false }}
         />
         <Stack.Screen
           name="SettingScreen"
@@ -138,6 +135,18 @@ const MainNavigator = () => {
           name="TabBar"
           component={TabBar}
           options={{ headerTitle: '', headerTitleAlign: 'center' }}
+        />
+        
+        {/* ChatchatScreen을 네비게이터에 추가 */}
+        <Stack.Screen
+          name="ChatchatScreen"
+          component={ChatchatScreen}
+          options={{ headerTitle: '채팅 화면', headerTitleAlign: 'center' }}
+        />
+        <Stack.Screen
+          name="ChattingList"
+          component={ChattingList}
+          options={{ headerTitle: '채팅 화면', headerTitleAlign: 'center' }}
         />
       </Stack.Navigator>
     </NavigationContainer>

@@ -11,6 +11,7 @@ const ConversationScreen = () => {
     const [simulatorUri, setSimulatorUri] = useState(null);
     const [loading, setLoading] = useState(null);
     const [inputValue, setInputValue] = useState('');
+    const [gender, setGender] = useState(null);
 
     const CreateMySim = async () => {
         if(inputValue == '') {
@@ -18,9 +19,14 @@ const ConversationScreen = () => {
             return;
         }
 
+        if(gender == null) {
+            alert("성별을 선택해주세요.");
+            return;
+        }
 
         const formData = new FormData();
         formData.append("ideal_type", inputValue);
+        formData.append("gender", gender);
         
         console.log(`Your Input idealType: ${inputValue}`)
 
@@ -36,9 +42,9 @@ const ConversationScreen = () => {
             });
             if (select_r.data)
                 if (select_r.data.server_ip == "") {
-                Alert.alert("서버가 혼잡합니다. 잠시 후에 다시 시도해주세요.")
-                setLoading(null);
-                return;
+                    Alert.alert("서버가 혼잡합니다. 잠시 후에 다시 시도해주세요.")
+                    setLoading(null);
+                    return;
                 }
             
             console.log("사용가능한 서버: ", select_r.data.server_ip)
@@ -56,11 +62,10 @@ const ConversationScreen = () => {
               navigation.navigate("IdealTypeImg", { simUri: response.data.simUrl });
             }
         } catch (error) {
-            console.error('request failed:', error.message);
             setLoading(null);
-        } finally {
-            setLoading(false);
-        }
+            console.error('request failed:', error.message);
+        } 
+        setLoading(false);
     };
     
     return(
@@ -71,12 +76,17 @@ const ConversationScreen = () => {
     >
         <ScrollView>       
             <View style={styles.container}>
-                <Text style={styles.header}>                    
-                    <Icon name="menu" size={40} color="black" />                
-                    <Text style={styles.headerText}>               AI 대화 연습               </Text>  
-                    <Icon name="check" size={40} color="black" />
-                </Text>
-                
+                <View style={styles.header}>
+                    <View style={styles.menu}>                   
+                    <Icon name="menu" size={40} color="black"/>
+                    </View> 
+                                   
+                    <Text style={styles.headerText}>AI 대화 연습</Text>  
+                    
+                    <View style={styles.check}>                    
+                    <Icon name="check" size={40} color="black"/>
+                    </View>
+                </View>
                 <Text style={styles.main}>
                     AI와 대화를 시작하기 전에 {'\n'}
                     나의 이상형을 만드세요!
@@ -86,12 +96,14 @@ const ConversationScreen = () => {
                 </Text>
                 
                 <View style={styles.selectBox}>
-                <TouchableOpacity style={styles.select}>
+                <TouchableOpacity style={[styles.select, gender === "male" && styles.buttonSelected]}
+                    onPress={() => setGender('male')}>
                     <Text style={styles.selectText}>
                         남성
                     </Text>            
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.select}>
+                <TouchableOpacity style={[styles.select, gender === "female" && styles.buttonSelected]}
+                    onPress={() => setGender('female')}>
                     <Text style={styles.selectText}>
                          여성
                     </Text>            
@@ -149,6 +161,20 @@ const styles = StyleSheet.create({
         alignItems: 'center',    
       },
 
+    menu: {
+        position: 'absolute', // 절대 위치 지정
+        top: 15, // 상단에서 50px
+        left: 10, // 왼쪽에서 20px
+        width:'20%'
+    },
+
+    check: {
+        position: 'absolute', // 절대 위치 지정
+        top: 15, // 상단에서 50px
+        right: -20, // 왼쪽에서 20px
+        width:'20%'
+    },
+
     header: { 
         backgroundColor: '#FFF0F0',
         marginBottom: 20, 
@@ -158,16 +184,20 @@ const styles = StyleSheet.create({
         height: 70,
         flexDirection: 'row', // Arrange children in a row
         alignItems: 'center', // Vertically center all items
-        justifyContent: 'space-between',
+        justifyContent: 'center',
         textAlign:'center', 
+        alignSelf: 'center',
     },
 
     headerText: {
+        position: 'absolute',
         textAlign: 'center', // Center text horizontally within its space
-        flex: 1, // Take up remaining space between the icons 
         color : 'black',
         alignSelf: 'center',
-        fontSize:26,       
+        justifyContent: 'center',
+        fontSize:26,  
+        width:'100%',
+        marginTop:15     
     },
     
     main: { fontSize: 24,
@@ -183,8 +213,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold', 
         marginBottom: 20, 
         color : '#FFB89A', 
-        textAlign:'center', 
-        fontWeight: 'bold',
+        textAlign:'center',
         alignSelf: 'center'
     },
     selectBox:{
@@ -192,7 +221,7 @@ const styles = StyleSheet.create({
     },
 
     select:{paddingTop:10,
-        backgroundColor: '#FFB89A',
+        backgroundColor: '#ccc',
         borderRadius: 23, 
         width: '35%',
         height: 55, 
@@ -203,7 +232,13 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         marginHorizontal:15
     },
+  
+    buttonSelected:{
+        backgroundColor: '#FFB89A'
+    },
+  
     selectText:{
+        marginTop:8,
         fontSize:20,
         color : 'white', 
         width: '80%',
@@ -211,7 +246,8 @@ const styles = StyleSheet.create({
         alignItems: 'center', 
         textAlign:'center', 
         fontWeight: 'bold',
-        alignSelf: 'center'
+        alignSelf: 'center',
+        justifyContent: 'center',
     },
 
     textBox: {
@@ -253,7 +289,7 @@ const styles = StyleSheet.create({
     button2: {paddingTop:15,
         backgroundColor: '#FFB89A',
         borderRadius: 23, 
-        width: '70%',
+        width: '75%',
         height: 60, 
         alignItems: 'center', 
         marginBottom: 10, 

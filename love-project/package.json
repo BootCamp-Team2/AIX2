@@ -35,11 +35,14 @@
     "react-native-modal": "^13.0.1",
     "react-native-paper": "^4.9.2",
     "react-native-qrcode-svg": "^6.3.12",
-    "react-native-reanimated": "^3.16.7",
+    "react-native-reanimated": "^3.16.6",
     "react-native-safe-area-context": "^5.0.0",
     "react-native-screens": "^4.4.0",
     "react-native-svg": "^15.10.1",
-    "react-native-vector-icons": "^10.2.0"
+    "react-native-vector-icons": "^10.2.0",
+    "react-dom": "18.3.1",
+    "react-native-web": "~0.19.13",
+    "@expo/metro-runtime": "~4.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

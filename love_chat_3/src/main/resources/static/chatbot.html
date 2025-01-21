@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <style>
+        /* 스타일을 원하는 대로 추가 */
+        #chatBox {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            padding: 5px;
+            border: 1px solid #ccc;
+        }
+        .chat-message {
+            margin: 5px 0;
+        }
+        .user-message {
+            color: blue;
+        }
+        .ai-message {
+            color: green;
+        }
+        .emotion {
+            font-style: italic;
+            color: gray;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h2>AI Chatbot</h2>
+        <textarea id="userInput" placeholder="Type your message here"></textarea><br>
+        <button onclick="sendMessage()">Send</button>
+    </div>
+
+    <div id="chatBox"></div>
+
+    <script>
+        async function sendMessage() {
+            const userInput = document.getElementById("userInput").value;
+            const chatBox = document.getElementById("chatBox");
+
+            // 사용자가 입력한 메시지가 없다면 반환
+            if (!userInput.trim()) {
+                alert("Please enter a message");
+                return;
+            }
+
+            // 메시지 전송 전에 사용자 입력을 채팅박스에 표시
+            chatBox.innerHTML += `<div class="chat-message user-message"><strong>You:</strong> ${userInput}</div>`;
+
+            try {
+                // Flask 서버로 POST 요청을 보냄
+                const response = await fetch('http://127.0.0.1:5000/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `message=${encodeURIComponent(userInput)}`
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // AI 응답을 채팅박스에 표시
+                    chatBox.innerHTML += `<div class="chat-message ai-message"><strong>AI:</strong> ${data.response}</div>`;
+
+                    // 감정 분석 결과 출력 (null이 아니라 값이 제대로 출력되도록 처리)
+                    chatBox.innerHTML += `<div class="chat-message emotion"><strong>Emotion:</strong> ${data.emotion || "No emotion detected"}</div>`;
+                } else {
+                    chatBox.innerHTML += `<div class="chat-message ai-message"><strong>AI:</strong> Error: ${data.error}</div>`;
+                }
+
+                // 채팅 박스 스크롤을 가장 아래로 이동
+                chatBox.scrollTop = chatBox.scrollHeight;
+
+            } catch (error) {
+                chatBox.innerHTML += `<div class="chat-message ai-message"><strong>AI:</strong> Error: ${error.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>
