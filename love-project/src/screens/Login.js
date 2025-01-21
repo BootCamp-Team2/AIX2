@@ -12,7 +12,7 @@ const Login = ({ navigation }) => {
         }
 
         try {
-            const response = await fetch('http://192.168.0.68:5000/login', { // Flask 서버 URL
+            const response = await fetch('http://192.168.0.101:5000/login', { // Flask 서버 URL
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -24,7 +24,7 @@ const Login = ({ navigation }) => {
             const data = await response.json();
             if (response.ok) {
                 Alert.alert('로그인 성공', `환영합니다, ${data.nickname}님!`);
-                navigation.navigate('AssistantSelect'); // 로그인 성공 시 이동할 페이지
+                navigation.navigate('MainScreen'); // 로그인 성공 시 이동할 페이지
             } else {
                 Alert.alert('로그인 실패', data.error || '잘못된 ID 또는 비밀번호입니다.');
             }

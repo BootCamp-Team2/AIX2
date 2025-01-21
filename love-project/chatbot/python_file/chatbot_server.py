@@ -128,7 +128,11 @@ def analyze_and_respond(user_id, user_input, partner_id):
 app = Flask(__name__)
 
 # 세션 암호화를 위한 Secret Key 설정
-app.secret_key = "1234"  # 고유하고 안전한 키 입력
+# 세션 암호화를 위한 Secret Key 설정
+secret_key = os.getenv("REACT_APP_SECRET_KEY")
+if not secret_key:
+    raise Exception("REACT_APP_SECRET_KEY가 .env 파일에 설정되지 않았습니다.")
+app.secret_key = secret_key
 
 # CORS 설정
 CORS(app, supports_credentials=True)  # 세션 쿠키 허용
@@ -273,6 +277,23 @@ def start_conversation():
     except Exception as e:
         logging.error(f"Error starting conversation: {e}")
         return jsonify({'error': '대화를 시작하는 동안 문제가 발생했습니다.'}), 500
+
+@app.route('/dating-coaching', methods=['POST'])
+def dating_coaching():
+    try:
+        data = request.get_json()
+        chat_history = data.get('chat_history', [])
+
+        if not chat_history:
+            return jsonify({'error': '대화 기록이 없습니다.'}), 400
+
+        from dating_coaching_handler import process_dating_coaching_with_chat_history
+
+        coaching_response, emotions = process_dating_coaching_with_chat_history(chat_history, emotion_model)
+        return jsonify({'response': coaching_response, 'emotions': emotions})
+    except Exception as e:
+        logging.error(f"Error during dating coaching: {e}")
+        return jsonify({'error': '연애 코칭 처리 중 오류가 발생했습니다.'}), 500
 
 # Flask 서버 실행
 if __name__ == '__main__':

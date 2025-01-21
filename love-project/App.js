@@ -20,6 +20,7 @@ import MatchingList from './src/screens/Matching/MatchingList';
 import AIchat from './src/screens/Simulation/AIchat.js';
 import AssistantSelect from './src/screens/Simulation/AssistantSelect';
 import Login from './src/screens/Login.js';
+import CoachingScreen from './src/screens/Simulation/CoachingScreen.js';
 
 const Stack = createStackNavigator(); // 스택 내비게이션 생성
 
@@ -127,6 +128,11 @@ const MainNavigator = () => {
           name="AssistantSelect"
           component={AssistantSelect}
           options={{ headerTitle: '챗봇 선택', headerTitleAlign: 'center' }}
+        />
+        <Stack.Screen
+          name="CoachingScreen"
+          component={CoachingScreen}
+          options={{ headerTitle: '연애 상담', headerTitleAlign: 'center' }}
         />
         <Stack.Screen
           name="TabBar"

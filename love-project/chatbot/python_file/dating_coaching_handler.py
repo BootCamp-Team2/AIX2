@@ -1,4 +1,4 @@
-from chatbot import client, send_message, activate_message, wait_for_completion, list_messages
+from chatbot_server import client, send_message, activate_message, wait_for_completion, list_messages
 from analyzing_emotion import analyze_emotion
 import os
 

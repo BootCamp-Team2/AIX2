@@ -12,7 +12,7 @@ const AssistantSelect = ({ navigation }) => {
         const fetchUserIdAndThreadKey = async () => {
             try {
                 // Fetch user ID
-                const userIdResponse = await fetch('http://192.168.0.68:5000/get-user-id', {
+                const userIdResponse = await fetch('http://192.168.0.101:5000/get-user-id', {
                     method: 'GET',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include', // 세션 쿠키 포함
@@ -23,7 +23,7 @@ const AssistantSelect = ({ navigation }) => {
                     setUserId(userIdData.id);
 
                     // Check thread key
-                    const threadKeyResponse = await fetch('http://192.168.0.68:5000/check-thread', {
+                    const threadKeyResponse = await fetch('http://192.168.0.101:5000/check-thread', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         credentials: 'include',
@@ -51,7 +51,7 @@ const AssistantSelect = ({ navigation }) => {
         }
     
         try {
-            const response = await fetch('http://192.168.0.68:5000/start-conversation', {
+            const response = await fetch('http://192.168.0.101:5000/start-conversation', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include', // 세션 쿠키 포함
@@ -76,7 +76,7 @@ const AssistantSelect = ({ navigation }) => {
     
     const handleContinueConversation = async () => {
         try {
-            const response = await fetch('http://192.168.0.68:5000/get-thread', {
+            const response = await fetch('http://192.168.0.101:5000/get-thread', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
