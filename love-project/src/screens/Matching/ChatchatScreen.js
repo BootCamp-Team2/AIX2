@@ -44,6 +44,7 @@ const ChatScreen = ({ route }) => {
           const chatData = new FormData();
           chatData.append("userUID", userID);
           chatData.append("partnerUID", partnerID);
+          chatData.append("content", JSON.stringify(previousMessages));
 
           const upChat = await axios.post("http://192.168.1.3:3000/update-chat", chatData, {
             headers: { 'Content-Type': 'multipart/form-data', },
@@ -104,6 +105,7 @@ const ChatScreen = ({ route }) => {
     const chatData = new FormData();
       chatData.append("userUID", userID);
       chatData.append("partnerUID", partnerID);
+      chatData.append("content", JSON.stringify(previousMessages));
 
       const upChat = await axios.post("http://192.168.1.3:3000/update-chat", chatData, {
         headers: { 'Content-Type': 'multipart/form-data', },
