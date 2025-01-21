@@ -1,4 +1,3 @@
-// WebSocketHandshakeInterceptor.java
 package com.example.love_chat.config;
 
 import org.springframework.http.server.ServerHttpRequest;
