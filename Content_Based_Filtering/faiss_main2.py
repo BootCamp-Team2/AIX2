@@ -33,7 +33,7 @@ def list_to_multiply_hot(value_list, value_types):
 def fetch_mbti_data():
     ## MySQL Server 연결
     conn = mysql.connector.connect(
-        host="192.168.1.4",
+        host="192.168.1.3",
         user="root",
         password="AIX2_1234",
         database="idealDatabase"
