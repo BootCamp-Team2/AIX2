@@ -22,7 +22,9 @@ import com.example.demo.dto.*;
 import com.example.demo.User;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.UserDataService;
+import com.example.demo.service.UserService;
 import com.example.demo.utils.JwtUtil;
+import com.example.demo.config.EnvConfig;
 
 import jakarta.validation.Valid;
 
@@ -35,6 +37,9 @@ public class UserController {
 
     @Autowired
     private UserDataService userDataService;
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -60,9 +65,9 @@ public class UserController {
         User user = new User();
         
         // DTO로부터 값 설정
-        user.setEmail(signUpRequest.getUserId()); // 이메일
-        user.setPassword(signUpRequest.getPw()); // 비밀번호
-        user.setUsername(signUpRequest.getNickname()); // 닉네임
+        user.setEmail(signUpRequest.getEmail()); // 이메일
+        user.setPassword(signUpRequest.getPassword()); // 비밀번호
+        user.setUsername(signUpRequest.getUsername()); // 닉네임
         user.setBirthDate(signUpRequest.getBirthDate()); // 생년월일
         user.setRegion(signUpRequest.getRegion()); // 지역
         user.setHobby(signUpRequest.getHobby()); // 취미
@@ -71,6 +76,9 @@ public class UserController {
         // 추가적인 설정
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
+        
+        EnvConfig envConfig = new EnvConfig();
+        user.setSecretKey(envConfig.getJwtSecretKey());
         user.encodePassword(); // 비밀번호 해시화
 
         // User 객체 저장
@@ -93,7 +101,7 @@ public class UserController {
                 return ResponseEntity.ok(response);
             default:
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body(new LoginResponse(null, 0, "서버 오류가 발생했습니다"));
+                        .body(new LoginResponse(null, 0, "서버 오류가 발생했습니다", null));
         }
     }
 
@@ -172,9 +180,12 @@ public class UserController {
     public ResponseEntity<TokenValidation> validateToken(@RequestHeader("Authorization") String token) {
         String jwtToken = token.substring(7);
         boolean isValid = jwtUtil.validateToken(jwtToken);
-
         String message = isValid ? "토큰이 유효합니다" : "토큰이 유효하지 않습니다";
-        return ResponseEntity.ok(new TokenValidation(isValid, message));
+
+        User user = userService.getUserByToken(jwtToken);
+        System.out.println("Checking!! : " + user);
+
+        return ResponseEntity.ok(new TokenValidation(isValid, message, user));
     }
 
     // 2차 인증 비활성화
@@ -190,6 +201,8 @@ public class UserController {
     public ResponseEntity<User> getProfile(@RequestHeader("Authorization") String token) {
         String jwtToken = token.substring(7); // JWT 토큰에서 'Bearer ' 부분 제거
         User user = userDataService.getUserByToken(jwtToken); // 토큰을 통해 사용자 정보 조회
+
+        System.out.println("User : " + user);
 
         if (user != null) {
             return ResponseEntity.ok(user);

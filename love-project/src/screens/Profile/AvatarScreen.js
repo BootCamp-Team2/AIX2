@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { View, Button, Image, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
@@ -8,6 +8,9 @@ import axios from 'axios';
 import { Ionicons } from '@expo/vector-icons';
 
 const AvatarScreen = () => {
+  const route = useRoute();
+  const { userUID } = route.params;
+
   const navigation = useNavigation();
   const [imageUri, setImageUri] = useState(null);
   const [avatarUri, setAvatarUri] = useState(null); // 생성된 아바타 URI
@@ -77,6 +80,7 @@ const AvatarScreen = () => {
       name: 'photo.jpg', // 업로드할 파일 이름
     });
     formData.append('gender', gender); // 성별 정보 추가
+    formData.append('userUID', userUID);
 
     console.log(`Preparing to upload. Selected gender: ${gender}`);
 
@@ -86,7 +90,7 @@ const AvatarScreen = () => {
 
       const sel_formData = new FormData();
       sel_formData.append("type", "avatar");
-      const select_r = await axios.post("http://192.168.1.4:1000/select-server", sel_formData, {
+      const select_r = await axios.post("http://192.168.1.3:1000/select-server", sel_formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

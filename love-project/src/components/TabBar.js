@@ -5,10 +5,14 @@ import Icon2 from 'react-native-vector-icons/Ionicons';
 import MainScreen from '../screens/MainScreen';
 import ProfileScreen from '../screens/Profile/ProfileScreen';
 import SettingScreen from '../screens/SettingScreen';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 const Tab = createBottomTabNavigator();
 
 const TabBar = () => {
+  const route = useRoute();
+  const { userData } = route.params;
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -34,7 +38,8 @@ const TabBar = () => {
     >
       <Tab.Screen 
           name="Home" 
-          component={MainScreen} 
+          component={MainScreen}
+          initialParams={{ userData: userData }}
           options={{
                   tabBarIcon: ({ color }) => <Icon name="home" size={20} color={color} />, // 아이콘 색상 설정
                   headerShown: false,
@@ -42,7 +47,8 @@ const TabBar = () => {
       />
       <Tab.Screen 
           name="Profile" 
-          component={ProfileScreen} 
+          component={ProfileScreen}
+          initialParams={{ userData: userData }}
           options={{
                   tabBarIcon: ({ color }) => <Icon2 name="person-circle-outline" size={20} color={color} />, // 아이콘 색상 설정
                   headerShown: false,

@@ -53,9 +53,7 @@ def getServerIP():
     return {"server-ip": f"{SERVER_HOST}", "server-port": f"{SERVER_PORT}"}
 
 @app.post("/sim/create")
-async def createMyLover(ideal_type: str = Form(...), gender: str = Form(...)):
-    # 고객 uuid 대체용 임시 테스트
-    personal_uuid = uuid.uuid4()
+async def createMyLover(ideal_type: str = Form(...), gender: str = Form(...), userUID: str = Form(...)):
     censor_list = ["노출", "호텔", "모텔", "알몸" , "야한얼굴", "야하다", "에로", "선정적", "음란"
                    , "변태", "야동", "포르노", "성적", "장애", "살인", "테러", "자살", "타살", "학대"
                    , "약물", "마약", "흑인"]
@@ -65,10 +63,10 @@ async def createMyLover(ideal_type: str = Form(...), gender: str = Form(...)):
             if word in ideal_type:
                 raise HTTPException(status_code=400, detail="금지 단어가 포함되어 있습니다.")
             
-        idealType_module.main(ideal_type, gender, personal_uuid)
-        result_path = f"./output/idealType_{personal_uuid}_00001_.jpg"
+        idealType_module.main(ideal_type, gender, userUID)
+        result_path = f"./output/idealType_{userUID}_00001_.jpg"
             
-        new_file_director = f"./output/{personal_uuid}"
+        new_file_director = f"./output/{userUID}"
         if not os.path.exists(new_file_director):
             os.makedirs(new_file_director)
         new_file_path = os.path.join(new_file_director, "mySimulator.jpg")
@@ -96,7 +94,7 @@ async def createMyLover(ideal_type: str = Form(...), gender: str = Form(...)):
     
     return {
         "message": "Your Requested prompt successfully",
-        "simUrl": f"http://192.168.1.4:1000/output/{personal_uuid}/mySimulator.jpg"
+        "simUrl": f"http://192.168.1.4:1000/output/{userUID}/mySimulator.jpg"
     }
 
 if __name__ == "__main__":

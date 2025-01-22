@@ -35,31 +35,32 @@ const ProfileScreen = () => {
     const [addProfileModalVisible, setAddProfileModalVisible] = useState(false); // 추가 모달 상태
     const [editProfileModalVisible, setEditProfileModalVisible] = useState(false); // 수정 모달 상태
     const [avatarUri, setAvatarUri] = useState(null);
-    const route = useRoute();
     const [profilePhotoUri, setProfilePhotoUri] = useState(null); // 프로필 사진 URI
     const isCircleFront = true; // 예제 값, 실제 로직에 따라 변경
 
+    const route = useRoute();
+    const { userData } = route.params;
 
-    useFocusEffect(
-        React.useCallback(() => {
-          const fetchUserData = async () => {
-            try {
-              const userInfo = await fetchUserInfo();
-              setNickname(userInfo.nickname);
-              setEmail(userInfo.id);
-            } catch (error) {
-              console.error('사용자 정보 가져오기 실패:', error);
-            }
-          };
+    // useFocusEffect(
+    //     React.useCallback(() => {
+    //       const fetchUserData = async () => {
+    //         try {
+    //           const userInfo = await fetchUserInfo();
+    //           setNickname(userInfo.nickname);
+    //           setEmail(userInfo.id);
+    //         } catch (error) {
+    //           console.error('사용자 정보 가져오기 실패:', error);
+    //         }
+    //       };
     
-          fetchUserData(); // 화면 포커스 시 사용자 데이터 가져오기
+    //       fetchUserData(); // 화면 포커스 시 사용자 데이터 가져오기
     
-          // 클린업 함수 (필요할 경우)
-          return () => {
-            // 정리 작업이 필요하다면 여기에 작성
-          };
-        }, [])
-      );
+    //       // 클린업 함수 (필요할 경우)
+    //       return () => {
+    //         // 정리 작업이 필요하다면 여기에 작성
+    //       };
+    //     }, [])
+    //   );
 
       useEffect(() => {
         if (route.params?.avatarUri) {
@@ -286,7 +287,7 @@ const ProfileScreen = () => {
 
                 <View>
                     {isCircleFront === true && ( // overlappingCircle이 왼쪽에 있을 때만 렌더링
-                        <TouchableOpacity style={styles.avatarButton} onPress={() => navigation.navigate("AvatarScreen")}>
+                        <TouchableOpacity style={styles.avatarButton} onPress={() => navigation.navigate("AvatarScreen", { userUID : userData.userUID })}>
                             <Text style={styles.avatarText}>캐릭터 생성하기</Text>
                         </TouchableOpacity>
                     )}
