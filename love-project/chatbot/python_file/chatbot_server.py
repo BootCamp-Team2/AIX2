@@ -1,12 +1,12 @@
 from flask import Flask, request, jsonify, session
 import logging
-from analyzing_emotion import initialize_emotion_model, analyze_emotion
 from openai import OpenAI
 import time
 from dotenv import load_dotenv
 import os
-import sqlite3
+import mysql.connector
 from flask_cors import CORS  # CORS 관련 라이브러리 추가
+from analyzing_emotion import initialize_emotion_model, analyze_emotion  # 감정 분석 관련 추가
 
 # .env 파일 로드
 load_dotenv()
@@ -20,9 +20,32 @@ if not api_key:
     raise Exception("REACT_APP_OPENAI_API_KEY가 .env 파일에 설정되지 않았습니다.")
 client = OpenAI(api_key=api_key)
 
+# MySQL 연결 설정
+db = mysql.connector.connect(
+    host=os.getenv('MYSQL_HOST'),
+    user=os.getenv('MYSQL_USER'),
+    password=os.getenv('MYSQL_PASSWORD'),
+    database=os.getenv('MYSQL_DATABASE')
+)
+
+cursor = db.cursor()
+
 # 감정 분석 모델 초기화
 emotion_model = initialize_emotion_model()
 
+# 데이터베이스 초기화 함수
+def initialize_database():
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS users (
+            id VARCHAR(255) PRIMARY KEY,
+            nickname VARCHAR(255),
+            password VARCHAR(255),
+            thread_key VARCHAR(255),
+            assistant_key VARCHAR(255)
+        )
+    ''')
+    db.commit()
+    
 # Partner ID 읽기
 def get_partner_id(partner_id="HANA"):
     if partner_id.upper() == "HWARANG":
@@ -34,28 +57,42 @@ def get_partner_id(partner_id="HANA"):
         raise Exception(f"REACT_APP_PARTNER_ID_{partner_id.upper()}가 .env 파일에 설정되지 않았습니다.")
     return partner_id_env
 
-# 데이터베이스 초기화 함수
-def initialize_database():
-    conn = sqlite3.connect('users.db')
-    cursor = conn.cursor()
-    cursor.execute('''CREATE TABLE IF NOT EXISTS threads (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        user_id TEXT,
-                        thread_key TEXT
-                    )''')
-    conn.commit()
-    conn.close()
+# 스레드 키 저장 및 불러오기
+# def get_or_create_thread_key(user_id):
+#     """
+#     사용자의 thread_key를 가져오거나 새로 생성
+#     """
+#     conn = sqlite3.connect('users.db')
+#     cursor = conn.cursor()
+
+#     # 사용자에 대한 기존 스레드 키 확인
+#     cursor.execute("SELECT thread_key FROM users WHERE id = ?", (user_id,))
+#     result = cursor.fetchone()
+
+#     if result and result[0]:
+#         thread_key = result[0]
+#         logging.info(f"Existing thread key found: {thread_key} for user_id: {user_id}")
+#     else:
+#         # 새 스레드 생성 및 저장
+#         thread = client.beta.threads.create()
+#         thread_key = thread.id
+#         cursor.execute("""
+#             UPDATE users
+#             SET thread_key = ?
+#             WHERE id = ?
+#         """, (thread_key, user_id))
+#         conn.commit()
+#         logging.info(f"New thread key created: {thread_key} for user_id: {user_id}")
+
+#     conn.close()
+#     return thread_key
 
 # 스레드 키 저장 및 불러오기
 def get_or_create_thread_key(user_id):
     """
     사용자의 thread_key를 가져오거나 새로 생성
     """
-    conn = sqlite3.connect('users.db')
-    cursor = conn.cursor()
-
-    # 사용자에 대한 기존 스레드 키 확인
-    cursor.execute("SELECT thread_key FROM users WHERE id = ?", (user_id,))
+    cursor.execute("SELECT thread_key FROM threads WHERE user_id = %s", (user_id,))
     result = cursor.fetchone()
 
     if result and result[0]:
@@ -64,16 +101,14 @@ def get_or_create_thread_key(user_id):
     else:
         # 새 스레드 생성 및 저장
         thread = client.beta.threads.create()
-        thread_key = thread.id
+        thread_key = thread.id 
         cursor.execute("""
-            UPDATE users
-            SET thread_key = ?
-            WHERE id = ?
-        """, (thread_key, user_id))
-        conn.commit()
+            INSERT INTO threads (user_id, thread_key)
+            VALUES (%s, %s)
+        """, (user_id, thread_key))
+        db.commit()
         logging.info(f"New thread key created: {thread_key} for user_id: {user_id}")
 
-    conn.close()
     return thread_key
 
 # 메시지 전송 함수
@@ -109,25 +144,29 @@ def list_messages(thread_id):
     messages = client.beta.threads.messages.list(thread_id)
     return messages.data[0].content[0].text.value
 
-# 감정 분석 및 응답 데이터 생성
-def analyze_and_respond(user_id, user_input, partner_id):
+# 사용자 입력 감정 분석 함수 추가
+def analyze_user_emotion(user_input):
+    """
+    사용자의 입력된 텍스트에 대해 감정을 분석하고 반환
+    """
+    emotion = analyze_emotion(user_input, emotion_model)
+    if not emotion:
+        emotion = "No emotion detected"
+    return emotion
+
+# 사용자 입력에 대한 응답 생성
+def generate_response(user_id, user_input, partner_id):
     thread_id = get_or_create_thread_key(user_id)
     send_message(thread_id, user_input)
     run_id = activate_message(thread_id, partner_id)
     wait_for_completion(thread_id, run_id)
     partner_response = list_messages(thread_id)
-    emotion = analyze_emotion(partner_response, emotion_model)  # 감정 분석
-    
-    # 감정 분석 결과가 None이나 빈 문자열이면 기본 값 반환
-    if not emotion:
-        emotion = "No emotion detected"
-        
-    return partner_response, emotion
+
+    return partner_response
 
 # Flask 서버 정의
 app = Flask(__name__)
 
-# 세션 암호화를 위한 Secret Key 설정
 # 세션 암호화를 위한 Secret Key 설정
 secret_key = os.getenv("REACT_APP_SECRET_KEY")
 if not secret_key:
@@ -154,11 +193,8 @@ def login():
     if not user_id or not password:
         return jsonify({'error': 'ID와 비밀번호를 입력해주세요.'}), 400
 
-    conn = sqlite3.connect('users.db')
-    cursor = conn.cursor()
-    cursor.execute("SELECT id, nickname, password FROM users WHERE id = ?", (user_id,))
+    cursor.execute("SELECT id, nickname, password FROM users WHERE id = %s", (user_id,))
     result = cursor.fetchone()
-    conn.close()
 
     if result:
         if result[2] == password:  # 비밀번호 확인
@@ -188,18 +224,19 @@ def chat():
             return jsonify({'error': '메시지가 비어 있습니다.'}), 400
 
         partner_id = get_partner_id(partner_choice)
-        response, emotion = analyze_and_respond(user_id, user_input, partner_id)
+        response = generate_response(user_id, user_input, partner_id)
+        user_emotion = analyze_user_emotion(user_input)  # 사용자의 입력 감정 분석
 
         return jsonify({
             'response': response,
-            'emotion': emotion,
+            'user_emotion': user_emotion,
             'thread_key': user_id
         })
 
     except Exception as e:
         logging.error(f"Unexpected error: {e}")
         return jsonify({'error': '챗봇 서버와 통신 중 문제가 발생했습니다.'}), 500
-    
+
 @app.route('/check-thread', methods=['POST'])
 def check_thread_key():
     # 로그인한 사용자 ID 가져오기
@@ -207,11 +244,8 @@ def check_thread_key():
     if not user_id:
         return jsonify({'error': '사용자가 로그인되지 않았습니다.'}), 401
 
-    conn = sqlite3.connect('users.db')
-    cursor = conn.cursor()
-    cursor.execute("SELECT thread_key FROM users WHERE id = ?", (user_id,))
+    cursor.execute("SELECT thread_key FROM users WHERE id = %s", (user_id,))
     result = cursor.fetchone()
-    conn.close()
 
     return jsonify({'thread_key': result[0] if result else None})
 
@@ -222,11 +256,8 @@ def get_thread_key():
     if not user_id:
         return jsonify({'error': '사용자가 로그인되지 않았습니다.'}), 401
 
-    conn = sqlite3.connect('users.db')
-    cursor = conn.cursor()
-    cursor.execute("SELECT thread_key, assistant_key FROM users WHERE id = ?", (user_id,))
+    cursor.execute("SELECT thread_key, assistant_key FROM users WHERE id = %s", (user_id,))
     result = cursor.fetchone()
-    conn.close()
 
     if result:
         return jsonify({'thread_key': result[0], 'assistant_key': result[1]})
@@ -262,15 +293,12 @@ def start_conversation():
         thread_key = get_or_create_thread_key(user_id)
 
         # 어시스턴트 ID를 DB에 업데이트
-        conn = sqlite3.connect('users.db')
-        cursor = conn.cursor()
         cursor.execute("""
             UPDATE users
-            SET assistant_key = ?
-            WHERE id = ?
+            SET assistant_key = %s
+            WHERE id = %s
         """, (partner_id, user_id))
-        conn.commit()
-        conn.close()
+        db.commit()
 
         return jsonify({'thread_key': thread_key, 'assistant_key': partner_id})
 
