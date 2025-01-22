@@ -51,7 +51,8 @@ const IdealTypeImg = () => {
 
 const styles = StyleSheet.create({
   
-    header: { backgroundColor: '#FFF0F0', 
+    header: { 
+        backgroundColor: '#FFF0F0', 
         alignSelf: 'center',
         marginBottom: 30, 
         fontSize:26, 
@@ -68,8 +69,8 @@ const styles = StyleSheet.create({
         textAlign:'center',     
     },
     
-
-    main: { fontSize: 25,
+    main: { 
+        fontSize: 25,
         marginBottom: 35,   
         color : '#FFB89A', 
         textAlign:'center',  
@@ -96,7 +97,8 @@ const styles = StyleSheet.create({
         borderColor: '#ddd',
         },
 
-    middle: { fontSize: 24,  
+    middle: { 
+        fontSize: 24,  
         marginBottom: 20, 
         color : '#FFB89A', 
         textAlign:'center',  

@@ -12,9 +12,7 @@
     - OpenAI API Key
     - Chat Bot Key 2 가지
     - Dating Coach Key
-### 수정사항
-    - flask 서버 삭제
-    - chatbot_server.py -> chatbot_database.py
+    - SECRET_KEY
     
 ## !! ComfyUI 필독 !!
 ### 시스템 환경
