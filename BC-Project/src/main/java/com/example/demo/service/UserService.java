@@ -28,8 +28,9 @@ public class UserService {
         String token = "generatedJWTToken"; // JWT 토큰 생성 로직 추가
         int loginStatus = 1; // 성공적으로 로그인했다고 가정
         String message = "로그인 성공";
+        User user = null;
 
-        return new LoginResponse(token, loginStatus, message);
+        return new LoginResponse(token, loginStatus, message, user);
     }
 
     // JWT 토큰 유효성 검사
@@ -58,7 +59,7 @@ public class UserService {
 
     // JWT를 통해 사용자 정보 가져오기
     public User getUserByToken(String token) {
-        Long userId = jwtUtil.extractUserId(token); // JWT에서 사용자 ID 추출
-        return userRepository.findById(userId).orElse(null); // 사용자 찾기
+        String userEmail = jwtUtil.extractEmail(token); // JWT에서 사용자 ID 추출
+        return userRepository.findByEmail(userEmail).orElse(null); // 사용자 찾기
     }
 }

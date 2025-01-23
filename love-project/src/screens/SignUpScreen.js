@@ -122,6 +122,8 @@ const handleSignUp = async () => {  // 회원가입 버튼 핸들러
   }
   
   const formattedBirthDate = birthDate.toISOString().split('T')[0]; // birthDate를 YYYY-MM-DD 형식으로 변환
+
+  console.log(password);
   
   try { // 서버로 회원가입 데이터 전송 후 응답 대기
      const response = await SignUpUser(email, password, nickname, formattedBirthDate, hobby, mbti, region);

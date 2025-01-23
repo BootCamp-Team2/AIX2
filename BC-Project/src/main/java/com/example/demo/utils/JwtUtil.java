@@ -33,9 +33,9 @@ public class JwtUtil {
     }
 
     // JWT 토큰 생성
-    public String generateToken(String username) {
+    public String generateToken(String email) {
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(email)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(key, SignatureAlgorithm.HS256)
@@ -60,6 +60,16 @@ public class JwtUtil {
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
+    }
+
+    // 사용자 이메일 추출
+    public String extractEmail(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();  // 이메일을 추출
     }
 
     // 사용자 ID 추출

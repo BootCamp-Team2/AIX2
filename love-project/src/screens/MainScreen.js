@@ -1,16 +1,18 @@
 import React from 'react';
 import { Image, View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 const MainScreen = () => {
-  
+  const route = useRoute();
+  const { userData } = route.params;
+
   const navigation = useNavigation();
 
   return (
   <ScrollView>
     <View style={styles.container}>
       <View style={styles.header}>
-        <Image source={require('../../assets/MainScreen/ima.jpg')} 
+        <Image source={userData.profile_picture ? {uri: userData.prpfile_picture} : require('../../assets/MainScreen/ima.jpg')} 
                 style={{width : 50, 
                         height : 50,
                         borderRadius: 30,
@@ -19,13 +21,13 @@ const MainScreen = () => {
                         }}
         />
 
-        <Text style={styles.headerText}>임재현{'\n'}
-          <Text style={styles.headerText2}>VIP고객</Text>
+        <Text style={styles.headerText}>{userData.username}{'\n'}
+          <Text style={styles.headerText2}>일반고객</Text>
         </Text>
       </View>
 
-      <TouchableOpacity style={styles.main} onPress={() => navigation.navigate("MatchingScreen")}>             
-        <Text style={styles.mainText}>임재현님 주변에{'\n'}
+      <TouchableOpacity style={styles.main} onPress={() => navigation.navigate("MatchingScreen", {userUID: "0026469667"})}>    
+        <Text style={styles.mainText}>{userData.username}님 주변에{'\n'}
           300명의 사용자가 있습니다!{'\n'}{'\n'}
           클릭하시면{'\n'}
           내 주변 이성들의{'\n'}
@@ -38,7 +40,7 @@ const MainScreen = () => {
         </Text>
       </View>
 
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("MatchingScreen")}>      
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("MatchingScreen", {userUID: "0026469667"})}>      
         <View>
           <Image source={require('../../assets/MainScreen/matching.jpg')} 
               style={{width : 70, 
@@ -57,7 +59,7 @@ const MainScreen = () => {
         </Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("ConversationScreen")}>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("ConversationScreen", {userUID: userData.userUID})}>
         <View>
           <Image source={require('../../assets/MainScreen/couple.jpg')} 
               style={{width : 70, 

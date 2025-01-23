@@ -39,7 +39,10 @@ dependencies {
 
     implementation 'org.apache.poi:poi-ooxml:5.2.3' // apache poi 의존성
     implementation 'org.apache.poi:poi:5.2.3' // apache poi 의존성
-    implementation 'io.github.cdimascio:dotenv-java:3.1.0'
+    // implementation 'io.github.cdimascio:dotenv-java:3.1.0'
+
+    implementation 'mysql:mysql-connector-java:8.0.33'
+    
 
     runtimeOnly 'org.postgresql:postgresql'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'

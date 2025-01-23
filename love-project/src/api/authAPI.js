@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // 공통 URL 설정
 const apiClient = axios.create({
-  baseURL: '', // 서버 기본 URL을 직접 입력하세요
+  baseURL: 'http://192.168.1.2:8080', // 서버 기본 URL을 직접 입력하세요
   headers: {
     "Content-Type": "application/json", // JSON 형식의 데이터를 보내기 위해 Content-Type을 application/json으로 설정
   }
@@ -74,6 +74,7 @@ export const checkTokenValidity = async () => {
         'Authorization': `Bearer ${token}`
       }
     });
+
     return response.data;
   } catch (error) {
     console.log('서버에서 반환된 오류 메시지:', error.response);

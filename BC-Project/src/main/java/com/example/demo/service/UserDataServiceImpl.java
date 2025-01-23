@@ -59,18 +59,18 @@ public class UserDataServiceImpl implements UserDataService {
     @Transactional(rollbackFor = Exception.class)
     public boolean registerUser(SignUpRequest request) {
         // 중복된 ID 확인
-        if (duplicateCheckUser(request.getUserId())) { // getUserId()는 이메일
+        if (duplicateCheckUser(request.getEmail())) { // getUserId()는 이메일
             return false; // 중복된 ID
         }
 
         // 비밀번호 해시 처리
-        String hashedPassword = passwordEncoder.encode(request.getPw()); // getPw() 사용
+        String hashedPassword = passwordEncoder.encode(request.getPassword()); // getPw() 사용
 
         // User 객체 생성
         User user = new User();
-        user.setEmail(request.getUserId()); // 사용자 ID (이메일)
+        user.setEmail(request.getEmail()); // 사용자 ID (이메일)
         user.setPassword(hashedPassword); // 해시된 비밀번호
-        user.setUsername(request.getNickname()); // 사용자 이름
+        user.setUsername(request.getUsername()); // 사용자 이름
         user.setBirthDate(request.getBirthDate()); // 생년월일
 
         // 데이터베이스에 저장
@@ -89,13 +89,13 @@ public class UserDataServiceImpl implements UserDataService {
 
         if (userOptional.isEmpty() || !passwordEncoder.matches(pw, userOptional.get().getPassword())) {
             logger.warn("Login failed for email: {}", email);
-            return new LoginResponse(null, 0, "ID나 비밀번호가 잘못되었습니다");
+            return new LoginResponse(null, 0, "ID나 비밀번호가 잘못되었습니다", null);
         }
 
         User user = userOptional.get();
         String jwtToken = jwtUtil.generateToken(user.getEmail());
         logger.info("Login successful for email: {}", email);
-        return new LoginResponse(jwtToken, 2, "로그인 성공");
+        return new LoginResponse(jwtToken, 2, "로그인 성공", user);
     }
 
 

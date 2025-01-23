@@ -56,16 +56,13 @@ def getServerIP():
     return {"server-ip": f"{SERVER_HOST}", "server-port": f"{SERVER_PORT}"}
 
 @app.post("/avatar/uploads")
-async def createMyAvatar(img: UploadFile = File(...), gender: str = Form(...)):
-    # 고객 uuid 대체용 임시 테스트
-    personal_uuid = uuid.uuid4()
-    
+async def createMyAvatar(img: UploadFile = File(...), gender: str = Form(...), userUID: str = Form(...)):    
     try:
         if not allowed_file(img.filename):
             raise HTTPException(status_code=400, detail="지원하지 않는 이미지 형식입니다.")
         ext = os.path.splitext(img.filename)[1]
         
-        folder_path = os.path.join(INPUT_FOLDER, f"{personal_uuid}")
+        folder_path = os.path.join(INPUT_FOLDER, f"{userUID}")
         if not os.path.exists(folder_path):
             os.makedirs(folder_path)
             
@@ -74,10 +71,10 @@ async def createMyAvatar(img: UploadFile = File(...), gender: str = Form(...)):
         with open(img_path, "wb") as f:
             f.write(await img.read())
             
-        avatar_module.main(uid_img, personal_uuid, gender)
-        result_path = f"./output/avatar_{personal_uuid}_00001_.jpg"
+        avatar_module.main(uid_img, userUID, gender)
+        result_path = f"./output/avatar_{userUID}_00001_.jpg"
             
-        new_file_director = f"./output/{personal_uuid}"
+        new_file_director = f"./output/{userUID}"
         if not os.path.exists(new_file_director):
             os.makedirs(new_file_director)
         new_file_path = os.path.join(new_file_director, "myAvatar.jpg")
@@ -107,7 +104,7 @@ async def createMyAvatar(img: UploadFile = File(...), gender: str = Form(...)):
     return {
         "message": "Images uploaded successfully",
         "result_path": new_file_path,
-        "avatarUrl": f"http://192.168.1.4:1000/output/{personal_uuid}/myAvatar.jpg"
+        "avatarUrl": f"http://192.168.1.4:1000/output/{userUID}/myAvatar.jpg"
     }
     
 def allowed_file(filename):
