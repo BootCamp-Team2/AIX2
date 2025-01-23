@@ -5,6 +5,7 @@ import { SignUpUser, checkID } from "../api/authAPI";
 import DateTimePicker from '@react-native-community/datetimepicker'; 
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import { FormCheck } from 'react-native-elements';
 
 const SignUpScreen = () => {
   const navigation = useNavigation();
@@ -13,6 +14,7 @@ const SignUpScreen = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [mbti, setmbti] = useState('');
   const [nickname, setNickname] = useState('');
+  const [gender, setGender] = useState('');
   const [hobby, sethobby] = useState('');
   const [region, setregion] = useState('');
   const [birthDate, setBirthDate] = useState(new Date()); // 초기값 Date 객체로 설정
@@ -35,6 +37,7 @@ const SignUpScreen = () => {
       setConfirmPassword('');
       setmbti('');
       setNickname('');
+      setGender('');
       sethobby('');
       setregion('');
       setBirthDate(new Date());
@@ -79,7 +82,7 @@ const handleConfirmPassword = (text) => { // 비밀번호 일치 여부 즉시 �
 };
 
 const handleSignUp = async () => {  // 회원가입 버튼 핸들러
-  if (!email || !password || !confirmPassword || !mbti || !nickname || !hobby || !region || !birthDate) {
+  if (!email || !password || !confirmPassword || !mbti || !nickname || !gender || !hobby || !region || !birthDate) {
      setFormError("모든 항목을 입력해 주세요.");
      return;
   }
@@ -126,7 +129,7 @@ const handleSignUp = async () => {  // 회원가입 버튼 핸들러
   console.log(password);
   
   try { // 서버로 회원가입 데이터 전송 후 응답 대기
-     const response = await SignUpUser(email, password, nickname, formattedBirthDate, hobby, mbti, region);
+     const response = await SignUpUser(email, password, nickname, gender, formattedBirthDate, hobby, mbti, region);
      if (response) {
         navigation.navigate("LoginScreen", { screen: 'LoginScreen' }); // 로그인 화면 이동
      } else {
@@ -239,6 +242,15 @@ const handleSignUp = async () => {  // 회원가입 버튼 핸들러
                 placeholder="닉네임"
                 placeholderTextColor="#D9D9D9"
                 value={nickname}
+              />
+
+              <Text style={Styles.text}>성별</Text>
+              <TextInput 
+                style={Styles.TextInput} 
+                onChangeText={setGender}
+                placeholder="성별"
+                placeholderTextColor="#D9D9D9"
+                value={gender}
               />
 
               <Text style={Styles.text}>취미</Text>

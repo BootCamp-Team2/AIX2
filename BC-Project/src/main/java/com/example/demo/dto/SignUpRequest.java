@@ -24,6 +24,8 @@ public class SignUpRequest {
     @NotBlank(message = "닉네임 입력")
     private String username; // 사용자 이름
 
+    @Pattern(regexp = "(남성|여성)$", message = "유효하지 않는 성별입니다. (남성 / 여성) 입력해주세요.")
+    private String gender;
     private LocalDate birthDate; // 생년월일
     private String region;         // 지역
     private String hobby;        // 취미
@@ -38,6 +40,7 @@ public class SignUpRequest {
                 "email='" + email + '\'' +
                 ", pw='" + password + '\'' +
                 ", nickname='" + username + '\'' +
+                ", gender='" + gender + '\'' +
                 ", birthDate=" + birthDate +
                 ", region='" + region + '\'' +
                 ", hobby='" + hobby + '\'' +

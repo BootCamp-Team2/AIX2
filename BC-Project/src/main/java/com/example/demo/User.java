@@ -32,6 +32,9 @@ public class User {
     @Column(nullable = false, length = 50)
     private String username; // 닉네임
 
+    @Column(length = 255)
+    private String gender; // 성별
+
     @Column(length = 10)
     private String mbti; // MBTI
 
@@ -98,6 +101,14 @@ public class User {
 
     public void setUsername(String username) {  
         this.username = username;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 
     public String getMbti() {
