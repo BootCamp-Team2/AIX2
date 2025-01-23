@@ -68,6 +68,7 @@ public class UserController {
         user.setEmail(signUpRequest.getEmail()); // 이메일
         user.setPassword(signUpRequest.getPassword()); // 비밀번호
         user.setUsername(signUpRequest.getUsername()); // 닉네임
+        user.setGender(signUpRequest.getGender()); // 성별
         user.setBirthDate(signUpRequest.getBirthDate()); // 생년월일
         user.setRegion(signUpRequest.getRegion()); // 지역
         user.setHobby(signUpRequest.getHobby()); // 취미

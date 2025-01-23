@@ -101,11 +101,12 @@ export const checkID = async (email) => {
 /**
  * 회원가입 API
  */
-export const SignUpUser = async (email, password, nickname, birthDate, hobby, mbti, region) => {
+export const SignUpUser = async (email, password, nickname, gender, birthDate, hobby, mbti, region) => {
   const data = {
     email: email,
     password: password,
     username: nickname, // 수정된 변수 이름
+    gender: gender,
     birthDate: birthDate,
     hobby: hobby,
     mbti:mbti,
