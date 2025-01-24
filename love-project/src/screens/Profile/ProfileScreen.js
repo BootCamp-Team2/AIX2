@@ -9,6 +9,7 @@ import Icon4 from 'react-native-vector-icons/FontAwesome5';
 import Icon5 from 'react-native-vector-icons/MaterialCommunityIcons';
 import AddProfileModal from '../../components/Modal/AddProfileModal';
 import EditProfileModal from '../../components/Modal/EditProfileModal';
+import EditBasiccProfileModal from '../../components/Modal/EditBasicProfileModal';
 
 const ProfileScreen = () => {
     const navigation = useNavigation();
@@ -26,7 +27,7 @@ const ProfileScreen = () => {
     const [additionalInfo, setAdditionalInfo] = useState([]);
     const [showInput, setShowInput] = useState(false); // 추가 정보 입력 필드 보이기 상태
     const [showEditButtons, setShowEditButtons] = useState(false); // 수정 버튼 보이기 상태
-    //const [isCircleFront, setIsCircleFront] = useState(false);
+    const [isCircleFront, setIsCircleFront] = useState(false);
     const [editMode, setEditMode] = useState(null); // 수정 모드 (수정 중인 항목의 인덱스를 저장)
     const [mediaList, setMediaList] = useState([]); // 업로드된 미디어 리스트 상태
     const [numColumns, setNumColumns] = useState(2); // numColumns 상태 관리
@@ -34,33 +35,32 @@ const ProfileScreen = () => {
     const [editItem, setEditItem] = useState(null); // 편집할 항목 데이터
     const [addProfileModalVisible, setAddProfileModalVisible] = useState(false); // 추가 모달 상태
     const [editProfileModalVisible, setEditProfileModalVisible] = useState(false); // 수정 모달 상태
+    const [editBasicProfileModalVisible, setEditBasicProfileModalVisible] = useState(false); // 기본 정보 수정 모달 상태
     const [avatarUri, setAvatarUri] = useState(null);
-    const [profilePhotoUri, setProfilePhotoUri] = useState(null); // 프로필 사진 URI
-    const isCircleFront = true; // 예제 값, 실제 로직에 따라 변경
-
     const route = useRoute();
-    const { userData } = route.params;
+    const [profilePhotoUri, setProfilePhotoUri] = useState(null); // 프로필 사진 URI
 
-    // useFocusEffect(
-    //     React.useCallback(() => {
-    //       const fetchUserData = async () => {
-    //         try {
-    //           const userInfo = await fetchUserInfo();
-    //           setNickname(userInfo.nickname);
-    //           setEmail(userInfo.id);
-    //         } catch (error) {
-    //           console.error('사용자 정보 가져오기 실패:', error);
-    //         }
-    //       };
+
+    useFocusEffect(
+        React.useCallback(() => {
+          const fetchUserData = async () => {
+            try {
+              const userInfo = await fetchUserInfo();
+              setNickname(userInfo.nickname);
+              setEmail(userInfo.id);
+            } catch (error) {
+              console.error('사용자 정보 가져오기 실패:', error);
+            }
+          };
     
-    //       fetchUserData(); // 화면 포커스 시 사용자 데이터 가져오기
+          fetchUserData(); // 화면 포커스 시 사용자 데이터 가져오기
     
-    //       // 클린업 함수 (필요할 경우)
-    //       return () => {
-    //         // 정리 작업이 필요하다면 여기에 작성
-    //       };
-    //     }, [])
-    //   );
+          // 클린업 함수 (필요할 경우)
+          return () => {
+            // 정리 작업이 필요하다면 여기에 작성
+          };
+        }, [])
+      );
 
       useEffect(() => {
         if (route.params?.avatarUri) {
@@ -72,21 +72,34 @@ const ProfileScreen = () => {
     // 수정 버튼을 눌렀을 때 저장 처리
     const handleSaveEdit = (title, value) => {
         if (editMode !== null) {
-            // 수정 모드일 때
-            const updatedInfo = [...additionalInfo];
-            updatedInfo[editMode] = { title, value }; // 수정된 항목 업데이트
-            setAdditionalInfo(updatedInfo);
+            // 수정 모드일 때 추가 정보 수정
+            setAdditionalInfo((prev) => {
+                const updatedInfo = [...prev];
+                updatedInfo[editMode] = { title, value }; // 수정된 항목 업데이트
+                return updatedInfo;
+            });
         } else {
-            // 새 항목 추가 모드일 때
-            setAdditionalInfo([
-                ...additionalInfo,
-                { title, value }, // 새로운 항목 추가
-            ]);
+            // 기본 정보 수정 모드일 때 (예: MBTI, 나이, 지역 등)
+            setProfileData((profileData) => ({
+                ...profileData,
+                [title]: value, // 수정된 기본 정보 항목만 업데이트
+            }));
         }
-        setEditProfileModalVisible(false); // 수정 모달 닫기
-        setAddProfileModalVisible(false); // 추가 정보 모달 닫기
+    
+        // 수정/추가 모달 닫기
+        setEditBasicProfileModalVisible(false);
+        setEditProfileModalVisible(false);
+        setAddProfileModalVisible(false);
     };
     
+
+    const handleBasicSaveEdit = (updatedItem) => {
+        setProfileData((prevData) => ({
+            ...prevData,
+            [updatedItem.key]: updatedItem.value, // 키는 유지하고 값만 업데이트
+        }));
+        setEditBasicProfileModalVisible(false); // 모달 닫기
+    };
     
 
     // 사진 선택 함수
@@ -221,6 +234,12 @@ const ProfileScreen = () => {
         setEditProfileModalVisible(true); // 수정 모달 열기
     };
 
+    // 기본 정보 수정 모달 열기
+    const handleBasicEdit = (key) => {
+        setEditItem({ key, value: profileData[key] }); // 수정할 키와 값을 설정
+        setEditBasicProfileModalVisible(true); // 모달 열기
+    };
+
 
 
     return (
@@ -287,7 +306,7 @@ const ProfileScreen = () => {
 
                 <View>
                     {isCircleFront === true && ( // overlappingCircle이 왼쪽에 있을 때만 렌더링
-                        <TouchableOpacity style={styles.avatarButton} onPress={() => navigation.navigate("AvatarScreen", { userUID : userData.userUID })}>
+                        <TouchableOpacity style={styles.avatarButton} onPress={() => navigation.navigate("AvatarScreen")}>
                             <Text style={styles.avatarText}>캐릭터 생성하기</Text>
                         </TouchableOpacity>
                     )}
@@ -322,59 +341,37 @@ const ProfileScreen = () => {
                     <View style={styles.infoRow}>
                         {['MBTI', '나이', '지역'].map((key) => (
                             <View key={key} style={styles.infoBox}>
-                                {editMode === key ? (
-                                    <TextInput
-                                        style={styles.input}
-                                        value={profileData[key]}
-                                        onChangeText={(text) => handleSaveEdit(key, text)}
-                                    />
-                                ) : (
-                                    <Text style={styles.infoText}>{key}: {profileData[key]}</Text>
-                                )}
+                                <Text style={styles.infoText}>{key}: {profileData[key]}</Text>
                                 {showEditButtons && (
-                                    editMode === key ? (
-                                        <TouchableOpacity onPress={() => { handleSaveEdit(key, profileData[key]); handleCloseEditMode(); }} style={styles.informationEditButton}>
-                                            <Text style={styles.editButtonText}>저장</Text>
-                                        </TouchableOpacity>
-                                    ) : (
-                                        <TouchableOpacity onPress={() => setEditMode(key)} style={styles.informationEditButton}>
+                                        <TouchableOpacity 
+                                            onPress={() => handleBasicEdit(key)} 
+                                            style={styles.informationEditButton}
+                                        >
                                             <Text style={styles.editButtonText}>수정</Text>
                                         </TouchableOpacity>
-                                    )
                                 )}
                             </View>
                         ))}
                     </View>
 
                     {/* 나머지 기본 프로필 정보 */}
-                    {Object.entries(profileData).map(([key, value]) => (
-                        key !== 'MBTI' && key !== '나이' && key !== '지역' && (
-                            <View style={styles.hobbyBox}>
-                                {editMode === key ? (
-                                    <TextInput
-                                        style={styles.input}
-                                        value={value}
-                                        onChangeText={(text) => handleSaveEdit(key, text)}
-                                    />
-                                ) : (
-                                    <Text style={styles.infoText}>
-                                        <Text style={styles.keyText}>{key}{'\n'}</Text>
-                                        <Text style={styles.valueText}> {value}</Text>
-                                    </Text>
-                                )}
+                    {Object.entries(profileData)
+                        .filter(([key]) => !['MBTI', '나이', '지역'].includes(key)) // 수정 가능한 키 필터링
+                        .map(([key, value]) => (
+                            <View style={styles.hobbyBox} key={key}>
+                                <Text style={styles.infoText}>
+                                    <Text style={styles.keyText}>{key}{'\n'}</Text>
+                                    <Text style={styles.valueText}> {value}</Text>
+                                </Text>
                                 {showEditButtons && (
-                                    editMode === key ? (
-                                        <TouchableOpacity onPress={() => setEditMode(null)} style={styles.informationEditButton}>
-                                            <Text style={styles.editButtonText}>저장</Text>
-                                        </TouchableOpacity>
-                                    ) : (
-                                        <TouchableOpacity onPress={() => setEditMode(key)} style={styles.informationEditButton}>
-                                            <Text style={styles.editButtonText}>수정</Text>
-                                        </TouchableOpacity>
-                                    )
+                                    <TouchableOpacity
+                                        onPress={() => handleBasicEdit(key)} // 클릭 시 수정 모달 오픈
+                                        style={styles.informationEditButton}
+                                    >
+                                        <Text style={styles.editButtonText}>수정</Text>
+                                    </TouchableOpacity>
                                 )}
                             </View>
-                        )
                     ))}
                             
                     {/* 추가 정보 수정 UI */}
@@ -396,6 +393,18 @@ const ProfileScreen = () => {
                             )}
                         </View>
                     ))}
+
+                    {/* 기본 정보 수정 모달 */}
+                    <EditBasiccProfileModal
+                        visible={editBasicProfileModalVisible}
+                        onClose={() => setEditBasicProfileModalVisible(false)}
+                        onSave={handleBasicSaveEdit} // 수정 저장 처리
+                        editItem={editItem} // 수정할 데이터 전달
+                        setEditItem={setEditItem} // 수정할 데이터 업데이트 함수 전달
+                        profileData={profileData} // 상태 전달
+                        setProfileData={setProfileData} // 상태 업데이트 함수 전달
+                    />
+                    
                     {/* 수정 모달 */}
                     <EditProfileModal
                         visible={editProfileModalVisible}
