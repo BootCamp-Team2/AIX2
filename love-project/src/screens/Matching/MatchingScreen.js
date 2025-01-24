@@ -57,44 +57,45 @@ const MatchingScreen = () => {
     return(
     <ScrollView>
     <View style={styles.container}>
-            <Text style={styles.top}>
-                <Icon name="menu" size={40} color="black" />
-                             
-                <Text style={styles.topText}>                   소개팅 매칭                  </Text>                       
-                                
-                <Icon name="check" size={40} color="black" />
-            </Text>
-            <Text style={styles.main}>
-                나와 맞는 사람을{'\n'}만나보세요!
-            </Text>
+        <View style={styles.header}>
+            <View style={styles.menu}>                   
+            <Icon name="menu" size={40} color="black"/>
+            </View> 
+                            
+            <Text style={styles.headerText}>소개팅 매칭</Text>  
             
-            <TouchableOpacity style={styles.heartBox} onPress={() => {loadMatching();}}>
-            <Animated.View style={{ transform: [{ scale: scaleValue }] }}>
-                <Font style={styles.heart}                    
-                name={liked ? 'heart' : 'heart-o'} 
-                size={250} 
-                color={liked ? 'red' : 'black'} 
-                />
-            </Animated.View>
-                <Text style={styles.heartText}>
-                매칭잡기!
-                </Text>
-            </TouchableOpacity>
+            <View style={styles.check}>                    
+            <Icon name="check" size={40} color="black"/>
+            </View>
+        </View>
+            
+        <TouchableOpacity style={styles.heartBox} onPress={() => {loadMatching();}}>
+        <Animated.View style={{ transform: [{ scale: scaleValue }] }}>
+            <Font style={styles.heart}                    
+            name={liked ? 'heart' : 'heart-o'} 
+            size={250} 
+            color={liked ? 'red' : 'black'} 
+            />
+        </Animated.View>
+            <Text style={styles.heartText}>
+            매칭잡기!
+            </Text>
+        </TouchableOpacity>
 
-            <TouchableOpacity style={styles.information}>
-                <Text style={styles.informationText}>
-                    나의 정보
-                </Text>
-                <Text style={styles.informText}>
-                    MBTI: ISTP{'\n'}
-                    나이: 25{'\n'}
-                    지역: 서울{'\n'}
-                </Text>
-            </TouchableOpacity>
+        <TouchableOpacity style={styles.information}>
+            <Text style={styles.informationText}>
+                나의 정보
+            </Text>
+            <Text style={styles.informText}>
+                MBTI: ISTP{'\n'}
+                나이: 25{'\n'}
+                지역: 서울{'\n'}
+            </Text>
+        </TouchableOpacity>
 
-            <Text style={styles.text}>
-                나의 정보를 바탕으로 매칭돼요!
-            </Text>                           
+        <Text style={styles.text}>
+            나의 정보를 바탕으로 매칭돼요!
+        </Text>                           
      </View>
     </ScrollView>
                 );
@@ -106,25 +107,43 @@ const styles = StyleSheet.create({
         flex:1,        
     },
     
-    top: {
-        backgroundColor: '#FFF0F0', 
-        alignSelf: 'center',
-        marginBottom: 30,  
-        padding:10, 
-        textAlign:'center', 
+    menu: {
+        position: 'absolute', // 절대 위치 지정
+        top: 15, // 상단에서 50px
+        left: 10, // 왼쪽에서 20px
+        width:'20%'
+    },
+
+    check: {
+        position: 'absolute', // 절대 위치 지정
+        top: 15, // 상단에서 50px
+        right: -20, // 왼쪽에서 20px
+        width:'20%'
+    },
+
+    header: { 
+        backgroundColor: '#FFF0F0',
+        marginBottom: 20, 
+        fontSize:26, 
+        paddingTop:15, 
         width: '100%',  
         height: 70,
         flexDirection: 'row', // Arrange children in a row
         alignItems: 'center', // Vertically center all items
-        justifyContent: 'space-between',
-    },                
+        justifyContent: 'center',
+        textAlign:'center', 
+        alignSelf: 'center',
+    },
 
-    topText: { 
+    headerText: {
+        position: 'absolute',
+        textAlign: 'center', // Center text horizontally within its space
         color : 'black',
         alignSelf: 'center',
-        fontSize:24,        
-        textAlign:'center',                    
-        flex: 1, // Take up remaining space between the icons                             
+        justifyContent: 'center',
+        fontSize:26,  
+        width:'100%',
+        marginTop:15     
     },
     
     main: { 
