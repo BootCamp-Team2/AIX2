@@ -139,7 +139,7 @@ const ConversationScreen = () => {
                         <ActivityIndicator size="large" color="#FFB89A" style={styles.loader} />
                     )}
 
-                <TouchableOpacity style={styles.button2} onPress={() => navigation.navigate("AssistantSelect")}>
+                <TouchableOpacity style={styles.button2} onPress={() => navigation.navigate("AssistantSelect", {userUID})}>
                     <Text style={styles.button2Text}>
                                 AI 대화 바로가기
                     </Text>            
