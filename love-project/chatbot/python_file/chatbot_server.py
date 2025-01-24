@@ -38,20 +38,13 @@ emotion_model = initialize_emotion_model()
 def initialize_database():
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS users (
-            useruid VARCHAR(255) PRIMARY KEY,
+            id BIGINT PRIMARY KEY AUTO_INCREMENT,
+            useruid VARCHAR(255),
             thread_key VARCHAR(255),
             assistant_key VARCHAR(255)
         )
     ''')
     db.commit()
-
-# 사용자 유효성 검사 함수
-def validate_user(userUID):
-    cursor.execute("SELECT thread_key FROM users WHERE useruid = %s", (userUID,))
-    result = cursor.fetchone()
-    if not result:
-        return None
-    return result[0]
 
 # OpenAI 메시지 전송 및 응답 처리 함수
 def send_message(thread_id, content):
@@ -73,11 +66,27 @@ def wait_for_completion(thread_id, run_id):
         run = client.beta.threads.runs.retrieve(thread_id=thread_id, run_id=run_id)
         if run.status == "completed":
             break
-        time.sleep(0.1)
+        time.sleep(2.0)
 
 def list_messages(thread_id):
     messages = client.beta.threads.messages.list(thread_id)
     return messages.data[0].content[0].text.value
+
+def get_partner_id(partner_id):
+    """
+    어시스턴트 ID를 .env에서 가져오는 함수
+    """
+    if partner_id.upper() == "HANA":
+        partner_id_env = os.getenv("REACT_APP_PARTNER_ID_HANA")
+    elif partner_id.upper() == "HWARANG":
+        partner_id_env = os.getenv("REACT_APP_PARTNER_ID_HWARANG")
+    else:
+        raise ValueError(f"Invalid partner_id: {partner_id}")
+
+    if not partner_id_env:
+        raise Exception(f"{partner_id}에 대한 어시스턴트 키가 .env 파일에 설정되지 않았습니다.")
+    return partner_id_env
+
 
 # Flask 앱 설정
 app = Flask(__name__)
@@ -94,39 +103,77 @@ def start_conversation():
         if not userUID or not partner_id:
             return jsonify({"error": "userUID와 partner_id는 필수입니다."}), 400
 
-        thread_key = validate_user(userUID)
-        if not thread_key:
-            return jsonify({"error": "유효하지 않은 사용자입니다."}), 404
+        # 새 스레드 생성
+        thread = client.beta.threads.create()
+        thread_key = thread.id
+
+        # 스레드와 어시스턴트 키를 저장
+        cursor.execute('''
+            UPDATE users
+            SET thread_key = %s, assistant_key = %s
+            WHERE useruid = %s
+        ''', (thread_key, partner_id, userUID))
+        db.commit()
 
         return jsonify({"thread_key": thread_key, "assistant_key": partner_id}), 200
     except Exception as e:
         logging.error(f"Error starting conversation: {e}")
-        return jsonify({"error": "서버 오류가 발생했습니다."}), 500
+        return jsonify({"error": "스레드 생성 중 오류가 발생했습니다."}), 500
+
+# 스레드 불러오기
+@app.route('/get-thread', methods=['POST'])
+def get_thread():
+    try:
+        data = request.get_json()
+        userUID = data.get("userUID")
+
+        if not userUID:
+            return jsonify({"error": "userUID는 필수입니다."}), 400
+
+        cursor.execute("SELECT thread_key, assistant_key FROM users WHERE useruid = %s", (userUID,))
+        result = cursor.fetchone()
+
+        if not result:
+            return jsonify({"error": "스레드가 존재하지 않습니다."}), 404
+
+        return jsonify({"thread_key": result[0], "assistant_key": result[1]}), 200
+    except Exception as e:
+        logging.error(f"Error fetching thread: {e}")
+        return jsonify({"error": "스레드 조회 중 오류가 발생했습니다."}), 500
 
 # 감정 분석 및 대화 처리
 @app.route('/chat', methods=['POST'])
 def chat():
     try:
         data = request.get_json()
+        logging.info(f"Received chat data: {data}")
+
         user_input = data.get("content")
         userUID = data.get("userUID")
         partner_id = data.get("partner_id")
+        thread_key = data.get("thread_key")
 
-        if not userUID or not user_input or not partner_id:
+        if not userUID or not user_input or not partner_id or not thread_key:
+            logging.error("필수 데이터 누락.")
             return jsonify({"error": "필수 데이터가 누락되었습니다."}), 400
 
-        thread_key = validate_user(userUID)
-        if not thread_key:
-            return jsonify({"error": "유효하지 않은 사용자입니다."}), 404
+        # 스레드 키 확인
+        cursor.execute("SELECT thread_key FROM users WHERE useruid = %s", (userUID,))
+        result = cursor.fetchone()
+        if not result or result[0] != thread_key:
+            logging.error(f"Invalid thread_key: {thread_key}")
+            return jsonify({"error": "유효하지 않은 thread_key입니다."}), 404
 
+        # OpenAI API에서 사용할 실제 어시스턴트 ID 가져오기
+        assistant_id = get_partner_id(partner_id)
+
+        # OpenAI 대화 처리
         send_message(thread_key, user_input)
-        run_id = activate_message(thread_key, partner_id)
+        run_id = activate_message(thread_key, assistant_id)
         wait_for_completion(thread_key, run_id)
         response = list_messages(thread_key)
 
-        user_emotion = analyze_emotion(user_input)
-
-        return jsonify({"response": response, "user_emotion": user_emotion}), 200
+        return jsonify({"response": response}), 200
     except Exception as e:
         logging.error(f"Chat error: {e}")
         return jsonify({"error": "서버 오류가 발생했습니다."}), 500
@@ -142,8 +189,9 @@ def dating_coaching():
             return jsonify({"error": "대화 기록이 없습니다."}), 400
 
         # 감정 분석 및 코칭 결과 처리
-        
-        coaching_response, emotions = process_dating_coaching_with_chat_history(chat_history, emotion_model)
+        coaching_response, emotions = process_dating_coaching_with_chat_history(
+            chat_history, emotion_model, client, send_message, activate_message, wait_for_completion, list_messages
+        )
 
         return jsonify({"response": coaching_response, "emotions": emotions})
     except Exception as e:
