@@ -1,12 +1,15 @@
 import React, { useState }  from 'react';
 
 import { ActivityIndicator, KeyboardAvoidingView, Platform, TextInput, View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import axios from 'axios';
 
 
 const ConversationScreen = () => {
+    const route = useRoute();
+    const { userUID } = route.params;
+
     const navigation = useNavigation();
     const [simulatorUri, setSimulatorUri] = useState(null);
     const [loading, setLoading] = useState(null);
@@ -27,6 +30,7 @@ const ConversationScreen = () => {
         const formData = new FormData();
         formData.append("ideal_type", inputValue);
         formData.append("gender", gender);
+        formData.append("userUID", userUID);
         
         console.log(`Your Input idealType: ${inputValue}`)
 
@@ -35,7 +39,7 @@ const ConversationScreen = () => {
           
             const sel_formData = new FormData();
             sel_formData.append("type", "sim");
-            const select_r = await axios.post("http://192.168.1.4:1000/select-server", sel_formData, {
+            const select_r = await axios.post("http://192.168.1.3:1000/select-server", sel_formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -135,7 +139,7 @@ const ConversationScreen = () => {
                         <ActivityIndicator size="large" color="#FFB89A" style={styles.loader} />
                     )}
 
-                <TouchableOpacity style={styles.button2} onPress={() => navigation.navigate("AssistantSelect")}>
+                <TouchableOpacity style={styles.button2} onPress={() => navigation.navigate("AssistantSelect", {userUID})}>
                     <Text style={styles.button2Text}>
                                 AI 대화 바로가기
                     </Text>            
