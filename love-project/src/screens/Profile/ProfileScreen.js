@@ -341,25 +341,14 @@ const ProfileScreen = () => {
                     <View style={styles.infoRow}>
                         {['MBTI', '나이', '지역'].map((key) => (
                             <View key={key} style={styles.infoBox}>
-                                {editMode === key ? (
-                                    <TextInput
-                                        style={styles.input}
-                                        value={profileData[key]}
-                                        onChangeText={(text) => handleSaveEdit(key, text)}
-                                    />
-                                ) : (
-                                    <Text style={styles.infoText}>{key}: {profileData[key]}</Text>
-                                )}
+                                <Text style={styles.infoText}>{key}: {profileData[key]}</Text>
                                 {showEditButtons && (
-                                    editMode === key ? (
-                                        <TouchableOpacity onPress={() => { handleSaveEdit(key, profileData[key]); handleCloseEditMode(); }} style={styles.informationEditButton}>
-                                            <Text style={styles.editButtonText}>저장</Text>
-                                        </TouchableOpacity>
-                                    ) : (
-                                        <TouchableOpacity onPress={() => setEditMode(key)} style={styles.informationEditButton}>
+                                        <TouchableOpacity 
+                                            onPress={() => handleBasicEdit(key)} 
+                                            style={styles.informationEditButton}
+                                        >
                                             <Text style={styles.editButtonText}>수정</Text>
                                         </TouchableOpacity>
-                                    )
                                 )}
                             </View>
                         ))}
