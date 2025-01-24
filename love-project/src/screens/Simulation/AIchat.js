@@ -1,136 +1,206 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, ScrollView, StyleSheet, Alert, TouchableOpacity } from 'react-native';
+// AIchat.js
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
-const AIchat = ({ navigation, route }) => {
-    const { assistantId, threadKey, userUID } = route.params; // userUID 추가
-    const [messages, setMessages] = useState([]);
-    const [userMessage, setUserMessage] = useState('');
-    const [chatHistory, setChatHistory] = useState([]);
+const serverURL = "http://192.168.1.30:5000"; // 서버 URL 전역 변수
 
-    const serverIP = 'http://192.168.1.30:5000'; // 서버 IP 주소
+const AIchat = ({ route }) => {
+  const navigation = useNavigation();
+  const { threadKey, assistantId, userUID, idealPhoto } = route.params;
+  const [messages, setMessages] = useState([]);
+  const [inputText, setInputText] = useState("");
+  const [profilePicture, setProfilePicture] = useState(null);
 
-    const handleSendMessage = async () => {
-        if (!userMessage.trim()) {
-            Alert.alert('Error', '메시지를 입력해주세요.');
-            return;
-        }
-    
-        if (!threadKey || !assistantId || !userUID) {
-            console.error("필수 데이터 누락:", { threadKey, assistantId, userUID });
-            Alert.alert('Error', '필수 데이터가 누락되었습니다.');
-            return;
-        }
-    
-        console.log("Sending chat request:", {
-            thread_key: threadKey,
-            content: userMessage,
-            partner_id: assistantId,
-            userUID: userUID,
+  useEffect(() => {
+    // Fetch initial messages
+    const fetchMessages = async () => {
+      try {
+        const response = await fetch(`${serverURL}/chat-history`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ threadKey, userUID }),
         });
-    
-        try {
-            const response = await fetch(`${serverIP}/chat`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    thread_key: threadKey,
-                    content: userMessage,
-                    partner_id: assistantId,
-                    userUID: userUID,
-                }),
-            });
-    
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Failed to send message');
-            }
-    
-            const data = await response.json();
-            setMessages((prevMessages) => [
-                ...prevMessages,
-                { role: 'user', content: userMessage },
-                { role: 'assistant', content: data.response },
-            ]);
-            setChatHistory((prevHistory) => [...prevHistory, userMessage, data.response]);
-            setUserMessage('');
-        } catch (error) {
-            console.error('Error during conversation:', error);
-            Alert.alert('Error', '메시지를 전송하는 동안 오류가 발생했습니다.');
-        }
-    };    
-
-    const handleCoaching = async () => {
-        try {
-            const response = await fetch(`${serverIP}/dating-coaching`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ chat_history: chatHistory }),
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Failed to fetch coaching data');
-            }
-
-            const data = await response.json();
-            navigation.navigate('CoachingScreen', { coachingResponse: data.response });
-        } catch (error) {
-            console.error('Error during coaching:', error);
-            Alert.alert('Error', '연애 코칭 데이터를 가져오는 동안 오류가 발생했습니다.');
-        }
+        const data = await response.json();
+        setMessages(data.messages || []);
+      } catch (error) {
+        console.error("Error fetching chat history:", error);
+      }
     };
 
-    return (
-        <View style={styles.container}>
-            <Text style={styles.title}>어시스턴트와 대화</Text>
-            <ScrollView style={styles.chatBox}>
-                {messages.map((msg, idx) => (
-                    <Text
-                        key={idx}
-                        style={msg.role === 'user' ? styles.userMessage : styles.assistantMessage}
-                    >
-                        {msg.role === 'user' ? 'You: ' : `${assistantId}: `}
-                        {msg.content}
-                    </Text>
-                ))}
-            </ScrollView>
-            <TextInput
-                style={styles.input}
-                placeholder="메시지를 입력하세요"
-                value={userMessage}
-                onChangeText={setUserMessage}
+    // Fetch user profile picture
+    const fetchProfilePicture = async () => {
+      try {
+        const response = await fetch(`${serverURL}/get-profile-picture?userUID=${userUID}`);
+        const data = await response.json();
+        setProfilePicture(data.profilePicture || "../love-project/assets/default-profile-male.png");
+      } catch (error) {
+        console.error("Error fetching profile picture:", error);
+        setProfilePicture("../love-project/assets/default-profile-male.png");
+      }
+    };
+
+    fetchMessages();
+    fetchProfilePicture();
+  }, [threadKey, userUID]);
+
+  const sendMessage = async () => {
+    if (!inputText.trim()) return;
+
+    const newMessage = {
+      role: "user",
+      content: inputText,
+    };
+    setMessages((prevMessages) => [...prevMessages, newMessage]);
+    setInputText("");
+
+    try {
+      const response = await fetch(`${serverURL}/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          thread_key: threadKey,
+          content: inputText,
+          partner_id: assistantId,
+          userUID,
+        }),
+      });
+      const data = await response.json();
+      setMessages((prevMessages) => [...prevMessages, { role: "assistant", content: data.response }]);
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>어시스턴트와 대화</Text>
+      <View style={styles.chatContainer}>
+        {messages.map((msg, index) => (
+          <View
+            key={index}
+            style={[
+              styles.messageRow,
+              msg.role === "user" ? styles.userRow : styles.assistantRow,
+            ]}
+          >
+            <Image
+              source={{ uri: msg.role === "user" ? profilePicture : idealPhoto }}
+              style={styles.profileImage}
             />
-            <Button title="Send" onPress={handleSendMessage} />
-            <TouchableOpacity style={styles.arrowButton} onPress={handleCoaching}>
-                <Text style={styles.arrowText}>→</Text>
-            </TouchableOpacity>
-        </View>
-    );
+            <Text
+              style={msg.role === "user" ? styles.userMessage : styles.assistantMessage}
+            >
+              {msg.content}
+            </Text>
+          </View>
+        ))}
+      </View>
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.input}
+          placeholder="메시지를 입력하세요"
+          value={inputText}
+          onChangeText={setInputText}
+        />
+        <TouchableOpacity style={styles.sendButton} onPress={sendMessage}>
+          <Text style={styles.sendButtonText}>SEND</Text>
+        </TouchableOpacity>
+      </View>
+      <TouchableOpacity
+        style={styles.coachingButton}
+        onPress={() => navigation.navigate("CoachingScreen")}
+      >
+        <Text style={styles.coachingButtonText}>대화 평가 ➡</Text>
+      </TouchableOpacity>
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, padding: 20, backgroundColor: '#fff' },
-    title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20, textAlign: 'center' },
-    chatBox: { flex: 1, marginBottom: 20, borderWidth: 1, borderColor: '#ccc', padding: 10, borderRadius: 5 },
-    userMessage: { textAlign: 'right', color: 'blue', marginVertical: 5 },
-    assistantMessage: { textAlign: 'left', color: 'green', marginVertical: 5 },
-    input: { height: 40, borderWidth: 1, borderColor: '#ccc', borderRadius: 5, paddingHorizontal: 10, marginBottom: 10 },
-    arrowButton: {
-        alignSelf: 'center',
-        marginTop: 10,
-        padding: 10,
-        backgroundColor: '#ff5757',
-        borderRadius: 50,
-    },
-    arrowText: {
-        fontSize: 24,
-        color: '#fff',
-        fontWeight: 'bold',
-    },
+  container: { flex: 1, backgroundColor: "#fff" },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    textAlign: "center",
+    color: "#FF9AAB",
+    marginVertical: 20,
+  },
+  chatContainer: {
+    flex: 1,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 10,
+    margin: 20,
+    backgroundColor: "#f9f9f9",
+  },
+  messageRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 5,
+  },
+  userRow: { justifyContent: "flex-end" },
+  assistantRow: { justifyContent: "flex-start" },
+  profileImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 10,
+  },
+  userMessage: {
+    backgroundColor: "#4CAF50",
+    color: "#fff",
+    padding: 10,
+    borderRadius: 10,
+    maxWidth: "75%",
+  },
+  assistantMessage: {
+    backgroundColor: "#FF9AAB",
+    color: "#fff",
+    padding: 10,
+    borderRadius: 10,
+    maxWidth: "75%",
+  },
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 10,
+    borderTopWidth: 1,
+    borderColor: "#ddd",
+  },
+  input: {
+    flex: 1,
+    height: 40,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 20,
+    paddingHorizontal: 15,
+    backgroundColor: "#fff",
+  },
+  sendButton: {
+    marginLeft: 10,
+    backgroundColor: "#4CAF50",
+    padding: 10,
+    borderRadius: 20,
+  },
+  sendButtonText: { color: "#fff", fontSize: 16 },
+  coachingButton: {
+    alignSelf: "center",
+    marginVertical: 20,
+    backgroundColor: "#FF9AAB",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+  },
+  coachingButtonText: { color: "#fff", fontSize: 16 },
 });
 
 export default AIchat;
