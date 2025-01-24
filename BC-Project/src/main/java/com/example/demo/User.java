@@ -65,6 +65,12 @@ public class User {
     @Column(name = "userUID", nullable = false, unique = true) // UUID 추가
     private String userUID; // UUID 필드 추가
 
+    @Column(name = "thread_key", length = 255)
+    private String thread_key;
+
+    @Column(name = "assistant_key", length = 255)
+    private String assistant_key;
+
     // 생성자
     public User() {
         this.userUID = UUID.randomUUID().toString(); // UUID 자동 생성

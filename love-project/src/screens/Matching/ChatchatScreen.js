@@ -28,7 +28,7 @@ const ChatScreen = ({ route }) => {
   // 메시지 불러오기
   const onLoadMessages = async () => {
     try {
-      const response = await axios.get("http://192.168.1.3:3000/get-chat", {
+      const response = await axios.get("http://192.168.1.35:3000/get-chat", {
         params: { userUID: userID, partnerUID: partnerID }
       });
 
