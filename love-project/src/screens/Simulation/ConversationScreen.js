@@ -39,7 +39,7 @@ const ConversationScreen = () => {
           
             const sel_formData = new FormData();
             sel_formData.append("type", "sim");
-            const select_r = await axios.post("http://192.168.1.3:1000/select-server", sel_formData, {
+            const select_r = await axios.post("http://192.168.1.35:1000/select-server", sel_formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
