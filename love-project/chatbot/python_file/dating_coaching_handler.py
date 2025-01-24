@@ -1,8 +1,7 @@
-from chatbot_server import client, send_message, activate_message, wait_for_completion, list_messages
 from analyzing_emotion import analyze_emotion
 import os
 
-def process_dating_coaching_with_chat_history(chat_history, emotion_model):
+def process_dating_coaching_with_chat_history(chat_history, emotion_model, client, send_message, activate_message, wait_for_completion, list_messages):
     """
     연애 코칭을 수행하는 함수.
     사용자의 채팅 기록을 어시스턴트에게 보내고 응답을 처리합니다.

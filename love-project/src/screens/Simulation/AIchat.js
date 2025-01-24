@@ -1,78 +1,86 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, ScrollView, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, Button, ScrollView, StyleSheet, Alert, TouchableOpacity } from 'react-native';
 
-const ConversationScreen = ({ navigation, route }) => {
-    const { assistantId, threadKey } = route.params; // 선택한 챗봇 ID와 대화 스레드 키
+const AIchat = ({ navigation, route }) => {
+    const { assistantId, threadKey, userUID } = route.params; // userUID 추가
     const [messages, setMessages] = useState([]);
     const [userMessage, setUserMessage] = useState('');
-    const [chatHistory, setChatHistory] = useState([]); // 대화 내역 저장
+    const [chatHistory, setChatHistory] = useState([]);
 
-    // 챗봇 이름 맵핑
-    const chatbotNames = {
-        HANA: 'Hana',
-        HWARANG: 'Hwarang',
-    };
-    const chatbotName = chatbotNames[assistantId] || 'Assistant'; // 기본값은 'Assistant'
+    const serverIP = 'http://192.168.1.30:5000'; // 서버 IP 주소
 
-    // 메시지 전송 함수
     const handleSendMessage = async () => {
         if (!userMessage.trim()) {
             Alert.alert('Error', '메시지를 입력해주세요.');
             return;
         }
-
+    
+        if (!threadKey || !assistantId || !userUID) {
+            console.error("필수 데이터 누락:", { threadKey, assistantId, userUID });
+            Alert.alert('Error', '필수 데이터가 누락되었습니다.');
+            return;
+        }
+    
+        console.log("Sending chat request:", {
+            thread_key: threadKey,
+            content: userMessage,
+            partner_id: assistantId,
+            userUID: userUID,
+        });
+    
         try {
-            const response = await fetch('http://192.168.0.101:5000/chat', {
+            const response = await fetch(`${serverIP}/chat`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                credentials: 'include',
                 body: JSON.stringify({
-                    thread_id: threadKey,
+                    thread_key: threadKey,
                     content: userMessage,
                     partner_id: assistantId,
+                    userUID: userUID,
                 }),
             });
-
+    
             if (!response.ok) {
-                throw new Error('Failed to send message');
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to send message');
             }
-
+    
             const data = await response.json();
             setMessages((prevMessages) => [
                 ...prevMessages,
                 { role: 'user', content: userMessage },
                 { role: 'assistant', content: data.response },
             ]);
-            setChatHistory((prevHistory) => [...prevHistory, `You: ${userMessage}`, `${chatbotName}: ${data.response}`]);
+            setChatHistory((prevHistory) => [...prevHistory, userMessage, data.response]);
             setUserMessage('');
         } catch (error) {
             console.error('Error during conversation:', error);
             Alert.alert('Error', '메시지를 전송하는 동안 오류가 발생했습니다.');
         }
-    };
+    };    
 
-    // 대화 종료 및 연애 코칭 요청 함수
-    const handleEndConversation = async () => {
+    const handleCoaching = async () => {
         try {
-            const response = await fetch('http://192.168.0.101:5000/dating-coaching', {
+            const response = await fetch(`${serverIP}/dating-coaching`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ chat_history: chatHistory }), // 대화 내역 전달
+                body: JSON.stringify({ chat_history: chatHistory }),
             });
 
             if (!response.ok) {
-                throw new Error('Failed to get dating coaching');
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to fetch coaching data');
             }
 
             const data = await response.json();
-            navigation.navigate('CoachingScreen', { coachingResponse: data.response }); // 코칭 화면으로 이동
+            navigation.navigate('CoachingScreen', { coachingResponse: data.response });
         } catch (error) {
-            console.error('Error fetching dating coaching:', error);
-            Alert.alert('Error', '연애 코칭을 가져오는 중 오류가 발생했습니다.');
+            console.error('Error during coaching:', error);
+            Alert.alert('Error', '연애 코칭 데이터를 가져오는 동안 오류가 발생했습니다.');
         }
     };
 
@@ -85,7 +93,7 @@ const ConversationScreen = ({ navigation, route }) => {
                         key={idx}
                         style={msg.role === 'user' ? styles.userMessage : styles.assistantMessage}
                     >
-                        {msg.role === 'user' ? 'You: ' : `${chatbotName}: `}
+                        {msg.role === 'user' ? 'You: ' : `${assistantId}: `}
                         {msg.content}
                     </Text>
                 ))}
@@ -97,7 +105,9 @@ const ConversationScreen = ({ navigation, route }) => {
                 onChangeText={setUserMessage}
             />
             <Button title="Send" onPress={handleSendMessage} />
-            <Button title="대화 종료" onPress={handleEndConversation} color="red" />
+            <TouchableOpacity style={styles.arrowButton} onPress={handleCoaching}>
+                <Text style={styles.arrowText}>→</Text>
+            </TouchableOpacity>
         </View>
     );
 };
@@ -109,6 +119,18 @@ const styles = StyleSheet.create({
     userMessage: { textAlign: 'right', color: 'blue', marginVertical: 5 },
     assistantMessage: { textAlign: 'left', color: 'green', marginVertical: 5 },
     input: { height: 40, borderWidth: 1, borderColor: '#ccc', borderRadius: 5, paddingHorizontal: 10, marginBottom: 10 },
+    arrowButton: {
+        alignSelf: 'center',
+        marginTop: 10,
+        padding: 10,
+        backgroundColor: '#ff5757',
+        borderRadius: 50,
+    },
+    arrowText: {
+        fontSize: 24,
+        color: '#fff',
+        fontWeight: 'bold',
+    },
 });
 
-export default ConversationScreen;
+export default AIchat;
