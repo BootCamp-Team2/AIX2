@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 import logging
 from openai import OpenAI
 import time
@@ -92,6 +92,12 @@ def get_partner_id(partner_id):
 app = Flask(__name__)
 CORS(app)
 
+UPLOAD_FOLDER = '../uploads'
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+# 정적 파일 제공 설정
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
 # 사용자 정보 검증 및 대화 시작
 @app.route('/start-conversation', methods=['POST'])
 def start_conversation():
@@ -99,6 +105,7 @@ def start_conversation():
         data = request.get_json()
         userUID = data.get("userUID")
         partner_id = data.get("partner_id")
+        ideal_photo = data.get("idealPhoto") or "love-project/assets/default-profile-male.png"
 
         if not userUID or not partner_id:
             return jsonify({"error": "userUID와 partner_id는 필수입니다."}), 400
@@ -107,7 +114,7 @@ def start_conversation():
         thread = client.beta.threads.create()
         thread_key = thread.id
 
-        # 스레드와 어시스턴트 키를 저장
+        # 스레드와 어시스턴트 키 저장
         cursor.execute('''
             UPDATE users
             SET thread_key = %s, assistant_key = %s
@@ -115,11 +122,11 @@ def start_conversation():
         ''', (thread_key, partner_id, userUID))
         db.commit()
 
-        return jsonify({"thread_key": thread_key, "assistant_key": partner_id}), 200
+        return jsonify({"thread_key": thread_key, "assistant_key": partner_id, "ideal_photo": ideal_photo}), 200
     except Exception as e:
         logging.error(f"Error starting conversation: {e}")
         return jsonify({"error": "스레드 생성 중 오류가 발생했습니다."}), 500
-
+    
 # 스레드 불러오기
 @app.route('/get-thread', methods=['POST'])
 def get_thread():
@@ -177,6 +184,55 @@ def chat():
     except Exception as e:
         logging.error(f"Chat error: {e}")
         return jsonify({"error": "서버 오류가 발생했습니다."}), 500
+
+@app.route('/get-profile-picture', methods=['GET'])
+def get_profile_picture():
+    try:
+        user_uid = request.args.get('userUID')
+        if not user_uid:
+            return jsonify({"error": "userUID is required"}), 400
+
+        # 사용자 프로필 사진 조회
+        cursor.execute("SELECT profile_picture FROM users WHERE useruid = %s", (user_uid,))
+        result = cursor.fetchone()
+
+        # 프로필 사진이 없을 경우 기본 이미지 경로 반환
+        if not result or not result.get('profile_picture'):
+            default_image_path = "love-project\assets\default-profile-male.png"
+            return jsonify({"profilePicture": default_image_path}), 200
+
+        # 프로필 사진이 있는 경우 해당 URL 반환
+        return jsonify({"profilePicture": result['profile_picture']}), 200
+
+    except Exception as e:
+        logging.error(f"Error fetching profile picture: {e}")
+        return jsonify({"error": "Server error"}), 500
+
+@app.route('/uploads/<filename>', methods=['GET'])
+def get_uploaded_file(filename):
+    """업로드된 파일 반환"""
+    try:
+        return send_from_directory(UPLOAD_FOLDER, filename)
+    except FileNotFoundError:
+        logging.error(f"File not found: {filename}")
+        return jsonify({"error": "File not found"}), 404
+
+@app.route('/upload-ideal-photo', methods=['POST'])
+def upload_ideal_photo():
+    try:
+        file = request.files['file']
+        if not file:
+            return jsonify({"error": "No file provided"}), 400
+
+        # 파일 저장 경로 설정
+        filename = f"ideal-photo-{int(time.time())}.jpg"
+        file_path = os.path.join(UPLOAD_FOLDER, filename)
+        file.save(file_path)
+
+        return jsonify({"message": "File uploaded successfully", "file_path": f"uploads/{filename}"}), 200
+    except Exception as e:
+        logging.error(f"Error uploading file: {e}")
+        return jsonify({"error": str(e)}), 500
 
 # 연애 코칭 처리
 @app.route('/dating-coaching', methods=['POST'])
