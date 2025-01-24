@@ -11,7 +11,12 @@ const Tab = createBottomTabNavigator();
 
 const TabBar = () => {
   const route = useRoute();
-  const { userData } = route.params;
+  // 기본값 설정
+  const userData = route.params?.userData || {
+    username: "Guest",
+    profile_picture: null,
+    userUID: null,
+  };
 
   return (
     <Tab.Navigator
