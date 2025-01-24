@@ -9,7 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 const AvatarScreen = () => {
   const route = useRoute();
-  const { userUID } = route.params;
+  const { userUID } = route.params  || { userUID: null }; // 기본값 설정
 
   const navigation = useNavigation();
   const [imageUri, setImageUri] = useState(null);
