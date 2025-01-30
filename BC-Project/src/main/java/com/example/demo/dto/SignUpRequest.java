@@ -28,11 +28,13 @@ public class SignUpRequest {
     private String gender;
     private LocalDate birthDate; // 생년월일
     private String region;         // 지역
-    private String hobby;        // 취미
+    private String age;        // 나이
 
     @NotBlank(message = "MBTI 입력")
     @Pattern(regexp = "^(ENFP|ENFJ|ESFP|ESFJ|ENTP|ENTJ|ESTP|ESTJ|INFP|INFJ|ISFP|ISFJ|INTP|INTJ|ISTP|ISTJ)$", message = "유효하지 않은 MBTI입니다.")
     private String mbti;
+    private String job;
+    private String introduce;
 
     @Override
     public String toString() {
@@ -43,8 +45,10 @@ public class SignUpRequest {
                 ", gender='" + gender + '\'' +
                 ", birthDate=" + birthDate +
                 ", region='" + region + '\'' +
-                ", hobby='" + hobby + '\'' +
+                ", hobby='" + age + '\'' +
                 ", mbti='" + mbti + '\'' +
+                ", job='" + job + '\'' +
+                ", introduce='" + introduce + '\'' +
                 '}';
     }
 }

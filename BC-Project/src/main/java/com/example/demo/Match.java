@@ -1,75 +1,116 @@
 package com.example.demo;
 
-import java.time.LocalDateTime;
+import java.util.List;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+// import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
-@Entity
+// @Entity
 @Table(name = "matches")
 public class Match {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@Column(name = "userUID")
+    private String userUID;
+	@Column(name = "myGender")
+    private String myGender;
+	@Column(name = "recommendGender")
+    private String recommendGender;
+	@Column(name = "myMBTI")
+    private String myMBTI;
 
-    @ManyToOne
-    @JoinColumn(name = "user1_id")
-    private User user1;
+	@Column(name = "recommendMBTI", columnDefinition = "json")
+    private List<String> recommendMBTI;
 
-    @ManyToOne
-    @JoinColumn(name = "user2_id")
-    private User user2;
+	@Column(name = "myHeight")
+	private String myHeight;
+	@Column(name = "favoriteHeight")
+	private String favoriteHeight;
 
-    @Column(name = "matched_at")
-    private LocalDateTime matchedAt;
+	@Column(name = "myAppearance", columnDefinition = "json")
+	private List<String> myAppearance;
+	@Column(name = "favoriteAppearance", columnDefinition = "json")
+	private List<String> favoriteAppearance;
 
-    private String status;
+	// Getter and Setter for userUID
+    public String getUserUID() {
+        return userUID;
+    }
 
-	public Long getId() {
-		return id;
-	}
+    public void setUserUID(String userUID) {
+        this.userUID = userUID;
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    // Getter and Setter for myGender
+    public String getMyGender() {
+        return myGender;
+    }
 
-	public User getUser1() {
-		return user1;
-	}
+    public void setMyGender(String myGender) {
+        this.myGender = myGender;
+    }
 
-	public void setUser1(User user1) {
-		this.user1 = user1;
-	}
+    // Getter and Setter for recommendGender
+    public String getRecommendGender() {
+        return recommendGender;
+    }
 
-	public User getUser2() {
-		return user2;
-	}
+    public void setRecommendGender(String recommendGender) {
+        this.recommendGender = recommendGender;
+    }
 
-	public void setUser2(User user2) {
-		this.user2 = user2;
-	}
+    // Getter and Setter for myMBTI
+    public String getMyMBTI() {
+        return myMBTI;
+    }
 
-	public LocalDateTime getMatchedAt() {
-		return matchedAt;
-	}
+    public void setMyMBTI(String myMBTI) {
+        this.myMBTI = myMBTI;
+    }
 
-	public void setMatchedAt(LocalDateTime matchedAt) {
-		this.matchedAt = matchedAt;
-	}
+    // Getter and Setter for recommendMBTI
+    public List<String> getRecommendMBTI() {
+        return recommendMBTI;
+    }
 
-	public String getStatus() {
-		return status;
-	}
+    public void setRecommendMBTI(List<String> recommendMBTI) {
+        this.recommendMBTI = recommendMBTI;
+    }
 
-	public void setStatus(String status) {
-		this.status = status;
-	}
+    // Getter and Setter for myHeight
+    public String getMyHeight() {
+        return myHeight;
+    }
 
-    // Getters and Setters
+    public void setMyHeight(String myHeight) {
+        this.myHeight = myHeight;
+    }
+
+    // Getter and Setter for favoriteHeight
+    public String getFavoriteHeight() {
+        return favoriteHeight;
+    }
+
+    public void setFavoriteHeight(String favoriteHeight) {
+        this.favoriteHeight = favoriteHeight;
+    }
+
+    // Getter and Setter for myAppearance
+    public List<String> getMyAppearance() {
+        return myAppearance;
+    }
+
+    public void setMyAppearance(List<String> myAppearance) {
+        this.myAppearance = myAppearance;
+    }
+
+    // Getter and Setter for favoriteAppearance
+    public List<String> getFavoriteAppearance() {
+        return favoriteAppearance;
+    }
+
+    public void setFavoriteAppearance(List<String> favoriteAppearance) {
+        this.favoriteAppearance = favoriteAppearance;
+    }
 }

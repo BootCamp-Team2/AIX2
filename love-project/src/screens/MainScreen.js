@@ -1,18 +1,24 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Image, View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const MainScreen = () => {
-  const route = useRoute();
-  const { userData } = route.params;
-
   const navigation = useNavigation();
+  const [userData, setUserData] = useState({});
+  useEffect(() => {
+    const loadUserData = async () => {
+      setUserData(JSON.parse(await AsyncStorage.getItem('userData')));
+    };
+
+    loadUserData();
+  }, []);
 
   return (
   <ScrollView>
     <View style={styles.container}>
       <View style={styles.header}>
-        <Image source={userData.profile_picture ? {uri: userData.prpfile_picture} : require('../../assets/MainScreen/ima.jpg')} 
+        <Image source={userData.profile_picture ? {uri: userData.profile_picture} : require('../../assets/MainScreen/ima.jpg')} 
                 style={{width : 50, 
                         height : 50,
                         borderRadius: 30,
@@ -40,7 +46,7 @@ const MainScreen = () => {
         </Text>
       </View>
 
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("MatchingScreen", {userUID: "0026469667"})}>      
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("MatchingScreen", {userUID: "0026469667", userData: userData})}>      
         <View>
           <Image source={require('../../assets/MainScreen/matching.jpg')} 
               style={{width : 70, 

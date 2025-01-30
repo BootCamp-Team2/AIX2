@@ -12,7 +12,10 @@ import com.example.demo.dto.Password;
 import com.example.demo.dto.Response;
 import com.example.demo.dto.SignUpRequest;
 import com.example.demo.dto.UpdateBirthDate;
+import com.example.demo.dto.UpdateCharacterPicture;
+import com.example.demo.dto.UpdateMedia;
 import com.example.demo.dto.UpdateNickname;
+import com.example.demo.dto.UpdateProfileInfo;
 import com.example.demo.dto.UpdateResponse;
 
 public interface UserDataService {
@@ -29,5 +32,7 @@ public interface UserDataService {
 	public Response modifyPassword(String jwtToken, Password password);
 	public Response disableMfa(String jwtToken);
 	public User getUserByToken(String jwtToken);
-	
+	public UpdateResponse modifyProfileInfo(String jwtToken, UpdateProfileInfo modifyProfile);
+	public UpdateResponse modifyCharacterPicture(String jwtToken, UpdateCharacterPicture characterPicture);
+	public UpdateResponse modifyMedia(String jwtToken, UpdateMedia mediaString);
 }

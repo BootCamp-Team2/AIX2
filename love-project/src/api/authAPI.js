@@ -3,9 +3,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // 공통 URL 설정
 const apiClient = axios.create({
-  baseURL: 'http://192.168.1.2:8080', // 서버 기본 URL을 직접 입력하세요
+  baseURL: 'http://192.168.y.y:8080', // 서버 기본 URL을 직접 입력하세요
   headers: {
     "Content-Type": "application/json", // JSON 형식의 데이터를 보내기 위해 Content-Type을 application/json으로 설정
+  }
+});
+
+const matchClient = axios.create({
+  baseURL: 'http://192.168.x.x:2000',
+  headers: {
+    "Content-Type": "application/json",
   }
 });
 
@@ -39,7 +46,16 @@ export const loginUser = async (email, password) => {
     const response = await apiClient.post("/users/login", data); // 로그인 엔드포인트
     console.log('로그인 데이터 전송 성공:', response.data);
     
+    const userData = response.data.userData;
     const token = response.data.token;
+
+    if (userData) {
+      await AsyncStorage.setItem('userData', JSON.stringify(userData));
+      apiClient.defaults.headers['Authorization'] = `Bearer ${token}`; // 기본 설정의 Authorization 헤더에 추가
+      console.log("로컬 저장 유저정보:", userData);
+    } else {
+      console.log("토큰이 없으므로 저장하지 않습니다.");
+    }
 
     if (token) {
       await AsyncStorage.setItem('token', token);
@@ -101,14 +117,16 @@ export const checkID = async (email) => {
 /**
  * 회원가입 API
  */
-export const SignUpUser = async (email, password, nickname, gender, birthDate, hobby, mbti, region) => {
+export const SignUpUser = async (email, password, nickname, gender, age, region, job, introduce, birthDate, mbti) => {
   const data = {
     email: email,
     password: password,
     username: nickname, // 수정된 변수 이름
     gender: gender,
     birthDate: birthDate,
-    hobby: hobby,
+    age: age,
+    job: job,
+    introduce: introduce,
     mbti:mbti,
     region,region,
     secretKey: "secretKey" //시크릿키 설정
@@ -116,8 +134,23 @@ export const SignUpUser = async (email, password, nickname, gender, birthDate, h
 
 
   try {
+    // 스프링 유저관리
     const response = await apiClient.post("/users/signup", data); // 회원가입 엔드포인트
     console.log("회원가입 반환 데이터: ", response);
+
+    // 파이썬 매칭관리
+    if (response.data) {
+      await matchClient.post("settings/ideal", {
+        userUID: response.data.userUID,
+        myGender: response.data.gender,
+        myMBTI: response.data.mbti,
+        myHeight: null,
+        favoriteHeight: null,
+        myAppearance: null,
+        favoriteAppearance: null,
+      });
+    };
+
     return response.data;
   } catch (error) {
     console.error('회원가입 데이터 전송 오류:', error);

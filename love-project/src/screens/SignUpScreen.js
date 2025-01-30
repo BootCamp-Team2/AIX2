@@ -15,8 +15,10 @@ const SignUpScreen = () => {
   const [mbti, setmbti] = useState('');
   const [nickname, setNickname] = useState('');
   const [gender, setGender] = useState('');
-  const [hobby, sethobby] = useState('');
+  const [age, setAge] = useState('');
   const [region, setregion] = useState('');
+  const [job, setJob] = useState('');
+  const [introduce, setIntroduce] = useState('');
   const [birthDate, setBirthDate] = useState(new Date()); // 초기값 Date 객체로 설정
   const [isDuplicateID, setIsDuplicateID] = useState(false); // ID 중복 여부
   const [isPasswordVisible, setIsPasswordVisible] = useState(false); // 비밀번호 보이기 상태
@@ -38,8 +40,10 @@ const SignUpScreen = () => {
       setmbti('');
       setNickname('');
       setGender('');
-      sethobby('');
+      setAge('');
       setregion('');
+      setJob('');
+      setIntroduce('');
       setBirthDate(new Date());
       setIsDuplicateID(false);
       setIsIDChecked(false);
@@ -82,7 +86,7 @@ const handleConfirmPassword = (text) => { // 비밀번호 일치 여부 즉시 �
 };
 
 const handleSignUp = async () => {  // 회원가입 버튼 핸들러
-  if (!email || !password || !confirmPassword || !mbti || !nickname || !gender || !hobby || !region || !birthDate) {
+  if (!email || !password || !confirmPassword || !mbti || !nickname || !gender || !age || !region || !job || !introduce || !birthDate) {
      setFormError("모든 항목을 입력해 주세요.");
      return;
   }
@@ -129,7 +133,7 @@ const handleSignUp = async () => {  // 회원가입 버튼 핸들러
   console.log(password);
   
   try { // 서버로 회원가입 데이터 전송 후 응답 대기
-     const response = await SignUpUser(email, password, nickname, gender, formattedBirthDate, hobby, mbti, region);
+     const response = await SignUpUser(email, password, nickname, gender, age, region, job, introduce, formattedBirthDate, mbti, region);
      if (response) {
         navigation.navigate("LoginScreen", { screen: 'LoginScreen' }); // 로그인 화면 이동
      } else {
@@ -253,13 +257,13 @@ const handleSignUp = async () => {  // 회원가입 버튼 핸들러
                 value={gender}
               />
 
-              <Text style={Styles.text}>취미</Text>
+              <Text style={Styles.text}>나이</Text>
               <TextInput 
                 style={Styles.TextInput} 
-                onChangeText={sethobby}
-                placeholder="취미"
+                onChangeText={setAge}
+                placeholder="나이"
                 placeholderTextColor="#D9D9D9"
-                value={hobby}
+                value={age}
               />
 
               <Text style={Styles.text}>지역</Text>
@@ -269,6 +273,24 @@ const handleSignUp = async () => {  // 회원가입 버튼 핸들러
                 placeholder="지역"
                 placeholderTextColor="#D9D9D9"
                 value={region}
+              />
+
+              <Text style={Styles.text}>직업</Text>
+              <TextInput 
+                style={Styles.TextInput} 
+                onChangeText={setJob}
+                placeholder="직업"
+                placeholderTextColor="#D9D9D9"
+                value={job}
+              />
+
+              <Text style={Styles.text}>자기소개</Text>
+              <TextInput 
+                style={Styles.TextInput} 
+                onChangeText={setIntroduce}
+                placeholder="자기소개"
+                placeholderTextColor="#D9D9D9"
+                value={introduce}
               />
 
 

@@ -8,6 +8,7 @@ import ConversationScreen from './src/screens/Simulation/ConversationScreen';
 import LoginScreen from './src/screens/LoginScreen';
 import MatchingScreen from './src/screens/Matching/MatchingScreen';
 import MatchingChatScreen from './src/screens/Matching/MatchingChatScreen';
+import ModifyMatchInfo from './src/screens/Matching/ModifyMatchInfo';
 import ProfileScreen from './src/screens/Profile/ProfileScreen';
 import AvatarScreen from './src/screens/Profile/AvatarScreen';
 import SettingScreen from './src/screens/SettingScreen';
@@ -80,6 +81,11 @@ const MainNavigator = () => {
           name="MatchingScreen"
           component={MatchingScreen}
           options={{ headerTitle: '매칭 화면', headerTitleAlign: 'center' }}
+        />
+        <Stack.Screen
+          name="ModifyMatchInfo"
+          component={ModifyMatchInfo}
+          options={{ headerTitle: '매칭 정보 수정', headerTitleAlign: 'center' }}
         />
         <Stack.Screen
           name="MatchingChatScreen"

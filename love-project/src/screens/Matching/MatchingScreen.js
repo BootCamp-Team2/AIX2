@@ -1,27 +1,58 @@
-import React, { useState }  from 'react';
-import { Animated, View, Text, TouchableOpacity, StyleSheet, Platform, Modal, ScrollView } from 'react-native';
+import React, { useEffect, useState }  from 'react';
+import { ActivityIndicator, Animated, View, Text, TouchableOpacity, StyleSheet, Platform, Modal, ScrollView } from 'react-native';
 import Font from 'react-native-vector-icons/FontAwesome';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import axios from 'axios';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
+import ModifyMatchInfo from './ModifyMatchInfo';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const MatchingScreen = () => {
     const navigation = useNavigation();
-    const route = useRoute();
-    const { userUID } = route.params;
-
     const [liked, setLiked] = useState(false);
     const scaleValue = new Animated.Value(1);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [userMatchInfo, setUserMatchInfo] = useState(null);
+
+    const [userData, setUserData] = useState({});
+    useEffect(() => {
+        const loadUserData = async () => {
+            setUserData(JSON.parse(await AsyncStorage.getItem('userData')));
+        };
+
+        loadUserData();
+    }, []);
+
+    useEffect(() => {
+        if (!userData.userUID) return;
+
+        const loadMatchUser = async () => {
+            setLoading(true);
+            try {
+                const formData = new FormData();
+                formData.append("uid", userData.userUID);
+
+                const response = await axios.post("http://192.168.x.x:2000/getMyInfo", formData, {
+                    headers: {'Content-Type': 'multipart/form-data'},
+                });
+        
+                if(response.data) {
+                    setUserMatchInfo(JSON.parse(response.data.userInfo));
+                }
+            } catch (error) {
+                console.error("Error loading userInfo: ", error);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        loadMatchUser();
+    }, [userData]);
 
     const loadMatching = async () => {
-        const formData = new FormData();
-        formData.append("uid", userUID);
-
         try {
-            setLoading(true);
-            const response = await axios.post("http://192.168.1.35:2000/recommend", formData, {
+            const response = await axios.post("http://192.168.219.136:2000/recommend", formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -38,8 +69,6 @@ const MatchingScreen = () => {
 
         } catch (error) {
             console.error('request failed:', error.message);
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -82,16 +111,20 @@ const MatchingScreen = () => {
             </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.information}>
-            <Text style={styles.informationText}>
-                나의 정보
-            </Text>
-            <Text style={styles.informText}>
-                MBTI: ISTP{'\n'}
-                나이: 25{'\n'}
-                지역: 서울{'\n'}
-            </Text>
-        </TouchableOpacity>
+        {(userMatchInfo == null) ? (
+            <ActivityIndicator size="large" color="#FF9AAB" style={styles.loader} />
+        ) : (
+            <TouchableOpacity style={styles.information} onPress={() => {ModifyMatchInfo();}}>
+                <Text style={styles.informationText}>
+                    나의 정보
+                </Text>
+                <Text style={styles.informText}>
+                    나의 MBTI: {userMatchInfo.myMBTI}{'\n'}
+                    나의 키: {userMatchInfo.myHeight}{'\n'}
+                    나의 외모: {userMatchInfo.myAppearance}{'\n'}
+                </Text>
+            </TouchableOpacity>
+        )}
 
         <Text style={styles.text}>
             나의 정보를 바탕으로 매칭돼요!
@@ -105,6 +138,11 @@ const styles = StyleSheet.create({
 
     container:{
         flex:1,        
+    },
+
+    loader: {
+        marginTop: 20,
+        alignItems: 'center',
     },
     
     menu: {

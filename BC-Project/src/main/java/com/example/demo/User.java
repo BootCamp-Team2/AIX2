@@ -2,14 +2,14 @@ package com.example.demo;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
@@ -18,10 +18,9 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "users")
 public class User {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // 고유 ID
+    @Column(name = "userUID", nullable = false, unique = true) // UUID 추가
+    private String userUID; // UUID 필드 추가
 
     @Column(nullable = false, unique = true, length = 255)
     private String email; // 이메일 (ID)
@@ -39,7 +38,7 @@ public class User {
     private String mbti; // MBTI
 
     @Column(length = 255)
-    private String hobby; // 취미
+    private String age; // 나이
 
     @Column(length = 100)
     private String region; // 지역
@@ -53,17 +52,23 @@ public class User {
     @Column(name = "character_picture", length = 255)
     private String characterPicture; // 캐릭터 사진 URL
 
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt; // 생성일
+    @Column(name = "sim_picture", length = 255)
+    private String simPicture;
 
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt; // 수정일
+    @Column(name = "job", length = 255)
+    private String job;
+
+    @Column(name = "introduce", length = 255)
+    private String introduce;
+
+    @Column(name = "appeal", columnDefinition = "json")
+    private List<String> appeal;
+
+    @Column(name = "media", columnDefinition = "json")
+    private String media;
 
     @Column(name = "secret_key", nullable = false) // 비밀 키 추가
     private String secretKey; // JWT 비밀 키
-
-    @Column(name = "userUID", nullable = false, unique = true) // UUID 추가
-    private String userUID; // UUID 필드 추가
 
     @Column(name = "thread_key", length = 255)
     private String thread_key;
@@ -71,20 +76,18 @@ public class User {
     @Column(name = "assistant_key", length = 255)
     private String assistant_key;
 
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt; // 생성일
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt; // 수정일
+
     // 생성자
     public User() {
         this.userUID = UUID.randomUUID().toString(); // UUID 자동 생성
     }
 
     // Getters and Setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getEmail() {
         return email;
     }
@@ -125,12 +128,44 @@ public class User {
         this.mbti = mbti;
     }
 
-    public String getHobby() {
-        return hobby;
+    public String getAge() {
+        return age;
     }
 
-    public void setHobby(String hobby) {
-        this.hobby = hobby;
+    public void setAge(String age) {
+        this.age = age;
+    }
+
+    public String getJob() {
+        return job;
+    }
+
+    public void setJob(String job) {
+        this.job = job;
+    }
+
+    public String getIntroduce() {
+        return introduce;
+    }
+
+    public void setIntroduce(String introduce) {
+        this.introduce = introduce;
+    }
+
+    public List<String> getAppeal() {
+        return appeal;
+    }
+
+    public void setAppeal(List<String> appeal) {
+        this.appeal = appeal;
+    }
+
+    public String getMedia() {
+        return media;
+    }
+
+    public void setMedia(String media) {
+        this.media = media;
     }
 
     public String getRegion() {
@@ -163,6 +198,14 @@ public class User {
 
     public void setCharacterPicture(String characterPicture) {
         this.characterPicture = characterPicture;
+    }
+
+    public String getSimPicture() {
+        return simPicture;
+    }
+
+    public void setSimPicture(String simPicture) {
+        this.simPicture = simPicture;
     }
 
     public LocalDateTime getCreatedAt() {
