@@ -25,10 +25,11 @@ import com.example.demo.dto.MyDataResponse;
 import com.example.demo.dto.Password;
 import com.example.demo.dto.Response;
 import com.example.demo.dto.SignUpRequest;
+import com.example.demo.dto.UpdateAppeal;
 import com.example.demo.dto.UpdateBirthDate;
 import com.example.demo.dto.UpdateCharacterPicture;
 import com.example.demo.dto.UpdateNickname;
-import com.example.demo.dto.UpdateProfileInfo;
+import com.example.demo.dto.UpdateProfile;
 import com.example.demo.dto.UpdateResponse;
 import com.example.demo.dto.UpdateMedia;
 import com.example.demo.repository.UserRepository;
@@ -239,16 +240,14 @@ public class UserDataServiceImpl implements UserDataService {
 
     // 회원정보 변경
     @Override
-    public UpdateResponse modifyProfileInfo(String jwtToken, UpdateProfileInfo modifyProfile) {
+    public UpdateResponse modifyProfileInfo(String jwtToken, UpdateProfile modifyProfile) {
         String email = jwtUtil.extractEmail(jwtToken);
         String newUsername = modifyProfile.getUsername();
-        String newProfilePicture = modifyProfile.getProfile_picture();
-        String newMBTI = modifyProfile.getMbti();
+        String newMBTI = modifyProfile.getMBTI();
         String newAge = modifyProfile.getAge();
         String newRegion = modifyProfile.getRegion();
         String newJob = modifyProfile.getJob();
         String newIntroduce = modifyProfile.getIntroduce();
-        List<String> newAppeal = modifyProfile.getAppeal();
 
         Optional<User> userOptional = userDataRepository.findByEmail(email);
 
@@ -259,7 +258,6 @@ public class UserDataServiceImpl implements UserDataService {
 
         User user = userOptional.get();
         user.setUsername(newUsername);
-        user.setProfilePicture(newProfilePicture);
         user.setMbti(newMBTI);
         user.setAge(newAge);
         user.setRegion(newRegion);
@@ -290,6 +288,25 @@ public class UserDataServiceImpl implements UserDataService {
         return new UpdateResponse(true, "프로필이 적용되었습니다.", newCharacterPicture);
     }
 
+    // 회원 프로필이미지 변경
+    @Override
+    public UpdateResponse modifyProfileImg(String jwtToken, String profileImg) {
+        String email = jwtUtil.extractEmail(jwtToken);
+
+        Optional<User> userOptional = userDataRepository.findByEmail(email);
+
+        // 사용자가 존재하지 않을 경우 처리
+        if (userOptional.isEmpty()) {
+            return new UpdateResponse(false, "ID가 존재하지 않습니다 : " + email, null);
+        }
+
+        User user = userOptional.get();
+        user.setProfilePicture(profileImg);
+
+        userDataRepository.save(user);
+        return new UpdateResponse(true, "프로필 이미지가 변경되었습니다.", profileImg);
+    }
+
     // 회원 미디어 추가 및 변경
     @Override
     public UpdateResponse modifyMedia(String jwtToken, UpdateMedia media) {
@@ -308,6 +325,26 @@ public class UserDataServiceImpl implements UserDataService {
 
         userDataRepository.save(user);
         return new UpdateResponse(true, "미디어가 변경되었습니다.", newMedia);
+    }
+
+    // 사용자의 어필리스트 추가 및 변경
+    @Override
+    public UpdateResponse modifyAppeal(String jwtToken, UpdateAppeal appeal) {
+        String email = jwtUtil.extractEmail(jwtToken);
+        String newAppeal = appeal.getAppeal();
+
+        Optional<User> userOptional = userDataRepository.findByEmail(email);
+
+        // 사용자가 존재하지 않을 경우 처리
+        if (userOptional.isEmpty()) {
+            return new UpdateResponse(false, "ID가 존재하지 않습니다 : " + email, null);
+        }
+
+        User user = userOptional.get();
+        user.setAppeal(newAppeal);
+
+        userDataRepository.save(user);
+        return new UpdateResponse(true, "어필리스트가 변경되었습니다.", newAppeal);
     }
 
     public UserRepository getUserDataRepository() {

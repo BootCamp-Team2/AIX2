@@ -33,7 +33,7 @@ const MatchingScreen = () => {
                 const formData = new FormData();
                 formData.append("uid", userData.userUID);
 
-                const response = await axios.post("http://192.168.x.x:2000/getMyInfo", formData, {
+                const response = await axios.post("http://다른컴퓨터.주소:2000/getMyInfo", formData, {
                     headers: {'Content-Type': 'multipart/form-data'},
                 });
         

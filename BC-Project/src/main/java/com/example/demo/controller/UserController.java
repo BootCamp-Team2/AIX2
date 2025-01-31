@@ -29,7 +29,6 @@ import com.example.demo.repository.UserRepository;
 import com.example.demo.service.UserDataService;
 import com.example.demo.service.UserService;
 import com.example.demo.utils.JwtUtil;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.example.demo.config.EnvConfig;
 
 import jakarta.validation.Valid;
@@ -222,9 +221,11 @@ public class UserController {
 
     // 사용자 정보 변경
     @PostMapping("/updateProfile")
-    public ResponseEntity<UpdateResponse> updateProfileInfo(@RequestHeader("Authorization") String token, @RequestBody UpdateProfileInfo modifyProfileInfo) {
+    public ResponseEntity<UpdateResponse> updateProfileInfo(@RequestHeader("Authorization") String token, @RequestBody UpdateProfile modifyProfile) {
+        System.out.println("modify!: " + modifyProfile.toString());
+        
         String jwtToken = token.substring(7);
-        UpdateResponse response = userDataService.modifyProfileInfo(jwtToken, modifyProfileInfo);        
+        UpdateResponse response = userDataService.modifyProfileInfo(jwtToken, modifyProfile);        
         return ResponseEntity.ok(response);
     }
 
@@ -238,6 +239,29 @@ public class UserController {
 
     // 미디어 부분 서버업로드
     private String uploadPath = "/Users/sihyun/Documents/uploads/";
+
+    @PostMapping("/updateProfileImg")
+    public ResponseEntity<UpdateResponse> updateProfileImg(@RequestHeader("Authorization") String token, @RequestParam(value="fileMedia", required=false) MultipartFile file) throws IllegalStateException, IOException {
+        String jwtToken = token.substring(7);
+        MyDataResponse data = userDataService.getMyDataByToken(jwtToken);
+
+        File userDir = new File(uploadPath, data.getUser().getUserUID());
+        if (!userDir.exists()) { userDir.mkdirs(); }
+
+        String originalFileName = file.getOriginalFilename();
+        String fileExtension = originalFileName != null ? originalFileName.substring(originalFileName.lastIndexOf(".")) : ".jpg";
+
+        String newFileName = "myProfileImg" + fileExtension;
+        File destinationFile = new File(userDir, newFileName);
+        
+        if (destinationFile.exists()) { destinationFile.delete(); }
+
+        file.transferTo(destinationFile);
+        String result = "uploads/" + data.getUser().getUserUID() + "/" + newFileName;
+
+        UpdateResponse response = userDataService.modifyProfileImg(jwtToken, result);
+        return ResponseEntity.ok(response);
+    }
 
     @PostMapping("/uploadMedia")
     public String uploadImage(@RequestHeader("Authorization") String token, @RequestParam(value="fileMedia", required=false) MultipartFile file) throws IllegalStateException, IOException {
@@ -263,13 +287,17 @@ public class UserController {
 
     @PostMapping("/updateMedia")
     public ResponseEntity<UpdateResponse> updateMediaInfo(@RequestHeader("Authorization") String token, @RequestBody UpdateMedia media) {
-        System.out.println("GetMedia~!!: " + media.getMedia());
-
         String jwtToken = token.substring(7);
         UpdateResponse response = userDataService.modifyMedia(jwtToken, media);
         return ResponseEntity.ok(response);
     }
-    
+
+    @PostMapping("/updateAppeal")
+    public ResponseEntity<UpdateResponse> updateAppealInfo(@RequestHeader("Authorization") String token, @RequestBody UpdateAppeal appeal) {
+        String jwtToken = token.substring(7);
+        UpdateResponse response = userDataService.modifyAppeal(jwtToken, appeal);
+        return ResponseEntity.ok(response);
+    }
     
 	public UserRepository getUserRepository() {
 		return userRepository;

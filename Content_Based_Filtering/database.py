@@ -4,7 +4,7 @@ import json
 from fastapi import FastAPI, HTTPException, Form
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
-from typing import List
+from typing import List, Optional
 import faiss_main2
 import pandas as pd
 
@@ -36,13 +36,12 @@ async def startup_event():
 
 class idealType(BaseModel):
     userUID: str
-    profileImg: str
     myGender: str
     myMBTI: str
-    myHeight: str
-    favoriteHeight: str
-    myAppearance: List[str]
-    favoriteAppearance: List[str]
+    myHeight: Optional[str] = None
+    favoriteHeight: Optional[str] = None
+    myAppearance: Optional[List[str]] = None
+    favoriteAppearance: Optional[List[str]] = None
     
 def generate_recommend(userIdeal):
     recommend_gender = {
@@ -74,15 +73,16 @@ def generate_recommend(userIdeal):
                  "청순함", "중성미", "카리스마", "스포티", "패션감각"]
     }
     
-    return recommend_gender.get(userIdeal.myGender, ""), recommend_MBTI.get(userIdeal.myMBTI, []), favorite_Appearance.get(userIdeal.favoriteAppearance[0], userIdeal.favoriteAppearance)
+    return recommend_gender.get(userIdeal.myGender, ""), recommend_MBTI.get(userIdeal.myMBTI, []), favorite_Appearance.get(userIdeal.favoriteAppearance[0], userIdeal.favoriteAppearance) if userIdeal.favoriteAppearance != None else None
     
 # MySQL Server 연결
 def get_db_connection():
     return mysql.connector.connect(
-        host="192.168.1.3",
-        user="root",
-        password="AIX2_1234",
-        database="idealDatabase"
+        host="192.168.219.142",
+        port="3307",
+        user="lovepractice",
+        password="500412!!",
+        database="love_practice"
     )
     
 @app.post("/settings/ideal")
@@ -94,26 +94,26 @@ def create_or_update_mbti(idealType: idealType):
 
     recommendGender, recommendMBTI, favoriteAppearance = generate_recommend(idealType)
     recommendMBTI_json = json.dumps(recommendMBTI)
-    myAppearance_JSON = json.dumps(idealType.myAppearance)
-    favoriteAppearance_JSON = json.dumps(favoriteAppearance)
+    myAppearance_JSON = json.dumps(idealType.myAppearance) if idealType.myAppearance != None else None
+    favoriteAppearance_JSON = json.dumps(favoriteAppearance) if favoriteAppearance != None else None
     
     try:
-        cursor.execute("SELECT * FROM idealTable WHERE userUID = %s", (idealType.userUID, ))
+        cursor.execute("SELECT * FROM idealType WHERE userUID = %s", (idealType.userUID, ))
         existing_record = cursor.fetchone()
         
         # userUID 통해서 데이터가 이미 존재한다면, 수정
         if existing_record:
-            cursor.execute("""UPDATE idealTable SET profileImg = %s, myGender = %s, myMBTI = %s, recommendGender = %s, recommendMBTI = %s,
+            cursor.execute("""UPDATE idealType SET myGender = %s, myMBTI = %s, recommendGender = %s, recommendMBTI = %s,
                            myHeight = %s, favoriteHeight = %s, myAppearance = %s, favoriteAppearance = %s WHERE userUID = %s""",
-                           (idealType.profileImg, idealType.myGender, idealType.myMBTI, recommendGender, recommendMBTI_json, idealType.myHeight, 
+                           (idealType.myGender, idealType.myMBTI, recommendGender, recommendMBTI_json, idealType.myHeight, 
                             idealType.favoriteHeight, myAppearance_JSON, favoriteAppearance_JSON, idealType.userUID))
             message = "Data Updated Successfully"
             
         # 없다면, 생성
         else:
-            cursor.execute("""INSERT INTO idealTable (userUID, profileImg, myGender, myMBTI, recommendGender, recommendMBTI, 
-                           myHeight, favoriteHeight, myAppearance, favoriteAppearance) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
-                           (idealType.userUID, idealType.profileImg, idealType.myGender, idealType.myMBTI, recommendGender, recommendMBTI_json, 
+            cursor.execute("""INSERT INTO idealType (userUID, myGender, myMBTI, recommendGender, recommendMBTI, 
+                           myHeight, favoriteHeight, myAppearance, favoriteAppearance) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+                           (idealType.userUID, idealType.myGender, idealType.myMBTI, recommendGender, recommendMBTI_json, 
                             idealType.myHeight, idealType.favoriteHeight, myAppearance_JSON, favoriteAppearance_JSON))
             message = "Data Inserted Successfully"
             
@@ -141,22 +141,21 @@ async def getMyInfo(uid: str = Form(...)):
     cursor = conn.cursor(dictionary=True)
     
     try:
-        cursor.execute("SELECT * FROM idealTable WHERE userUID = %s", (uid, ))
+        cursor.execute("SELECT * FROM idealType WHERE userUID = %s", (uid, ))
         find_user = cursor.fetchone()
         
-        # JSON 컬럼 변환
         for key, value in find_user.items():
-            # JSON 형식일 가능성이 있는 값을 처리
-            if isinstance(value, str) and value.startswith("[") or value.startswith("{"):
+        # 값이 None이 아니고 문자열인지 확인
+            if isinstance(value, str) and (value.startswith("[") or value.startswith("{")):
                 try:
                     find_user[key] = json.loads(value)
                 except json.JSONDecodeError:
-                    pass  # JSON으로 파싱되지 않으면 그대로 둡니다
-        
+                    pass  # JSON 변환에 실패하면 원래 값 유지
+
         find_user_json = json.dumps(find_user, ensure_ascii=False)
-        
+                
         if not find_user:
-            raise HTTPException(status_code=400, detail=f"Not UserData: {e}")
+            return {"userInfo": None}
         
         return {"userInfo": find_user_json}
         
@@ -169,4 +168,4 @@ async def getMyInfo(uid: str = Form(...)):
             
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("database:app", host="192.168.1.3", port=2000)
+    uvicorn.run("database:app", host="192.168.1.4", port=2000)

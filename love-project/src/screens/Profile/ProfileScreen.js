@@ -25,10 +25,12 @@ const ProfileScreen = () => {
     const [showEditButtons, setShowEditButtons] = useState(false); // 수정 버튼 보이기 상태
     const [isCircleFront, setIsCircleFront] = useState(false);
     const [editMode, setEditMode] = useState(null); // 수정 모드 (수정 중인 항목의 인덱스를 저장)
-    const [mediaList, setMediaList] = useState(null); // 업로드된 미디어 리스트 상태
+    const [mediaList, setMediaList] = useState([]); // 업로드된 미디어 리스트 상태
     const [numColumns, setNumColumns] = useState(2); // numColumns 상태 관리
     const [modalVisible, setModalVisible] = useState(false); // 모달 상태
     const [editItem, setEditItem] = useState(null); // 편집할 항목 데이터
+    const [profileImg, setProfileImg] = useState(null);
+    const [avatarImg, setAvatarImg] = useState(null);
     const [addProfileModalVisible, setAddProfileModalVisible] = useState(false); // 추가 모달 상태
     const [editProfileModalVisible, setEditProfileModalVisible] = useState(false); // 수정 모달 상태
     const [editBasicProfileModalVisible, setEditBasicProfileModalVisible] = useState(false); // 기본 정보 수정 모달 상태
@@ -48,33 +50,40 @@ const ProfileScreen = () => {
 
             setProfileData({
                 username: userData.username,
-                profile_picture: userData.profilePicture,
-                character_picture: userData.characterPicture,
                 MBTI: userData.mbti,
                 나이: userData.age ?? '20',
                 지역: userData.region,
                 직업: userData.job ?? '무직',
                 자기소개: userData.introduce ?? '안녕하세요~',
-                appeal: userData.appeal,
             });
 
+            setProfileImg(userData.profilePicture ?? null);
+            setAvatarImg(userData.characterPicture ?? null);
+
             setMediaList(userData.media ? JSON.parse(userData.media) : []);
+            setAdditionalInfo(userData.appeal ? JSON.parse(userData.appeal) : []);
         };
 
         loadProfileData();
     }, [userData]);
 
     // 수정 버튼을 눌렀을 때 저장 처리
-    const handleSaveEdit = (title, value) => {
+    const handleSaveEdit = async (title, value) => {
         if (editMode !== null) {
             // 수정 모드일 때 추가 정보 수정
-            setAdditionalInfo((prev) => {
+            setAdditionalInfo( async (prev) => {
                 const updatedInfo = [...prev];
                 updatedInfo[editMode] = { title, value }; // 수정된 항목 업데이트
+
+                await axios.post("http://스프링.주소:8080/users/updateAppeal", {appeal: JSON.stringify(updatedInfo)},
+                    { headers: { "Content-Type": "application/json", 'Authorization': `Bearer ${await AsyncStorage.getItem('token')}` }}
+                );
                 return updatedInfo;
             });
         } else {
             // 기본 정보 수정 모드일 때 (예: MBTI, 나이, 지역 등)
+            const newProfileData = {...profileData, [title]: value};
+            console.log(newProfileData);
             setProfileData((profileData) => ({
                 ...profileData,
                 [title]: value, // 수정된 기본 정보 항목만 업데이트
@@ -88,11 +97,17 @@ const ProfileScreen = () => {
     };
     
 
-    const handleBasicSaveEdit = (updatedItem) => {
-        setProfileData((prevData) => ({
-            ...prevData,
+    const handleBasicSaveEdit = async (updatedItem) => {
+        const newProfileData = {
+            ...profileData,
             [updatedItem.key]: updatedItem.value, // 키는 유지하고 값만 업데이트
-        }));
+        };
+
+        await axios.post("http://스프링.주소:8080/users/updateProfile", newProfileData,
+            { headers: { "Content-Type": "application/json", 'Authorization': `Bearer ${await AsyncStorage.getItem('token')}` }}
+        );
+
+        setProfileData(newProfileData);
         setEditBasicProfileModalVisible(false); // 모달 닫기
     };
     
@@ -115,7 +130,24 @@ const ProfileScreen = () => {
 
         if (!pickerResult.cancelled) {
             alert('set profile photo!');
-            setProfilePhotoUri(pickerResult.assets[0].uri); // 선택한 사진을 상태에 저장
+
+            const formData = new FormData();
+            formData.append('fileMedia', {
+                uri: pickerResult.assets[0].uri,
+                type: pickerResult.assets[0].type,
+                name: pickerResult.assets[0].uri.split('/').pop(),
+            });
+
+            const response = await axios.post("http://스프링.주소:8080/users/updateProfileImg", formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${await AsyncStorage.getItem('token')}`
+                }
+            });
+
+            console.log(response.data.newData);
+
+            setProfileImg(response.data.newData)
             alert('completed to set profile photo!');
         }else{
             alert('cancelled!');
@@ -123,12 +155,16 @@ const ProfileScreen = () => {
     };
 
     // 추가 정보 모달 열기
-    const handleAddInfo = () => {
+    const handleAddInfo = async () => {
         if (newInfo.title && newInfo.value) {
             setAdditionalInfo([...additionalInfo, { title: newInfo.title, value: newInfo.value }]);
             console.log(newInfo);
             setAddProfileModalVisible(false); // 추가 후 모달 닫기
             setNewInfo({ title: '', value: '' }); // 입력 필드 초기화
+
+            await axios.post("http://스프링.주소:8080/users/updateAppeal", {appeal: JSON.stringify([...additionalInfo, { title: newInfo.title, value: newInfo.value }])},
+                { headers: { "Content-Type": "application/json", 'Authorization': `Bearer ${await AsyncStorage.getItem('token')}` }}
+            );
         } else {
             Alert.alert("오류", "모든 필드를 입력해주세요.");
         }
@@ -144,9 +180,13 @@ const ProfileScreen = () => {
         setIsCircleFront(!isCircleFront); // 상태 스위치
     };
 
-    const handleDeleteInfo = (index) => {
+    const handleDeleteInfo = async (index) => {
         const updatedInfo = additionalInfo.filter((_, i) => i !== index);
         setAdditionalInfo(updatedInfo);
+
+        await axios.post("http://스프링.주소:8080/users/updateAppeal", {appeal: JSON.stringify(updatedInfo)},
+            { headers: {"Content-Type": "application/json", 'Authorization': `Bearer ${await AsyncStorage.getItem('token')}`}} 
+        );
     };
 
     // 수정 버튼 클릭 핸들러
@@ -202,7 +242,7 @@ const ProfileScreen = () => {
                 name: pickerResult.assets[0].uri.split('/').pop(),
             });
 
-            const responsePath = await axios.post("http://192.168.y.y:8080/users/uploadMedia", formData, {
+            const responsePath = await axios.post("http://스프링.주소:8080/users/uploadMedia", formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${await AsyncStorage.getItem('token')}`
@@ -210,13 +250,13 @@ const ProfileScreen = () => {
             });
 
             const newMedia = {
-                uri: `http://192.168.y.y:8080/${responsePath.data}`,
+                uri: `http://스프링.주소:8080/${responsePath.data}`,
                 type: pickerResult.assets[0].type,
             };
 
             setMediaList([newMedia, ...mediaList]);
     
-            await axios.post("http://192.168.y.y:8080/users/updateMedia", {media: JSON.stringify([newMedia, ...mediaList])},
+            await axios.post("http://스프링.주소:8080/users/updateMedia", {media: JSON.stringify([newMedia, ...mediaList])},
                 {headers: {"Content-Type": "application/json", "Authorization": `Bearer ${await AsyncStorage.getItem('token')}`,}}
             );
         }
@@ -227,7 +267,7 @@ const ProfileScreen = () => {
         const updatedMediaList = mediaList.filter((_, i) => i !== index);
         setMediaList(updatedMediaList);
 
-        await axios.post("http://192.168.y.y:8080/users/updateMedia", {media: JSON.stringify(updatedMediaList)},
+        await axios.post("http://스프링.주소:8080/users/updateMedia", {media: JSON.stringify(updatedMediaList)},
             {headers: {"Content-Type": "application/json", "Authorization": `Bearer ${await AsyncStorage.getItem('token')}`,}}
         );
     };
@@ -258,8 +298,6 @@ const ProfileScreen = () => {
         setEditBasicProfileModalVisible(true); // 모달 열기
     };
 
-
-
     return (
         <KeyboardAvoidingView 
             style={styles.container} 
@@ -284,7 +322,7 @@ const ProfileScreen = () => {
                 <View style={styles.photoContainer}>
                     {/* 프로필 사진 */}
                     <Image
-                        source={profileData.profile_picture ? { uri: profileData.profile_picture } : require('../../../assets/testProfile/kimgoeunProfile.png')} // 기본 이미지 설정
+                        source={profileImg ? { uri: `http://스프링.주소:8080/${profileImg}` } : require('../../../assets/testProfile/kimgoeunProfile.png')} // 기본 이미지 설정
                         style={[
                             styles.profilePhoto,
                             {
@@ -299,8 +337,8 @@ const ProfileScreen = () => {
                     {/* 겹치는 원 */}
                     <Image
                         source={
-                            profileData.character_picture
-                            ? { uri: `http://192.168.x.x:1000/${profileData.character_picture}` } // 적용된 아바타 URI 사용
+                            avatarImg
+                            ? { uri: `http://다른컴퓨터.주소:1000/${avatarImg}` } // 적용된 아바타 URI 사용
                             : require('../../../assets/testProfile/kimgoeunProfile.png') // 기본 이미지
                         }
                         style={[
@@ -316,7 +354,6 @@ const ProfileScreen = () => {
                     />
                     {/* 프로필 변경 버튼 */}
                     <TouchableOpacity style={styles.switchButton} onPress={() => {
-                        console.log("Checking!!: ", profileData.character_picture);
                         handleSwitch();
                     }}>
                         <Icon5 style={styles.switchText} name="account-convert-outline" size={24} color="#9AAEFF" />

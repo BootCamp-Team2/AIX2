@@ -102,7 +102,7 @@ const AvatarScreen = () => {
 
       const sel_formData = new FormData();
       sel_formData.append("type", "avatar");
-      const select_r = await axios.post("http://192.168.x.x:1000/select-server", sel_formData, {
+      const select_r = await axios.post("http://다른컴퓨터.주소:1000/select-server", sel_formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -181,18 +181,18 @@ const AvatarScreen = () => {
       const formData = new FormData();
       formData.append("img_src", avatarUri);
       formData.append("uid", userUID);
-      const avatarResponse = await axios.post("http://192.168.x.x:1000/applyAvatar", formData,
+      const avatarResponse = await axios.post("http://다른컴퓨터.주소:1000/applyAvatar", formData,
         {headers: {"Content-Type": "multipart/form-data"}}
       );
 
       console.log("Path!: ", avatarResponse.data.avatarPath);
 
-      const response = await axios.post("http://192.168.y.y:8080/users/updateCharacterPicture", {character_picture: avatarResponse.data.avatarPath}, 
+      const response = await axios.post("http://스프링.주소:8080/users/updateCharacterPicture", {character_picture: avatarResponse.data.avatarPath}, 
         {headers: {"Content-Type": "application/json", "Authorization": `Bearer ${token}`,}}
       );
       
       if(response) {
-        const newUserData = await axios.get("http://192.168.y.y:8080/users/myData",
+        const newUserData = await axios.get("http://스프링.주소:8080/users/myData",
           {headers: {"Authorization": `Bearer ${token}`}}
         );
 

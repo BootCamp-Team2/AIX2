@@ -3,14 +3,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // 공통 URL 설정
 const apiClient = axios.create({
-  baseURL: 'http://192.168.y.y:8080', // 서버 기본 URL을 직접 입력하세요
+  baseURL: 'http://스프링.주소:8080', // 서버 기본 URL을 직접 입력하세요
   headers: {
     "Content-Type": "application/json", // JSON 형식의 데이터를 보내기 위해 Content-Type을 application/json으로 설정
   }
 });
 
 const matchClient = axios.create({
-  baseURL: 'http://192.168.x.x:2000',
+  baseURL: 'http://다른컴퓨터.주소:2000',
   headers: {
     "Content-Type": "application/json",
   }

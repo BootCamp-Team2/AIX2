@@ -62,7 +62,7 @@ public class User {
     private String introduce;
 
     @Column(name = "appeal", columnDefinition = "json")
-    private List<String> appeal;
+    private String appeal;
 
     @Column(name = "media", columnDefinition = "json")
     private String media;
@@ -152,11 +152,11 @@ public class User {
         this.introduce = introduce;
     }
 
-    public List<String> getAppeal() {
+    public String getAppeal() {
         return appeal;
     }
 
-    public void setAppeal(List<String> appeal) {
+    public void setAppeal(String appeal) {
         this.appeal = appeal;
     }
 
