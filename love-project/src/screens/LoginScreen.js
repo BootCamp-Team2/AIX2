@@ -37,8 +37,9 @@ const LoginScreen = () => {
         // console.log(response)
 
         if (response.valid) { // valid 값을 체크
+          await AsyncStorage.setItem('userData', JSON.stringify(response.user));
           console.log("토큰이 유효합니다. 메인 화면으로 이동합니다.");
-          navigation.navigate("MainScreen", {userData : response.user});
+          navigation.navigate("MainScreen");
         } else {
           console.log("토큰이 유효하지 않습니다. 로그인 화면으로 이동합니다.");
           navigation.navigate("LoginScreen");
@@ -73,7 +74,8 @@ const LoginScreen = () => {
 
         // JWT 토큰이 반환된 경우
         await AsyncStorage.setItem('token', response.token);
-        navigation.navigate("MainScreen", { userData: response.user }); // 메인화면 이동
+        await AsyncStorage.setItem('userData', JSON.stringify(response.user));
+        navigation.navigate("MainScreen"); // 메인화면 이동
       } else if (response.loginStatus === 0) {
         // 로그인 실패 시 반환된 메시지를 오류 메시지로 설정
         setErrorMessage('로그인 실패: ' + response.message);

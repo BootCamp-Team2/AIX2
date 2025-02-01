@@ -7,24 +7,59 @@ import cv2 as cv
 import numpy as np
 import os
 import base64
+import requests
+import json
+import re
 
 load_dotenv()
 OpenAI.api_key = os.getenv("OPENAI_API_KEY")
 
 app = FastAPI()
 
+def naver_search_api(items):
+    url = "https://openapi.naver.com/v1/search/image"
+    headers = {
+        "X-Naver-Client-Id": os.getenv("NAVER_CLIENT_ID"),
+        "X-Naver-Client-Secret": os.getenv("NAVER_CLIENT_SECRET")
+    }
+
+    result = []
+    for item in items:
+        params = {
+            "query": item,
+            "display": 1,
+            "sort": "sim"
+        }
+        
+        response = requests.get(url, headers = headers, params = params)
+        if response.status_code == 200:
+            response = response.json()
+            result.append({"title": response["items"][0]["title"], "img": response["items"][0]["link"]})
+
+    return result
+        
+    
+
 def call_vision_api(image_data):
     client = OpenAI()
 
     response = client.chat.completions.create(
-        model = "gpt-4o-mini",
+        model = "gpt-4-turbo",
         messages = [
+            {
+                "role": "system",
+                "content": "사용자의 얼굴을 분석하고, 어울리는 패션 코디를 추천하는 AI입니다."
+            },
             {
                 "role": "user",
                 "content": [
                     {
                         "type": "text",
-                        "text": '우선 사진속 사람의 특징들을 분석해서 결과 알려줘 얼굴형이라던지 이목구비 성별 체형 피부색 등 그리고 그 외모에 맞는 패션 코디를 추천해줘 패션 코디는 총 3가지 추천해줘 한글로해라 example output format : { "성별": "남성", "얼굴형": "둥근 형태", "이목구비": "검은 머리, 안경착용", "피부색": "따뜻한 톤", "체형": "슬림", "연령":"", "코디 리스트": [ {"상의": "", "하의": "", "신발": "", "기타악세사리": "", "추천이유":"외모 특징들 근거로 대면서 자세히써라"}, {}... ]'
+                        "text": "사진 속 인물의 성별, 얼굴형, 이목구비, 피부색, 체형을 분석하고, 어울리는 패션 코디 3가지 (상의, 하의, 신발)를 추천해줘! 물론 추천해주는 이유도 있어야 해!! 결과는 JSON 형식으로 출력해줘!",
+                    },
+                    {
+                        "type": "text",
+                        "text": "백틱 사용하지 말고 다음과 같은 JSON 형식으로 출력해줬으면 좋겠어. {성별: , 얼굴형: , 이목구비: , 피부색: , 체형: , 코디: [{아이템: [], 이유: }]}",
                     },
                     {
                         "type": "image_url",
@@ -33,7 +68,7 @@ def call_vision_api(image_data):
                 ],
             },
         ],
-        max_tokens=300,
+        max_tokens=1000
     )
 
     return response.choices[0].message.content
@@ -83,11 +118,16 @@ async def clothes_recommend(img : UploadFile = File(...)):
         padded_image_bytes = BytesIO(buffer)
 
         image_bytes_base64 = base64.b64encode(padded_image_bytes.getvalue()).decode("utf-8")
-        response = call_vision_api(image_bytes_base64)
+        response = call_vision_api(image_bytes_base64).replace("json", "").replace("'", '"')
 
         if (response):
-            return {"message": "Success!", "result": response}
+            search_response = []; fashion_data = json.loads(response)
+            for outfit in fashion_data["코디"]:
+                    search_response.append(naver_search_api(outfit["아이템"]))
+
+            return {"message": "Success!", "result_msg": response, "result_search": search_response}
         else:
-            return {"message": "Error!", "result": None}
+            return {"message": "Error!", "result_msg": None, "result_search": None}
+        
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error: {e}")

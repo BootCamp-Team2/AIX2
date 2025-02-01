@@ -74,8 +74,8 @@ async def createMyLover(ideal_type: str = Form(...), gender: str = Form(...), us
         shutil.move(result_path, new_file_path)
         async with httpx.AsyncClient() as client:
             response = await client.post(
-                "http://192.168.1.4:1000/update-status", 
-                json={"server_ip": f"http://192.168.1.4:{SERVER_PORT}", "status": False, "type": "sim"}
+                f"http://{SERVER_HOST}:1000/update-status", 
+                json={"server_ip": f"http://{SERVER_HOST}:{SERVER_PORT}", "status": False, "type": "sim"}
             )
             if response.status_code != 200:
                 raise HTTPException(status_code=response.status_code, detail=f"Error: {response.text}")
@@ -94,7 +94,7 @@ async def createMyLover(ideal_type: str = Form(...), gender: str = Form(...), us
     
     return {
         "message": "Your Requested prompt successfully",
-        "simUrl": f"http://192.168.1.4:1000/output/{userUID}/mySimulator.jpg"
+        "simUrl": f"http://{SERVER_HOST}:1000/output/{userUID}/mySimulator.jpg"
     }
 
 if __name__ == "__main__":

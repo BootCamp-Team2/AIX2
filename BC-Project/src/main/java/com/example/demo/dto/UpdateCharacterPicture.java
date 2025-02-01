@@ -1,7 +1,5 @@
 package com.example.demo.dto;
 
-import com.example.demo.User;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,6 +9,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MyDataResponse {
-	private User user;
+public class UpdateCharacterPicture {
+	private String character_picture;
 }

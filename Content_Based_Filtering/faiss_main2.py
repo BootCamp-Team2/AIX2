@@ -33,27 +33,28 @@ def list_to_multiply_hot(value_list, value_types):
 def fetch_mbti_data():
     ## MySQL Server 연결
     conn = mysql.connector.connect(
-        host="192.168.1.3",
-        user="root",
-        password="AIX2_1234",
-        database="idealDatabase"
+        host="192.168.219.142",
+        port="3307",
+        user="lovepractice",
+        password="500412!!",
+        database="love_practice"
     )
     
     cursor = conn.cursor()
 
-    query_row = "SELECT * FROM idealTable"
+    query_row = "SELECT * FROM idealType"
     cursor.execute(query_row)
     results_others = cursor.fetchall()
         
     # for row in results_others:
     #     print(row)
     
-    df = pd.DataFrame(results_others, columns=["userUID", "profileImg", "myGender", "recommendGender", "myMBTI", "recommendMBTI", 
+    df = pd.DataFrame(results_others, columns=["userUID", "myGender", "recommendGender", "myMBTI", "recommendMBTI", 
                                                   "myHeight", "favoriteHeight", "myAppearance", "favoriteAppearance"])
     
     ## 타입이 JSON인 feature 이름 가져오기
     query_row = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = %s AND DATA_TYPE = 'json'"
-    cursor.execute(query_row, ("idealTable", ))
+    cursor.execute(query_row, ("idealType", ))
     json_columns = [column[0] for column in cursor.fetchall()]
     
     cursor.close()
@@ -67,10 +68,10 @@ def process_data():
     # print(json_columns)
     
     for feature in json_columns:
-        df_copy[feature] = df_copy[feature].apply(lambda x: json.loads(x))
+        df_copy[feature] = df_copy[feature].apply(lambda x: json.loads(x) if x is not None else {})
     # print(user_df.head()); print(others_df.head())
     
-    feature_list = df.columns[(df.columns != "userUID") & (df.columns != "profileImg")]
+    feature_list = df.columns[(df.columns != "userUID")]
     type_list = [gender_types, mbti_types, height_types, appearance_types]
     for i, feature in enumerate(feature_list):
         if not isinstance(df_copy[feature][0], list):

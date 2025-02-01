@@ -26,6 +26,7 @@ dependencies {
     implementation 'org.hibernate.validator:hibernate-validator:6.2.0.Final' // Hibernate Validator
     implementation 'org.springframework.boot:spring-boot-starter-security' // 보안 관련 라이브러리
     implementation 'io.github.cdimascio:java-dotenv:5.2.2' // dotenv 의존성
+    implementation 'org.checkerframework:checker-qual:3.42.0' // 최신 버전 확인
     implementation 'org.springframework.integration:spring-integration-mqtt:5.5.14' // MQTT 의존성
     implementation 'org.postgresql:postgresql' // PostgreSQL 의존성
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310' // JACKSON 의존성 - TIMESTAMP 변환 위해 필요

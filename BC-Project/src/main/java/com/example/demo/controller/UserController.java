@@ -1,8 +1,11 @@
 package com.example.demo.controller;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.beans.factory.annotation.Value;
 
 import com.example.demo.dto.*;
 import com.example.demo.User;
@@ -61,7 +66,7 @@ public class UserController {
     // 사용자 생성 (회원가입)
     @PostMapping("/signup")
     public ResponseEntity<User> createUser(@Valid @RequestBody SignUpRequest signUpRequest) {
-    	System.out.println("Received SignUpRequest: " + signUpRequest);
+        System.out.println("Received SignUpRequest: " + signUpRequest);
         User user = new User();
         
         // DTO로부터 값 설정
@@ -71,8 +76,10 @@ public class UserController {
         user.setGender(signUpRequest.getGender()); // 성별
         user.setBirthDate(signUpRequest.getBirthDate()); // 생년월일
         user.setRegion(signUpRequest.getRegion()); // 지역
-        user.setHobby(signUpRequest.getHobby()); // 취미
+        user.setAge(signUpRequest.getAge()); // 나이
         user.setMbti(signUpRequest.getMbti()); // MBTI
+        user.setJob(signUpRequest.getJob());
+        user.setIntroduce(signUpRequest.getIntroduce());
         
         // 추가적인 설정
         user.setCreatedAt(LocalDateTime.now());
@@ -203,16 +210,95 @@ public class UserController {
         String jwtToken = token.substring(7); // JWT 토큰에서 'Bearer ' 부분 제거
         User user = userDataService.getUserByToken(jwtToken); // 토큰을 통해 사용자 정보 조회
 
-        System.out.println("User : " + user);
-
         if (user != null) {
+            System.out.println("Success!");
             return ResponseEntity.ok(user);
         } else {
+            System.out.println("Failed!");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 사용자 정보가 없으면 404 반환
         }
     }
 
+    // 사용자 정보 변경
+    @PostMapping("/updateProfile")
+    public ResponseEntity<UpdateResponse> updateProfileInfo(@RequestHeader("Authorization") String token, @RequestBody UpdateProfile modifyProfile) {
+        System.out.println("modify!: " + modifyProfile.toString());
+        
+        String jwtToken = token.substring(7);
+        UpdateResponse response = userDataService.modifyProfileInfo(jwtToken, modifyProfile);        
+        return ResponseEntity.ok(response);
+    }
 
+    // 사용자 AI프로필 변경
+    @PostMapping("/updateCharacterPicture")
+    public ResponseEntity<UpdateResponse> updateCharacterPicture(@RequestHeader("Authorization") String token, @RequestBody UpdateCharacterPicture modifyCharacterPicture) {
+        String jwtToken = token.substring(7);
+        UpdateResponse response = userDataService.modifyCharacterPicture(jwtToken, modifyCharacterPicture);
+        return ResponseEntity.ok(response);
+    }
+
+    // 미디어 부분 서버업로드
+    private String uploadPath = "/Users/sihyun/Documents/uploads/";
+
+    @PostMapping("/updateProfileImg")
+    public ResponseEntity<UpdateResponse> updateProfileImg(@RequestHeader("Authorization") String token, @RequestParam(value="fileMedia", required=false) MultipartFile file) throws IllegalStateException, IOException {
+        String jwtToken = token.substring(7);
+        MyDataResponse data = userDataService.getMyDataByToken(jwtToken);
+
+        File userDir = new File(uploadPath, data.getUser().getUserUID());
+        if (!userDir.exists()) { userDir.mkdirs(); }
+
+        String originalFileName = file.getOriginalFilename();
+        String fileExtension = originalFileName != null ? originalFileName.substring(originalFileName.lastIndexOf(".")) : ".jpg";
+
+        String newFileName = "myProfileImg" + fileExtension;
+        File destinationFile = new File(userDir, newFileName);
+        
+        if (destinationFile.exists()) { destinationFile.delete(); }
+
+        file.transferTo(destinationFile);
+        String result = "uploads/" + data.getUser().getUserUID() + "/" + newFileName;
+
+        UpdateResponse response = userDataService.modifyProfileImg(jwtToken, result);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/uploadMedia")
+    public String uploadImage(@RequestHeader("Authorization") String token, @RequestParam(value="fileMedia", required=false) MultipartFile file) throws IllegalStateException, IOException {
+        if (file == null || file.isEmpty()) {
+            return "업로드된 미디어가 없습니다.";
+        }
+
+        String jwtToken = token.substring(7);
+        MyDataResponse data = userDataService.getMyDataByToken(jwtToken);
+
+        File userDir = new File(uploadPath, data.getUser().getUserUID());
+        if (!userDir.exists()) { userDir.mkdirs(); }
+
+        String originalFileName = file.getOriginalFilename();
+        String fileExtension = originalFileName != null ? originalFileName.substring(originalFileName.lastIndexOf(".")) : ".jpg";
+
+        String shortUUID = UUID.randomUUID().toString().substring(0, 8) + fileExtension;
+        File destinationFile = new File(userDir, shortUUID);
+        
+        file.transferTo(destinationFile);
+        return "uploads/" + data.getUser().getUserUID() + "/" + shortUUID;
+    }
+
+    @PostMapping("/updateMedia")
+    public ResponseEntity<UpdateResponse> updateMediaInfo(@RequestHeader("Authorization") String token, @RequestBody UpdateMedia media) {
+        String jwtToken = token.substring(7);
+        UpdateResponse response = userDataService.modifyMedia(jwtToken, media);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/updateAppeal")
+    public ResponseEntity<UpdateResponse> updateAppealInfo(@RequestHeader("Authorization") String token, @RequestBody UpdateAppeal appeal) {
+        String jwtToken = token.substring(7);
+        UpdateResponse response = userDataService.modifyAppeal(jwtToken, appeal);
+        return ResponseEntity.ok(response);
+    }
+    
 	public UserRepository getUserRepository() {
 		return userRepository;
 	}

@@ -56,7 +56,11 @@ def getServerIP():
     return {"server-ip": f"{SERVER_HOST}", "server-port": f"{SERVER_PORT}"}
 
 @app.post("/avatar/uploads")
-async def createMyAvatar(img: UploadFile = File(...), gender: str = Form(...), userUID: str = Form(...)):    
+async def createMyAvatar(img: UploadFile = File(...), gender: str = Form(...), userUID: str = Form(...)):
+    result_path = f"output/avatar_{userUID}_00001_.jpg"
+    if os.path.exists(result_path):
+        os.remove(result_path)
+    
     try:
         if not allowed_file(img.filename):
             raise HTTPException(status_code=400, detail="지원하지 않는 이미지 형식입니다.")
@@ -72,18 +76,10 @@ async def createMyAvatar(img: UploadFile = File(...), gender: str = Form(...), u
             f.write(await img.read())
             
         avatar_module.main(uid_img, userUID, gender)
-        result_path = f"./output/avatar_{userUID}_00001_.jpg"
-            
-        new_file_director = f"./output/{userUID}"
-        if not os.path.exists(new_file_director):
-            os.makedirs(new_file_director)
-        new_file_path = os.path.join(new_file_director, "myAvatar.jpg")
-        
-        shutil.move(result_path, new_file_path)
         
         async with httpx.AsyncClient() as client:
             response = await client.post(
-                "http://192.168.1.4:1000/update-status", 
+                f"http://{SERVER_HOST}:1000/update-status", 
                 json={"server_ip": f"http://{SERVER_HOST}:{SERVER_PORT}", "status": False, "type": "avatar"}
             )
             if response.status_code != 200:
@@ -103,8 +99,7 @@ async def createMyAvatar(img: UploadFile = File(...), gender: str = Form(...), u
     
     return {
         "message": "Images uploaded successfully",
-        "result_path": new_file_path,
-        "avatarUrl": f"http://192.168.1.4:1000/output/{userUID}/myAvatar.jpg"
+        "avatarUrl": f"http://{SERVER_HOST}:1000/{result_path}"
     }
     
 def allowed_file(filename):

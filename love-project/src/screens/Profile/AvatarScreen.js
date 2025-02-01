@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { View, Button, Image, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
@@ -6,11 +6,12 @@ import * as FileSystem from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
 import axios from 'axios';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AvatarScreen = () => {
   const route = useRoute();
   // const { userUID } = route.params  || { userUID: null }; // 기본값 설정
-  const { userUID } = route.params
+  const { userUID } = route.params;
 
   const navigation = useNavigation();
   const [imageUri, setImageUri] = useState(null);
@@ -19,6 +20,16 @@ const AvatarScreen = () => {
   const [loading, setLoading] = useState(false);
   const [uploadStatus, setUploadStatus] = useState('');
   const [gender, setGender] = useState(null); // 성별 상태 추가
+  const [token, setToken] = useState("");
+
+  useEffect(() => {
+    const loadAsyncToken = async () => {
+      const userToken = await AsyncStorage.getItem('token');
+      setToken(userToken);
+    };
+
+    loadAsyncToken();
+  }, []);
 
   // 카메라로 이미지 찍기
   const takePhoto = async () => {
@@ -91,7 +102,7 @@ const AvatarScreen = () => {
 
       const sel_formData = new FormData();
       sel_formData.append("type", "avatar");
-      const select_r = await axios.post("http://192.168.1.35:1000/select-server", sel_formData, {
+      const select_r = await axios.post("http://다른컴퓨터.주소:1000/select-server", sel_formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -163,9 +174,33 @@ const AvatarScreen = () => {
   };
 
   // "Apply to Profile" 버튼 핸들러
-  const handleApplyToProfile = () => {
+  const handleApplyToProfile = async () => {
     if (avatarUri) {
-      navigation.navigate('ProfileScreen', { avatarUri }); // ProfileScreen으로 데이터 전달
+      console.log(avatarUri);
+      console.log(userUID);
+      const formData = new FormData();
+      formData.append("img_src", avatarUri);
+      formData.append("uid", userUID);
+      const avatarResponse = await axios.post("http://다른컴퓨터.주소:1000/applyAvatar", formData,
+        {headers: {"Content-Type": "multipart/form-data"}}
+      );
+
+      console.log("Path!: ", avatarResponse.data.avatarPath);
+
+      const response = await axios.post("http://스프링.주소:8080/users/updateCharacterPicture", {character_picture: avatarResponse.data.avatarPath}, 
+        {headers: {"Content-Type": "application/json", "Authorization": `Bearer ${token}`,}}
+      );
+      
+      if(response) {
+        const newUserData = await axios.get("http://스프링.주소:8080/users/myData",
+          {headers: {"Authorization": `Bearer ${token}`}}
+        );
+
+        await AsyncStorage.setItem('userData', JSON.stringify(newUserData.data.user));
+
+        Alert.alert("성공적으로 프로필이 적용되었습니다.");
+        navigation.replace('TabBar');
+      }
     }
   };
 

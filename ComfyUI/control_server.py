@@ -1,8 +1,11 @@
-from fastapi import FastAPI, Form
+from fastapi import FastAPI, Form, Request
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from typing import Dict
+import os
+import shutil
 
 app = FastAPI()
 app.add_middleware(
@@ -13,6 +16,19 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+SERVER_HOST = "127.0.0.1"
+SERVER_PORT = "8000"
+
+@app.middleware("http")
+async def detect_server_info(request: Request, call_next):
+    global SERVER_HOST, SERVER_PORT
+    server = request.scope.get("server", None)
+    if server:
+        SERVER_HOST = server[0]
+        SERVER_PORT = server[1]
+    response = await call_next(request)
+    return response
+
 INPUT_FOLDER = "./input"
 OUTPUT_FOLDER = "./output"
 
@@ -22,13 +38,13 @@ app.mount("/output", StaticFiles(directory=OUTPUT_FOLDER), name="output")
 
 ## false - 사용 가능 / true - 사용 불가능
 avatar_server_status: Dict[str, bool] = {
-    "http://192.168.1.4:8001": False,
-    "http://192.168.1.4:8002": False,
+    "http://192.168.219.142:8001": False,
+    "http://192.168.219.142:8002": False,
 }
 
 sim_server_status: Dict[str, bool] = {
-    "http://192.168.1.4:9001": False,
-    "http://192.168.1.4:9002": False,
+    "http://192.168.219.142:9001": False,
+    "http://192.168.219.142:9002": False,
 }
 
 class ServerStatus(BaseModel):
@@ -71,6 +87,25 @@ async def select_server(type: str = Form(...)):
         return {"server_ip": f"{selected_server}"}
     else:
         return {"server_ip": ""}
+    
+@app.post("/applyAvatar")
+async def apply_avatar(img_src: str = Form(...), uid: str = Form(...)):
+    img_src = "./output" + img_src.split("/output", 1)[1]
+    
+    try:
+        new_file_director = f"output/{uid}"
+        if not os.path.exists(new_file_director):
+            os.makedirs(new_file_director)
+        new_file_path = os.path.join(new_file_director, "myAvatar.jpg")
+        
+        shutil.move(img_src, new_file_path)
+        return {
+            "message": "success!!", 
+            "avatarPath": new_file_path
+        }
+    
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=400)
 
 if __name__ == "__main__":
     import uvicorn

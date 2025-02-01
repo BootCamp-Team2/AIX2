@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,16 +25,22 @@ import com.example.demo.dto.MyDataResponse;
 import com.example.demo.dto.Password;
 import com.example.demo.dto.Response;
 import com.example.demo.dto.SignUpRequest;
+import com.example.demo.dto.UpdateAppeal;
 import com.example.demo.dto.UpdateBirthDate;
+import com.example.demo.dto.UpdateCharacterPicture;
 import com.example.demo.dto.UpdateNickname;
+import com.example.demo.dto.UpdateProfile;
 import com.example.demo.dto.UpdateResponse;
+import com.example.demo.dto.UpdateMedia;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.utils.JwtUtil;
 
+import org.checkerframework.checker.units.qual.m;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
+@SuppressWarnings("unused")
 @Service
 public class UserDataServiceImpl implements UserDataService {
 	private static final Logger logger = LoggerFactory.getLogger(UserDataServiceImpl.class);
@@ -136,7 +143,7 @@ public class UserDataServiceImpl implements UserDataService {
     // 생년월일 변경
     @Override
     public UpdateResponse modifyBirthDate(String jwtToken, UpdateBirthDate updateBirthDate) {
-        String email = jwtUtil.extractUsername(jwtToken);
+        String email = jwtUtil.extractEmail(jwtToken);
         LocalDate newBirthDate = updateBirthDate.getBirthDate();
         Optional<User> userOptional = userDataRepository.findByEmail(email);
 
@@ -198,11 +205,10 @@ public class UserDataServiceImpl implements UserDataService {
     // 마이페이지 데이터 확인
     @Override
     public MyDataResponse getMyDataByToken(String jwtToken) {
-        String userId = jwtUtil.extractUsername(jwtToken);
+        String userId = jwtUtil.extractEmail(jwtToken);
         Optional<User> userOptional = userDataRepository.findByEmail(userId);
         User user = userOptional.orElseThrow(() -> new RuntimeException("ID가 존재하지 않습니다 : " + userId));
-        MyDataResponse data = new MyDataResponse(user.getEmail(), user.getUsername(),
-                user.getBirthDate());
+        MyDataResponse data = new MyDataResponse(user);
 
         return data;
     }
@@ -211,7 +217,7 @@ public class UserDataServiceImpl implements UserDataService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Response deleteUser(String jwtToken, Password passwordRequest) {
-        String userId = jwtUtil.extractUsername(jwtToken);
+        String userId = jwtUtil.extractEmail(jwtToken);
         String inputPassword = passwordRequest.getPw();
         Optional<User> userOptional = userDataRepository.findByEmail(userId);
 
@@ -230,6 +236,115 @@ public class UserDataServiceImpl implements UserDataService {
         // 사용자 삭제
         userDataRepository.delete(user);
         return new Response(true, "회원 탈퇴 되었습니다");
+    }
+
+    // 회원정보 변경
+    @Override
+    public UpdateResponse modifyProfileInfo(String jwtToken, UpdateProfile modifyProfile) {
+        String email = jwtUtil.extractEmail(jwtToken);
+        String newUsername = modifyProfile.getUsername();
+        String newMBTI = modifyProfile.getMBTI();
+        String newAge = modifyProfile.getAge();
+        String newRegion = modifyProfile.getRegion();
+        String newJob = modifyProfile.getJob();
+        String newIntroduce = modifyProfile.getIntroduce();
+
+        Optional<User> userOptional = userDataRepository.findByEmail(email);
+
+        // 사용자가 존재하지 않을 경우 처리
+        if (userOptional.isEmpty()) {
+            return new UpdateResponse(false, "ID가 존재하지 않습니다 : " + email, null);
+        }
+
+        User user = userOptional.get();
+        user.setUsername(newUsername);
+        user.setMbti(newMBTI);
+        user.setAge(newAge);
+        user.setRegion(newRegion);
+        user.setJob(newJob);
+        user.setIntroduce(newIntroduce);
+
+        userDataRepository.save(user);
+        return new UpdateResponse(true, "회원정보가 변경되었습니다.", null);
+    }
+
+    // 회원 AI아바타 변경
+    @Override
+    public UpdateResponse modifyCharacterPicture(String jwtToken, UpdateCharacterPicture characterPicture) {
+        String email = jwtUtil.extractEmail(jwtToken);
+        String newCharacterPicture = characterPicture.getCharacter_picture();
+
+        Optional<User> userOptional = userDataRepository.findByEmail(email);
+
+        // 사용자가 존재하지 않을 경우 처리
+        if (userOptional.isEmpty()) {
+            return new UpdateResponse(false, "ID가 존재하지 않습니다 : " + email, null);
+        }
+
+        User user = userOptional.get();
+        user.setCharacterPicture(newCharacterPicture);
+
+        userDataRepository.save(user);
+        return new UpdateResponse(true, "프로필이 적용되었습니다.", newCharacterPicture);
+    }
+
+    // 회원 프로필이미지 변경
+    @Override
+    public UpdateResponse modifyProfileImg(String jwtToken, String profileImg) {
+        String email = jwtUtil.extractEmail(jwtToken);
+
+        Optional<User> userOptional = userDataRepository.findByEmail(email);
+
+        // 사용자가 존재하지 않을 경우 처리
+        if (userOptional.isEmpty()) {
+            return new UpdateResponse(false, "ID가 존재하지 않습니다 : " + email, null);
+        }
+
+        User user = userOptional.get();
+        user.setProfilePicture(profileImg);
+
+        userDataRepository.save(user);
+        return new UpdateResponse(true, "프로필 이미지가 변경되었습니다.", profileImg);
+    }
+
+    // 회원 미디어 추가 및 변경
+    @Override
+    public UpdateResponse modifyMedia(String jwtToken, UpdateMedia media) {
+        String email = jwtUtil.extractEmail(jwtToken);
+        String newMedia = media.getMedia();
+
+        Optional<User> userOptional = userDataRepository.findByEmail(email);
+
+        // 사용자가 존재하지 않을 경우 처리
+        if (userOptional.isEmpty()) {
+            return new UpdateResponse(false, "ID가 존재하지 않습니다 : " + email, null);
+        }
+
+        User user = userOptional.get();
+        user.setMedia(newMedia);
+
+        userDataRepository.save(user);
+        return new UpdateResponse(true, "미디어가 변경되었습니다.", newMedia);
+    }
+
+    // 사용자의 어필리스트 추가 및 변경
+    @Override
+    public UpdateResponse modifyAppeal(String jwtToken, UpdateAppeal appeal) {
+        String email = jwtUtil.extractEmail(jwtToken);
+        String newAppeal = appeal.getAppeal();
+
+        Optional<User> userOptional = userDataRepository.findByEmail(email);
+
+        // 사용자가 존재하지 않을 경우 처리
+        if (userOptional.isEmpty()) {
+            return new UpdateResponse(false, "ID가 존재하지 않습니다 : " + email, null);
+        }
+
+        User user = userOptional.get();
+        user.setAppeal(newAppeal);
+
+        userDataRepository.save(user);
+        return new UpdateResponse(true, "어필리스트가 변경되었습니다.", newAppeal);
     }
 
     public UserRepository getUserDataRepository() {
