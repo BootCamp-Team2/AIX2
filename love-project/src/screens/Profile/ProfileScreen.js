@@ -340,7 +340,7 @@ const ProfileScreen = () => {
                     <Image
                         source={
                             avatarImg
-                            ? { uri: `http://다른컴퓨터.주소:1000/${avatarImg}` } // 적용된 아바타 URI 사용
+                            ? { uri: `http://컴퓨터.주소:1000/${avatarImg}` } // 적용된 아바타 URI 사용
                             : require('../../../assets/testProfile/kimgoeunProfile.png') // 기본 이미지
                         }
                         style={[

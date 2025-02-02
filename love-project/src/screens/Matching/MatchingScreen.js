@@ -33,7 +33,7 @@ const MatchingScreen = () => {
                 const formData = new FormData();
                 formData.append("uid", userData.userUID);
 
-                const response = await axios.post("http://다른컴퓨터.주소:2000/getMyInfo", formData, {
+                const response = await axios.post("http://컴퓨터.주소:2000/getMyInfo", formData, {
                     headers: {'Content-Type': 'multipart/form-data'},
                 });
         
@@ -52,7 +52,10 @@ const MatchingScreen = () => {
 
     const loadMatching = async () => {
         try {
-            const response = await axios.post("http://192.168.219.136:2000/recommend", formData, {
+            const formData = new FormData();
+            formData.append("uid", userData.userUID);
+
+            const response = await axios.post("http://컴퓨터.주소:2000/recommend", formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -107,28 +110,31 @@ const MatchingScreen = () => {
             />
         </Animated.View>
             <Text style={styles.heartText}>
-            매칭잡기!
+                매칭잡기!
             </Text>
         </TouchableOpacity>
 
         {(userMatchInfo == null) ? (
             <ActivityIndicator size="large" color="#FF9AAB" style={styles.loader} />
         ) : (
-            <TouchableOpacity style={styles.information} onPress={() => {ModifyMatchInfo();}}>
+            <TouchableOpacity style={styles.information} onPress={() => {navigation.navigate("ModifyMatchInfo", {matchInfo: userMatchInfo})}}>
                 <Text style={styles.informationText}>
-                    나의 정보
+                    ※ 나의 정보 ※
                 </Text>
                 <Text style={styles.informText}>
-                    나의 MBTI: {userMatchInfo.myMBTI}{'\n'}
-                    나의 키: {userMatchInfo.myHeight}{'\n'}
-                    나의 외모: {userMatchInfo.myAppearance}{'\n'}
+                    ♥ 나의 MBTI: {userMatchInfo.myMBTI}{'\n'}
+                    ♥ 나의 키: {userMatchInfo.myHeight ?? "----"}{'\n'}
+                    ♥ 나의 외모: {userMatchInfo.myAppearance.join(", ") ?? "----"}{'\n'}
                 </Text>
             </TouchableOpacity>
         )}
 
         <Text style={styles.text}>
             나의 정보를 바탕으로 매칭돼요!
-        </Text>                           
+        </Text>
+        <Text style={styles.detailtext}>
+            (정보 미기입시 상관없음으로 분류됩니다.)   
+        </Text>        
      </View>
     </ScrollView>
                 );
@@ -224,6 +230,7 @@ const styles = StyleSheet.create({
         color : '#FF9AAB', 
         width: '80%',
         height: 75, 
+        fontWeight: "bold",
         alignItems: 'center', 
         textAlign:'center', 
         alignSelf: 'center'
@@ -255,9 +262,9 @@ const styles = StyleSheet.create({
     informText: {
         fontSize:18,
         color : 'white', 
-        width: '80%',
+        width: '90%',
         height: 75, 
-        marginLeft: 20,
+        marginLeft: 15,
         marginVertical: 5,
     },
 
@@ -265,13 +272,21 @@ const styles = StyleSheet.create({
         fontSize:15,
         color : '#FF9AAB', 
         width: '80%',
-        height: 75, 
         alignItems: 'center', 
         textAlign:'center', 
         alignSelf: 'center',
         marginVertical: 5,
     },
-                
+    detailtext: {
+        fontSize:15,
+        color : '#FF9AAB', 
+        width: '80%',
+        fontWeight: "bold",
+        alignItems: 'center', 
+        textAlign:'center', 
+        alignSelf: 'center',
+        textDecorationLine: "underline",
+    },
 });
 
 export default MatchingScreen;
