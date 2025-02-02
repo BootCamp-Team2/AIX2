@@ -102,7 +102,7 @@ const AvatarScreen = () => {
 
       const sel_formData = new FormData();
       sel_formData.append("type", "avatar");
-      const select_r = await axios.post("http://다른컴퓨터.주소:1000/select-server", sel_formData, {
+      const select_r = await axios.post("http://컴퓨터.주소:1000/select-server", sel_formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -181,7 +181,7 @@ const AvatarScreen = () => {
       const formData = new FormData();
       formData.append("img_src", avatarUri);
       formData.append("uid", userUID);
-      const avatarResponse = await axios.post("http://다른컴퓨터.주소:1000/applyAvatar", formData,
+      const avatarResponse = await axios.post("http://컴퓨터.주소:1000/applyAvatar", formData,
         {headers: {"Content-Type": "multipart/form-data"}}
       );
 
