@@ -10,7 +10,7 @@ const apiClient = axios.create({
 });
 
 const matchClient = axios.create({
-  baseURL: 'http://다른컴퓨터.주소:2000',
+  baseURL: 'http://컴퓨터.주소:2000',
   headers: {
     "Content-Type": "application/json",
   }
