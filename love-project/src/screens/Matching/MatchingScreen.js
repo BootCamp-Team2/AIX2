@@ -84,9 +84,9 @@ const MatchingScreen = () => {
       };
     
     return(
-    <ScrollView>
+    <ScrollView contentContainerStyle={styles.containerScroll}>
     <View style={styles.container}>
-        <View style={styles.header}>
+        {/* <View style={styles.header}>
             <View style={styles.menu}>                   
             <Icon name="menu" size={40} color="black"/>
             </View> 
@@ -96,7 +96,7 @@ const MatchingScreen = () => {
             <View style={styles.check}>                    
             <Icon name="check" size={40} color="black"/>
             </View>
-        </View>
+        </View> */}
             
         <TouchableOpacity style={styles.heartBox} onPress={() => {loadMatching();}}>
         <Animated.View style={{ transform: [{ scale: scaleValue }] }}>
@@ -135,9 +135,15 @@ const MatchingScreen = () => {
             };
             
 const styles = StyleSheet.create({
+    containerScroll:{
+        flexGrow: 1,               // ScrollView가 자식 요소의 크기만큼 확장됨
+        justifyContent: 'center',  // 세로 중앙 정렬
+        alignItems: 'center',      // 가로 중앙 정렬
+    },
 
     container:{
-        flex:1,        
+        flex:1,   
+        justifyContent: 'center',
     },
 
     loader: {

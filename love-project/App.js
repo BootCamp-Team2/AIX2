@@ -80,7 +80,7 @@ const MainNavigator = () => {
         <Stack.Screen
           name="MatchingScreen"
           component={MatchingScreen}
-          options={{ headerTitle: '매칭 화면', headerTitleAlign: 'center' }}
+          options={{ headerTitle: '매칭 화면', headerTitleAlign: 'center', headerStyle: { backgroundColor: '#FFF0F0' } }}
         />
         <Stack.Screen
           name="ModifyMatchInfo"
@@ -95,7 +95,7 @@ const MainNavigator = () => {
         <Stack.Screen
           name="ConversationScreen"
           component={ConversationScreen}
-          options={{ headerTitle: 'AI 대화 시뮬레이션 화면', headerTitleAlign: 'center' }}
+          options={{ headerTitle: 'AI 대화 시뮬레이션 화면', headerTitleAlign: 'center', headerStyle: { backgroundColor: '#FFF0F0' }}}
         />
         <Stack.Screen
           name="CoordinationScreen"

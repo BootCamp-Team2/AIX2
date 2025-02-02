@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Image, View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { Image, View, Text, TouchableOpacity, StyleSheet, ScrollView, Platform } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -32,12 +32,14 @@ const MainScreen = () => {
         </Text>
       </View>
 
+      <View>
+        <Text style={styles.horizontalLineFirst} >         
+        </Text>
+      </View>
+
       <TouchableOpacity style={styles.main} onPress={() => navigation.navigate("MatchingScreen", {userUID: "0026469667"})}>    
         <Text style={styles.mainText}>{userData.username}님 주변에{'\n'}
-          300명의 사용자가 있습니다!{'\n'}{'\n'}
-          클릭하시면{'\n'}
-          내 주변 이성들의{'\n'}
-          위치를 확인하실 수 있습니다!!
+          300명의 사용자가 있습니다!
         </Text>
       </TouchableOpacity>
            
@@ -49,12 +51,7 @@ const MainScreen = () => {
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("MatchingScreen", {userUID: "0026469667", userData: userData})}>      
         <View>
           <Image source={require('../../assets/MainScreen/matching.jpg')} 
-              style={{width : 70, 
-                      height : 70,
-                      borderRadius: 10,
-                      marginRight: 20,
-                      marginLeft: 7
-                      }}
+              style={styles.imageStyle}
           />
         </View>
           <Text style={styles.textStyle}>
@@ -68,12 +65,7 @@ const MainScreen = () => {
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("ConversationScreen", {userUID: userData.userUID})}>
         <View>
           <Image source={require('../../assets/MainScreen/couple.jpg')} 
-              style={{width : 70, 
-                      height : 70,
-                      borderRadius: 10,
-                      marginRight: 20,
-                      marginLeft: 7 
-                      }}
+              style={styles.imageStyle}
           />
         </View>
           <Text style={styles.textStyle}>
@@ -87,12 +79,7 @@ const MainScreen = () => {
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("CoordinationScreen")}>
         <View>
           <Image source={require('../../assets/MainScreen/coor.jpg')} 
-              style={{width : 70, 
-                      height : 70,
-                      borderRadius: 10,
-                      marginRight: 20,
-                      marginLeft: 7  
-                      }}
+              style={styles.imageStyle}
           />
         </View>
           <Text style={styles.textStyle}>
@@ -106,12 +93,7 @@ const MainScreen = () => {
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("ChattingList")}>
         <View>
           <Image source={require('../../assets/MainScreen/mat.jpg')} 
-              style={{width : 70, 
-                      height : 70,
-                      borderRadius: 10,
-                      marginRight: 20,
-                      marginLeft: 7  
-                      }}
+              style={styles.imageStyle}
           />
         </View>
           <Text style={styles.textStyle}>
@@ -139,7 +121,7 @@ const styles = StyleSheet.create({
     marginRight : 30,
     marginLeft : 5,
     marginBottom : 1,
-    marginTop: 30
+    marginTop: -3
   },
 
   headerText: {
@@ -156,26 +138,36 @@ const styles = StyleSheet.create({
   },
 
   main: {
-    backgroundColor: '#FF9AAB',
-    marginBottom: 10,
-    paddingTop: 40,
+    // backgroundColor: '#FF9AAB',
+    marginBottom: 5,
+    padding: 15,
     borderRadius: 30,
     width: '100%',
-    height: 200,
+    // height: 200,
     alignItems: 'center',
     alignSelf: 'center', 
   },  
   
   mainText: { 
-    color: 'white',
-    height: 180, 
+    color: '#FF9AAB',
+    height: 60, 
     fontSize: 18, 
     fontWeight: 'bold', 
     textAlign: 'center',
     alignSelf: 'center', 
+    // backgroundColor: 'red'
   },
 
+  horizontalLineFirst: {
+    marginTop: 4,
+    marginBottom: 17,
+    width: '100%', 
+    height: 1,  
+    backgroundColor: 'silver',
+    marginVertical: 10, // Space above and below the line
+  },
   horizontalLine: {
+    marginBottom: 15,
     width: '100%', 
     height: 1,  
     backgroundColor: 'silver',
@@ -183,7 +175,8 @@ const styles = StyleSheet.create({
   },
 
   textStyle: {
-    paddingTop: 12,
+    alignSelf: 'center',
+    height: 50,
   },
   
   button: {
@@ -191,7 +184,8 @@ const styles = StyleSheet.create({
     height: 90,
     margin: 3,
     padding: 10,
-    borderRadius: 25,
+    alignSelf: 'center',
+    borderRadius: Platform.OS === 'android' ? 17 : 25,
     width: '100%',
     marginBottom: 10,
     flexDirection: 'row',
@@ -215,6 +209,13 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     margin:3,
   },
+  imageStyle: {
+    width : 70, 
+    height : 70,
+    borderRadius: 10,
+    marginRight: 15,
+    marginLeft: 7 
+  }
 });
 
 export default MainScreen;

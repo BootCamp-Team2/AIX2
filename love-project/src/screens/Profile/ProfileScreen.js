@@ -308,15 +308,17 @@ const ProfileScreen = () => {
                 contentContainerStyle={styles.scrollContainer} 
                 keyboardShouldPersistTaps='handled' // 키보드가 올라갔을 때 스크롤 유지
             >
-                <View style={styles.header}>
-                    <Text style={styles.headerText}>{profileData.username} 님의 프로필</Text>
-                    <TouchableOpacity style={styles.editButton} onPress={() => {
+                {/*편집 버튼*/}
+                <TouchableOpacity style={styles.editButton} onPress={() => {
                         setShowInput(!showEditButtons);
                         setShowEditButtons(!showEditButtons);
                         handleEditButtonPress();
                     }}>
                         <Icon2 style={styles.editButton} name="edit-3" size={24} color="#9AAEFF" />
                     </TouchableOpacity>
+                    
+                <View style={styles.header}>
+                    <Text style={styles.headerText}>{profileData.username} 님의 프로필</Text>
                 </View>
 
                 <View style={styles.photoContainer}>
@@ -566,22 +568,23 @@ const styles = StyleSheet.create({
     },
     header: {
         marginBottom: 20,
+        marginTop: -37,
         alignItems: 'center',
-        flexDirection: 'row',
+        flexDirection: 'center',
         justifyContent: 'space-between',
     },
     headerText: {
-        fontSize: 24,
+        fontSize: 20,//Platform.OS === 'android' ? 17 : 24,
         fontWeight: 'bold',
         marginTop: 50,
-        marginLeft: 85,
         color: '#9AAEFF',
     },
     editButton: {
         color: '#9AAEFF',
         fontSize: 24,
         textAlign: 'center',
-        marginTop: 5,
+        marginTop: 15,
+        marginLeft: 150
     },
     // editButtonText: {
     //     marginTop: 50,

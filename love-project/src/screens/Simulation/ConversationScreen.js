@@ -78,9 +78,9 @@ const ConversationScreen = () => {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // iOS와 Android에 따라 키보드 회피 방식 설정
         keyboardVerticalOffset={50} // 키보드로 인해 뷰가 올라가는 정도 조정
     >
-        <ScrollView>       
+        <ScrollView contentContainerStyle={styles.containerScroll}>       
             <View style={styles.container}>
-                <View style={styles.header}>
+                {/* <View style={styles.header}>
                     <View style={styles.menu}>                   
                     <Icon name="menu" size={40} color="black"/>
                     </View> 
@@ -90,7 +90,7 @@ const ConversationScreen = () => {
                     <View style={styles.check}>                    
                     <Icon name="check" size={40} color="black"/>
                     </View>
-                </View>
+                </View> */}
                 <Text style={styles.main}>
                     AI와 대화를 시작하기 전에 {'\n'}
                     나의 이상형을 만드세요!
@@ -154,6 +154,10 @@ const ConversationScreen = () => {
 
 const styles = StyleSheet.create({
 
+    containerScroll:{
+        flexGrow: 1,               // ScrollView가 자식 요소의 크기만큼 확장됨
+    },
+
     loader: {
         marginTop: 20,
     },
@@ -204,9 +208,11 @@ const styles = StyleSheet.create({
         marginTop:15     
     },
     
-    main: { fontSize: 24,
+    main: { 
+        fontSize: 24,
         height: 70, 
-        fontWeight: 'bold', 
+        fontWeight: 'bold',
+        marginTop: 20, 
         marginBottom: 10, 
         color : '#FFB89A', 
         textAlign:'center', 
