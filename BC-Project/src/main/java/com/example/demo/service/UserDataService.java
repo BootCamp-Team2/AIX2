@@ -38,4 +38,5 @@ public interface UserDataService {
 	public UpdateResponse modifyProfileImg(String jwtToken, String profileImg);
 	public UpdateResponse modifyMedia(String jwtToken, UpdateMedia mediaString);
 	public UpdateResponse modifyAppeal(String jwtToken, UpdateAppeal appealString);
+	public MyDataResponse getMyDataByUID(String uid);
 }

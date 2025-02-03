@@ -62,4 +62,10 @@ public class UserService {
         String userEmail = jwtUtil.extractEmail(token); // JWT에서 사용자 ID 추출
         return userRepository.findByEmail(userEmail).orElse(null); // 사용자 찾기
     }
+
+    // 성별에 따른 위치 데이터 가져오기
+    public long getOppositeGenderCount(String gender, String region) {
+        String oppositeGender = gender.equals("남성") ? "여성" : "남성";
+        return userRepository.countByGenderAndRegion(oppositeGender, region);
+    }
 }

@@ -9,8 +9,16 @@ public class EnvConfig {
     private final Dotenv dotenv;
 
     public EnvConfig() {
-        dotenv = Dotenv.configure().directory(".").load();
+        dotenv = Dotenv.configure().directory(".").load(); // 맥 환경?
+        // dotenv = Dotenv.configure().directory("C:/Love_Project/Bc-Project").filename(".env").load(); // 윈도우 환경?
     }
+
+    // public void init() {
+    //     Dotenv dotenv = Dotenv.configure().directory(".").load();
+    //     System.setProperty("MYSQL_DB_URL", dotenv.get("MYSQL_DB_URL"));
+    //     System.setProperty("MYSQL_DB_USERNAME", dotenv.get("MYSQL_DB_USERNAME"));
+    //     System.setProperty("MYSQL_DB_PASSWORD", dotenv.get("MYSQL_DB_PASSWORD"));
+    // }
 
     // 데이터베이스 설정
     public String getDatabaseUrl() {
@@ -48,6 +56,18 @@ public class EnvConfig {
 
     public String getInitialSecretKey() {
         return dotenv.get("INITIAL_SECRET_KEY");
+    }
+
+    public String getMysqlURL() {
+        return dotenv.get("MYSQL_DB_URL");
+    }
+
+    public String getMysqlUsername() {
+        return dotenv.get("MYSQL_DB_USERNAME");
+    }
+
+    public String getMysqlPassword() {
+        return dotenv.get("MYSQL_DB_PASSWORD");
     }
 
     public Dotenv getDotenv() {

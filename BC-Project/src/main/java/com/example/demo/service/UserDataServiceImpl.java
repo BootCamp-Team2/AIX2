@@ -213,6 +213,15 @@ public class UserDataServiceImpl implements UserDataService {
         return data;
     }
 
+    @Override
+    public MyDataResponse getMyDataByUID(String uid) {
+        Optional<User> userOptional = userDataRepository.findByUserUID(uid);
+        User user = userOptional.orElseThrow(() -> new RuntimeException("ID가 존재하지 않습니다 : " + uid));
+        MyDataResponse data = new MyDataResponse(user);
+
+        return data;
+    }
+
     // 회원 탈퇴
     @Override
     @Transactional(rollbackFor = Exception.class)
