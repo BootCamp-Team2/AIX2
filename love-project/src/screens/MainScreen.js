@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
     marginRight : 30,
     marginLeft : 5,
     marginBottom : 1,
-    marginTop: -3
+    marginTop: 15
   },
 
   headerText: {
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
   },
 
   horizontalLineFirst: {
-    marginTop: 4,
+    marginTop: 0,
     marginBottom: 17,
     width: '100%', 
     height: 1,  
