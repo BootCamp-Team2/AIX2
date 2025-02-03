@@ -1,47 +1,57 @@
 import React, { useEffect, useState } from 'react';
 import { Image, View, Text, TouchableOpacity, StyleSheet, ScrollView, Platform } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const MainScreen = () => {
   const navigation = useNavigation();
   const [userData, setUserData] = useState({});
+  const [oppositeGenderCount, setOppositeGenderCount] = useState(0); // 이성 사용자 수 상태 추가
+
   useEffect(() => {
     const loadUserData = async () => {
-      setUserData(JSON.parse(await AsyncStorage.getItem('userData')));
+      const data = JSON.parse(await AsyncStorage.getItem('userData'));
+      setUserData(data);
+      fetchOppositeGenderCount(data.gender, data.region); // 사용자 데이터에 따라 이성 사용자 수 조회
     };
 
     loadUserData();
   }, []);
 
+  const fetchOppositeGenderCount = async (gender, region) => {
+    const oppositeGender = gender === '남성' ? '여성' : '남성';
+
+    try {
+      const response = await fetch(`http://192.168.1.29:8080/users/count?gender=${oppositeGender}&region=${region}`);
+      const data = await response.json();
+      setOppositeGenderCount(data); // API에서 반환된 카운트를 상태로 설정
+    } catch (error) {
+      console.error('Error fetching opposite gender count:', error);
+    }
+  };
+
   return (
-  <ScrollView>
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Image source={userData.profile_picture ? {uri: userData.profile_picture} : require('../../assets/MainScreen/ima.jpg')} 
-                style={{width : 50, 
-                        height : 50,
-                        borderRadius: 30,
-                        marginRight: 20,
-                        marginLeft: 7,
-                        }}
-        />
+    <ScrollView>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Image source={userData.profilePicture ? { uri: `http://192.168.1.29:8080/${userData.profilePicture}` } : require('../../assets/MainScreen/ima.jpg')}
+            style={{ width: 50, height: 50, borderRadius: 30, marginRight: 20, marginLeft: 7, }}
+          />
 
-        <Text style={styles.headerText}>{userData.username}{'\n'}
-          <Text style={styles.headerText2}>일반고객</Text>
-        </Text>
-      </View>
+          <Text style={styles.headerText}>{userData.username}{'\n'}
+            <Text style={styles.headerText2}>일반고객</Text>
+          </Text>
+        </View>
 
-      <View>
-        <Text style={styles.horizontalLineFirst} >         
-        </Text>
-      </View>
+        <View>
+          <Text style={styles.horizontalLineFirst}></Text>
+        </View>
 
-      <TouchableOpacity style={styles.main} onPress={() => navigation.navigate("MatchingScreen", {userUID: "0026469667"})}>    
-        <Text style={styles.mainText}>{userData.username}님 주변에{'\n'}
-          300명의 사용자가 있습니다!
-        </Text>
-      </TouchableOpacity>
+        <TouchableOpacity style={styles.main} onPress={() => navigation.navigate("MatchingScreen", { userUID: "0026469667" })}>
+          <Text style={styles.mainText}>{userData.username}님 주변에{'\n'}
+            {oppositeGenderCount}명의 사용자가 있습니다!
+          </Text>
+        </TouchableOpacity>
            
       <View>
         <Text style={styles.horizontalLine} >         

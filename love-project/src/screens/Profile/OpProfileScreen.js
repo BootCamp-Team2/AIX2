@@ -2,47 +2,43 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, Alert, TextInput, ScrollView, KeyboardAvoidingView, Platform, FlatList, Modal } from 'react-native';
 import { useNavigation, useFocusEffect, useRoute } from "@react-navigation/native";
 import { MaterialIcons } from '@expo/vector-icons'; // Expo Icons 추가
-import * as ImagePicker from 'expo-image-picker'; // ImagePicker 추가
 import Icon2 from 'react-native-vector-icons/Feather';
 import Icon3 from 'react-native-vector-icons/Ionicons'; 
 import Icon4 from 'react-native-vector-icons/FontAwesome5';
 import Icon5 from 'react-native-vector-icons/MaterialCommunityIcons';
-import AddProfileModal from '../../components/Modal/AddProfileModal';
-import EditProfileModal from '../../components/Modal/EditProfileModal';
-import EditBasiccProfileModal from '../../components/Modal/EditBasicProfileModal';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import Video from 'react-native-video';
 
-const ProfileScreen = () => {
+const OpProfileScreen = () => {
+    const route = useRoute();
     const navigation = useNavigation();
     const [selectedIndex, setSelectedIndex] = useState(0); // 선택된 인덱스 상태
     const [profileData, setProfileData] = useState({});
-
-    const [newInfo, setNewInfo] = useState({ title: '', value: '' });
-    const [additionalInfo, setAdditionalInfo] = useState([]);
-    const [showInput, setShowInput] = useState(false); // 추가 정보 입력 필드 보이기 상태
-    const [showEditButtons, setShowEditButtons] = useState(false); // 수정 버튼 보이기 상태
     const [isCircleFront, setIsCircleFront] = useState(false);
-    const [editMode, setEditMode] = useState(null); // 수정 모드 (수정 중인 항목의 인덱스를 저장)
+    const [additionalInfo, setAdditionalInfo] = useState([]);
     const [mediaList, setMediaList] = useState([]); // 업로드된 미디어 리스트 상태
-    const [numColumns, setNumColumns] = useState(2); // numColumns 상태 관리
-    const [modalVisible, setModalVisible] = useState(false); // 모달 상태
-    const [editItem, setEditItem] = useState(null); // 편집할 항목 데이터
     const [profileImg, setProfileImg] = useState(null);
     const [avatarImg, setAvatarImg] = useState(null);
-    const [addProfileModalVisible, setAddProfileModalVisible] = useState(false); // 추가 모달 상태
-    const [editProfileModalVisible, setEditProfileModalVisible] = useState(false); // 수정 모달 상태
-    const [editBasicProfileModalVisible, setEditBasicProfileModalVisible] = useState(false); // 기본 정보 수정 모달 상태
+    const [numColumns, setNumColumns] = useState(2); // numColumns 상태 관리
 
     const [userData, setUserData] = useState({});
+    const { userUID } = route.params;
     useEffect(() => {
         const loadUserData = async () => {
-            setUserData(JSON.parse(await AsyncStorage.getItem('userData')));
+            if(userUID) {
+                const formData = new FormData();
+                formData.append("userUID", userUID);
+    
+                const response = await axios.post("http://192.168.1.29:8080/users/findUserData", formData, {
+                    headers: {"Content-Type": "multipart/form-data"}
+                });
+    
+                if(response.data) { setUserData(response.data.user); }
+            }
         };
 
         loadUserData();
-    }, []);
+    }, [route.params]);
 
     useEffect(() => {
         const loadProfileData = () => {
@@ -67,235 +63,8 @@ const ProfileScreen = () => {
         loadProfileData();
     }, [userData]);
 
-    // 수정 버튼을 눌렀을 때 저장 처리
-    const handleSaveEdit = async (title, value) => {
-        if (editMode !== null) {
-            // 수정 모드일 때 추가 정보 수정
-            setAdditionalInfo( async (prev) => {
-                const updatedInfo = [...prev];
-                updatedInfo[editMode] = { title, value }; // 수정된 항목 업데이트
-
-                await axios.post("http://192.168.1.29:8080/users/updateAppeal", {appeal: JSON.stringify(updatedInfo)},
-                    { headers: { "Content-Type": "application/json", 'Authorization': `Bearer ${await AsyncStorage.getItem('token')}` }}
-                );
-                return updatedInfo;
-            });
-        } else {
-            // 기본 정보 수정 모드일 때 (예: MBTI, 나이, 지역 등)
-            const newProfileData = {...profileData, [title]: value};
-            console.log(newProfileData);
-            setProfileData((profileData) => ({
-                ...profileData,
-                [title]: value, // 수정된 기본 정보 항목만 업데이트
-            }));
-        }
-    
-        // 수정/추가 모달 닫기
-        setEditBasicProfileModalVisible(false);
-        setEditProfileModalVisible(false);
-        setAddProfileModalVisible(false);
-    };
-    
-
-    const handleBasicSaveEdit = async (updatedItem) => {
-        const newProfileData = {
-            ...profileData,
-            [updatedItem.key]: updatedItem.value, // 키는 유지하고 값만 업데이트
-        };
-
-        await axios.post("http://192.168.1.29:8080/users/updateProfile", newProfileData,
-            { headers: { "Content-Type": "application/json", 'Authorization': `Bearer ${await AsyncStorage.getItem('token')}` }}
-        );
-
-        setProfileData(newProfileData);
-        setEditBasicProfileModalVisible(false); // 모달 닫기
-    };
-    
-
-    // 사진 선택 함수
-    const handlePickImage = async () => {
-        const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-        if (permissionResult.granted === false) {
-            alert('사진 접근 권한이 필요합니다!');
-            return;
-        }
-
-        const pickerResult = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.Images,
-            allowsEditing: true,
-            aspect: [1, 1],
-            quality: 1,
-        });
-
-        if (!pickerResult.cancelled) {
-            alert('set profile photo!');
-
-            const formData = new FormData();
-            formData.append('fileMedia', {
-                uri: pickerResult.assets[0].uri,
-                type: pickerResult.assets[0].type,
-                name: pickerResult.assets[0].uri.split('/').pop(),
-            });
-
-            const response = await axios.post("http://192.168.1.29:8080/users/updateProfileImg", formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                    'Authorization': `Bearer ${await AsyncStorage.getItem('token')}`
-                }
-            });
-
-            console.log(response.data.newData);
-
-            setProfileImg(response.data.newData)
-            alert('completed to set profile photo!');
-        }else{
-            alert('cancelled!');
-        }
-    };
-
-    // 추가 정보 모달 열기
-    const handleAddInfo = async () => {
-        if (newInfo.title && newInfo.value) {
-            setAdditionalInfo([...additionalInfo, { title: newInfo.title, value: newInfo.value }]);
-            console.log(newInfo);
-            setAddProfileModalVisible(false); // 추가 후 모달 닫기
-            setNewInfo({ title: '', value: '' }); // 입력 필드 초기화
-
-            await axios.post("http://192.168.1.29:8080/users/updateAppeal", {appeal: JSON.stringify([...additionalInfo, { title: newInfo.title, value: newInfo.value }])},
-                { headers: { "Content-Type": "application/json", 'Authorization': `Bearer ${await AsyncStorage.getItem('token')}` }}
-            );
-        } else {
-            Alert.alert("오류", "모든 필드를 입력해주세요.");
-        }
-    };
-
-    // 모달을 닫는 함수
-    const handleCloseModal = () => {
-        setModalVisible(false); // 모달 닫기
-        setNewInfo({ title: '', value: '' }); // 입력 필드 초기화
-    };
-
     const handleSwitch = () => {
         setIsCircleFront(!isCircleFront); // 상태 스위치
-    };
-
-    const handleDeleteInfo = async (index) => {
-        const updatedInfo = additionalInfo.filter((_, i) => i !== index);
-        setAdditionalInfo(updatedInfo);
-
-        await axios.post("http://192.168.1.29:8080/users/updateAppeal", {appeal: JSON.stringify(updatedInfo)},
-            { headers: {"Content-Type": "application/json", 'Authorization': `Bearer ${await AsyncStorage.getItem('token')}`}} 
-        );
-    };
-
-    // 수정 버튼 클릭 핸들러
-    const handleEditButtonPress = () => {
-        if (editMode !== null) {
-            setEditMode(null); // 수정 중인 항목이 있으면 수정 취소
-        } else {
-            setShowEditButtons(!showEditButtons); // 수정 버튼 상태 토글
-        }
-    };
-
-
-    // 수정 모드를 종료하는 함수
-    const handleCloseEditMode = () => {
-        // 수정 모드 취소 시 원래 값으로 복원
-        if (editMode !== null) {
-            // 수정한 데이터가 있으면 원래 값으로 롤백
-            if (profileData[editMode]) {
-                setProfileData(prevState => ({
-                    ...prevState,
-                    [editMode]: prevState[editMode], // 원래 값으로 롤백
-                }));
-            } else if (additionalInfo[editMode]) {
-                const updatedInfo = [...additionalInfo];
-                updatedInfo[editMode].value = updatedInfo[editMode].value; // 원래 값으로 롤백
-                setAdditionalInfo(updatedInfo);
-            }
-        }
-    
-        setEditMode(null); // 수정 모드 종료
-    };
-
-    // 미디어 선택 함수
-    const handleSelectMedia = async () => {
-        const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-        if (!permissionResult.granted) {
-            alert('미디어 접근 권한이 필요합니다!');
-            return;
-        }
-
-        const pickerResult = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.All, // 사진과 비디오 모두 선택 가능
-            allowsEditing: true,
-            quality: 1,
-        });
-
-        if (!pickerResult.cancelled) {
-            const formData = new FormData();
-            formData.append('fileMedia', {
-                uri: pickerResult.assets[0].uri,
-                type: pickerResult.assets[0].type,
-                name: pickerResult.assets[0].uri.split('/').pop(),
-            });
-
-            const responsePath = await axios.post("http://192.168.1.29:8080/users/uploadMedia", formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                    'Authorization': `Bearer ${await AsyncStorage.getItem('token')}`
-                }
-            });
-
-            const newMedia = {
-                uri: `http://192.168.1.29:8080/${responsePath.data}`,
-                type: pickerResult.assets[0].type,
-            };
-
-            setMediaList([newMedia, ...mediaList]);
-    
-            await axios.post("http://192.168.1.29:8080/users/updateMedia", {media: JSON.stringify([newMedia, ...mediaList])},
-                {headers: {"Content-Type": "application/json", "Authorization": `Bearer ${await AsyncStorage.getItem('token')}`,}}
-            );
-        }
-    };
-
-    // 미디어 삭제 함수
-    const handleDeleteMedia = async (index) => {
-        const updatedMediaList = mediaList.filter((_, i) => i !== index);
-        setMediaList(updatedMediaList);
-
-        await axios.post("http://192.168.1.29:8080/users/updateMedia", {media: JSON.stringify(updatedMediaList)},
-            {headers: {"Content-Type": "application/json", "Authorization": `Bearer ${await AsyncStorage.getItem('token')}`,}}
-        );
-    };
-
-    
-    const selectVideo = async () => {
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Videos, // 동영상만 선택
-      });
-  
-      if (!result.canceled) {
-        console.log('Video URI:', result.assets[0].uri);
-      } else {
-        console.log('User cancelled video picker');
-      }
-    };
-
-    // 수정 모달 열기
-    const handleEdit = (index) => {
-        setEditItem({ ...additionalInfo[index] }); // 편집할 항목 설정
-        setEditMode(index); // 수정할 항목 인덱스 설정
-        setEditProfileModalVisible(true); // 수정 모달 열기
-    };
-
-    // 기본 정보 수정 모달 열기
-    const handleBasicEdit = (key) => {
-        setEditItem({ key, value: profileData[key] }); // 수정할 키와 값을 설정
-        setEditBasicProfileModalVisible(true); // 모달 열기
     };
 
     return (
@@ -307,16 +76,7 @@ const ProfileScreen = () => {
             <ScrollView 
                 contentContainerStyle={styles.scrollContainer} 
                 keyboardShouldPersistTaps='handled' // 키보드가 올라갔을 때 스크롤 유지
-            >
-                {/*편집 버튼*/}
-                <TouchableOpacity style={styles.editButton} onPress={() => {
-                        setShowInput(!showEditButtons);
-                        setShowEditButtons(!showEditButtons);
-                        handleEditButtonPress();
-                    }}>
-                        <Icon2 style={styles.editButton} name="edit-3" size={24} color="#9AAEFF" />
-                    </TouchableOpacity>
-                    
+            >       
                 <View style={styles.header}>
                     <Text style={styles.headerText}>{profileData.username} 님의 프로필</Text>
                 </View>
@@ -362,23 +122,6 @@ const ProfileScreen = () => {
                     </TouchableOpacity>
                 </View>
 
-
-
-                <View>
-                    {isCircleFront === true && ( // overlappingCircle이 왼쪽에 있을 때만 렌더링
-                        <TouchableOpacity style={styles.avatarButton} onPress={() => navigation.navigate("AvatarScreen", {userUID: userData.userUID})}>
-                            <Text style={styles.avatarText}>캐릭터 생성하기</Text>
-                        </TouchableOpacity>
-                    )}
-                    {showEditButtons && isCircleFront === false && ( // showEditButtons가 true일 때만 '프로필 추가' 버튼 표시
-                        <TouchableOpacity style={styles.avatarButton} onPress={handlePickImage}>
-                            <Text style={styles.avatarText}>프로필 추가</Text>
-                        </TouchableOpacity>
-                    )}
-                    <TouchableOpacity style={styles.avatarButtonPlaceholder}>
-                    </TouchableOpacity>
-                </View>
-
                 <View style={styles.segmentedControl}>
                     <TouchableOpacity
                         style={[styles.segment, selectedIndex === 0 ? styles.activeSegment : styles.inactiveSegment]}
@@ -402,14 +145,6 @@ const ProfileScreen = () => {
                         {['MBTI', '나이', '지역'].map((key) => (
                             <View key={key} style={styles.infoBox}>
                                 <Text style={styles.infoText}>{key}: {profileData[key]}</Text>
-                                {showEditButtons && (
-                                        <TouchableOpacity 
-                                            onPress={() => handleBasicEdit(key)} 
-                                            style={styles.informationEditButton}
-                                        >
-                                            <Text style={styles.editButtonText}>수정</Text>
-                                        </TouchableOpacity>
-                                )}
                             </View>
                         ))}
                     </View>
@@ -423,14 +158,6 @@ const ProfileScreen = () => {
                                     <Text style={styles.keyText}>{key}{'\n'}</Text>
                                     <Text style={styles.valueText}> {value}</Text>
                                 </Text>
-                                {showEditButtons && (
-                                    <TouchableOpacity
-                                        onPress={() => handleBasicEdit(key)} // 클릭 시 수정 모달 오픈
-                                        style={styles.informationEditButton}
-                                    >
-                                        <Text style={styles.editButtonText}>수정</Text>
-                                    </TouchableOpacity>
-                                )}
                             </View>
                     ))}
                             
@@ -441,63 +168,8 @@ const ProfileScreen = () => {
                                 <Text style={styles.keyText}>{item.title}{'\n'}</Text>
                                 <Text style={styles.valueText}> {item.value}</Text>
                             </Text>
-                            {showEditButtons && selectedIndex === 0 && (
-                                <>
-                                    <TouchableOpacity onPress={() => handleEdit(index)} style={styles.informationEditButton}>
-                                        <Text style={styles.editButtonText}>수정</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity onPress={() => handleDeleteInfo(index)} style={styles.deleteButton}>
-                                        <Text style={styles.deleteButtonText}>삭제</Text>
-                                    </TouchableOpacity>
-                                </>
-                            )}
                         </View>
                     ))}
-
-                    {/* 기본 정보 수정 모달 */}
-                    <EditBasiccProfileModal
-                        visible={editBasicProfileModalVisible}
-                        onClose={() => setEditBasicProfileModalVisible(false)}
-                        onSave={handleBasicSaveEdit} // 수정 저장 처리
-                        editItem={editItem} // 수정할 데이터 전달
-                        setEditItem={setEditItem} // 수정할 데이터 업데이트 함수 전달
-                        profileData={profileData} // 상태 전달
-                        setProfileData={setProfileData} // 상태 업데이트 함수 전달
-                    />
-                    
-                    {/* 수정 모달 */}
-                    <EditProfileModal
-                        visible={editProfileModalVisible}
-                        onClose={() => setEditProfileModalVisible(false)}
-                        onSave={handleSaveEdit} // 수정 저장 처리
-                        editItem={editItem}
-                        setEditItem={setEditItem}
-                    />
-
-                    {/* 새 정보 추가 입력 필드 */}
-                    {showEditButtons && (
-                        <TouchableOpacity
-                        style={styles.addProfileBtn}
-                        onPress={() => {
-                            setAddProfileModalVisible(true); // 추가 모달을 열기 위한 코드
-                        }}
-                        >
-                            <Icon3 style={styles.switchText} name="add-circle-outline" size={35} color="#9AAEFF" />
-                        </TouchableOpacity>
-                    )}
-
-                    {/* 추가 정보 모달 */}
-                    <AddProfileModal
-                        visible={addProfileModalVisible}  // 여기에 visible 상태 전달
-                        onClose={() => setAddProfileModalVisible(false)}  // 모달 닫기 함수
-                        onAdd={handleAddInfo}  // 새로운 정보 추가 함수
-                        newInfo={newInfo}  // 새 정보 상태
-                        setNewInfo={setNewInfo}  // 새 정보 업데이트 함수
-                    />
-
-                    <View style={styles.appeal}>
-                        <Text style={styles.appealText}>어필하고 싶은 내용을 적어보세요!</Text>
-                    </View>
                 </View>
                 ) : (
                     <KeyboardAvoidingView>
@@ -507,13 +179,6 @@ const ProfileScreen = () => {
                                 mediaList.length === 1 ? { alignItems: 'flex-start' } : { alignItems: 'center' }
                             ]}
                         >
-                            {/* <TouchableOpacity style={styles.addMediaButton} onPress={selectVideo}>
-                                <Text style={styles.addMediaText}>동영상 추가</Text>
-                            </TouchableOpacity> */}
-                        
-                            <TouchableOpacity style={styles.addMediaButton} onPress={handleSelectMedia}>
-                                <Text style={styles.addMediaText}>사진 추가</Text>
-                            </TouchableOpacity>
                             <FlatList
                                 data={mediaList}
                                 keyExtractor={(item, index) => index.toString()}
@@ -534,20 +199,9 @@ const ProfileScreen = () => {
                                                     shouldPlay={false}
                                                 />
                                             )}
-                                            {showEditButtons === true && (
-                                            <TouchableOpacity
-                                                style={styles.deleteMediaButton}
-                                                onPress={() => handleDeleteMedia(index)}
-                                            >
-                                                <Text style={styles.deleteMediaText}>삭제</Text>
-                                            </TouchableOpacity>
-                                            )}
                                         </View>
                                 )}
                             />
-                            </View>
-                            <View style={styles.appeal}>
-                                <Text style={styles.appealText}>공유하고 싶은 사진을 올려보세요!</Text>
                             </View>
                     </KeyboardAvoidingView>
                 )}
@@ -568,7 +222,7 @@ const styles = StyleSheet.create({
     },
     header: {
         marginBottom: 20,
-        marginTop: -37,
+        // marginTop: -37,
         alignItems: 'center',
         flexDirection: 'center',
         justifyContent: 'space-between',
@@ -850,4 +504,4 @@ const styles = StyleSheet.create({
     
 });
 
-export default ProfileScreen;
+export default OpProfileScreen;

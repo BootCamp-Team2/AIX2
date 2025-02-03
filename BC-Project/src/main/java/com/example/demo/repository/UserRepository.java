@@ -4,6 +4,8 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.example.demo.User;
 
@@ -14,5 +16,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
     
     Optional<User> findByEmail(String email); // 이메일로 사용자 조회
 
+    Optional<User> findByUserUID(String uid);
+
 	Object findByUsername(String initialUsername);
+
+    @Query("SELECT COUNT(u) FROM User u WHERE u.gender = :gender AND u.region = :region")
+    long countByGenderAndRegion(@Param("gender") String gender, @Param("region") String region);
 }

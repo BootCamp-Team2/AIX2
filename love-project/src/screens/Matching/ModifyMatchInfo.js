@@ -55,7 +55,7 @@ const ModifyMatchInfo = () => {
   };
 
   const handleSubmit = async () => {
-    const response = await axios.post("http://컴퓨터.주소:2000/settings/ideal", matchInfo, {
+    const response = await axios.post("http://192.168.1.10:2000/settings/ideal", matchInfo, {
         headers: {"Content-Type": "application/json"}
     });
 
