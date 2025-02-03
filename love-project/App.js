@@ -96,12 +96,12 @@ const MainNavigator = () => {
         <Stack.Screen
           name="ConversationScreen"
           component={ConversationScreen}
-          options={{ headerTitle: 'AI 대화 시뮬레이션 화면', headerTitleAlign: 'center', headerStyle: { backgroundColor: '#FFF0F0' }}}
+          options={{ headerTitle: 'AI 대화 시뮬레이션 화면', headerTitleAlign: 'center', headerStyle: { backgroundColor: '#FFE4D9' }}}
         />
         <Stack.Screen
           name="CoordinationScreen"
           component={CoordinationScreen}
-          options={{ headerTitle: '코디 화면', headerTitleAlign: 'center' }}
+          options={{ headerTitle: '코디 화면', headerTitleAlign: 'center', headerStyle: { backgroundColor: '#d1e8d9' } }}
         />
         <Stack.Screen
           name="IdealTypeImg"
