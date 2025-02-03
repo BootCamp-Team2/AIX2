@@ -10,6 +10,7 @@ import MatchingScreen from './src/screens/Matching/MatchingScreen';
 import MatchingChatScreen from './src/screens/Matching/MatchingChatScreen';
 import ModifyMatchInfo from './src/screens/Matching/ModifyMatchInfo';
 import ProfileScreen from './src/screens/Profile/ProfileScreen';
+import OpProfileScreen from './src/screens/Profile/OpProfileScreen';
 import AvatarScreen from './src/screens/Profile/AvatarScreen';
 import SettingScreen from './src/screens/SettingScreen';
 import SignUpScreen from './src/screens/SignUpScreen';
@@ -66,6 +67,11 @@ const MainNavigator = () => {
         <Stack.Screen
           name="ProfileScreen"
           component={ProfileScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="OpProfileScreen"
+          component={OpProfileScreen}
           options={{ headerShown: false }}
         />
         <Stack.Screen

@@ -61,6 +61,8 @@ const MatchingScreen = () => {
                 },
             });
 
+            // console.log(response.data);
+
             if(!response.data) {
                 Alert.alert("추천 유저가 없거나, 오류가 발생했습니다.")
                 setLoading(false);
@@ -124,7 +126,7 @@ const MatchingScreen = () => {
                 <Text style={styles.informText}>
                     ♥ 나의 MBTI: {userMatchInfo.myMBTI}{'\n'}
                     ♥ 나의 키: {userMatchInfo.myHeight ?? "----"}{'\n'}
-                    ♥ 나의 외모: {userMatchInfo.myAppearance.join(", ") ?? "----"}{'\n'}
+                    ♥ 나의 외모: {userMatchInfo.myAppearance ? userMatchInfo.myAppearance.join(", ") : "----"}{'\n'}
                 </Text>
             </TouchableOpacity>
         )}

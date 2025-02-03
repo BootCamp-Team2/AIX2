@@ -39,7 +39,7 @@ const ConversationScreen = () => {
           
             const sel_formData = new FormData();
             sel_formData.append("type", "sim");
-            const select_r = await axios.post("http://192.168.1.35:1000/select-server", sel_formData, {
+            const select_r = await axios.post("http://192.168.1.10:1000/select-server", sel_formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -58,12 +58,17 @@ const ConversationScreen = () => {
               },
             });
       
+            // Replace navigation to IdealTypeImg with AssistantSelect
             if (response.data && response.data.simUrl) {
-              console.log(response.data.simUrl)
-              setSimulatorUri(response.data.simUrl); // 서버에서 반환된 아바타 URL 저장
-              
-              // 이미지 생성 완료 후 자동으로 다음 페이지로 이동
-              navigation.navigate("IdealTypeImg", { simUri: response.data.simUrl });
+            console.log(response.data.simUrl);
+            setSimulatorUri(response.data.simUrl); // 서버에서 반환된 아바타 URL 저장
+            
+            // 이미지 생성 완료 후 AssistantSelect로 이동
+            navigation.navigate("AssistantSelect", { 
+            userUID, 
+            gender, 
+            idealPhoto: `http://192.168.1.10:1000/output/${userUID}/mySimulator.jpg` 
+            });
             }
         } catch (error) {
             setLoading(null);
@@ -127,7 +132,7 @@ const ConversationScreen = () => {
                 <TouchableOpacity style={styles.button} onPress={() =>  {
                         if(loading == null) {CreateMySim();}
                         else { if(!loading) {
-                            navigation.navigate("IdealTypeImg", {simUri: simulatorUri});} 
+                            navigation.navigate("AssistantSelect", {simUri: simulatorUri});} 
                         }
                     }} disabled={loading}>
                     <Text style={styles.buttonText}>

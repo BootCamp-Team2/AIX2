@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class MessageService {
@@ -20,14 +21,21 @@ public class MessageService {
         return messageRepository.save(message); // 메시지 저장
     }
 
-    // 특정 사용자가 받은 메시지들을 조회하는 메서드
+    // 특정 사용자가 받은 메시지들을 조회하는 메서드 (수정)
     public List<Message> getMessagesForUser(String username) {
-        return messageRepository.findByReceiver(username); // 특정 사용자가 받은 메시지 조회
+        List<Message> allMessages = messageRepository.findBySenderOrReceiver(username, username); // 양방향 메시지 조회
+        return allMessages.stream()
+                .sorted((m1, m2) -> m2.getTimestamp().compareTo(m1.getTimestamp())) // 타임스탬프 기준으로 최신 메시지 순 정렬
+                .collect(Collectors.toList());
     }
 
-    // 두 사용자 간의 메시지를 조회하는 메서드
+    // 두 사용자 간의 메시지를 조회하는 메서드 (수정)
     public List<Message> getMessagesBetweenUsers(String sender, String receiver) {
-        return messageRepository.findBySenderAndReceiver(sender, receiver); // 두 사용자 간 메시지 조회
+        List<Message> messages = messageRepository.findBySenderAndReceiver(sender, receiver);
+        messages.addAll(messageRepository.findBySenderAndReceiver(receiver, sender)); // 양방향 메시지 모두 포함
+        return messages.stream()
+                .sorted((m1, m2) -> m2.getTimestamp().compareTo(m1.getTimestamp())) // 타임스탬프 기준으로 최신 메시지 순 정렬
+                .collect(Collectors.toList());
     }
 
     // 사용자가 읽지 않은 메시지들을 조회하는 메서드

@@ -129,6 +129,13 @@ public class UserController {
         return ResponseEntity.ok(data);
     }
 
+    // userUID로 사용자 정보 확인
+    @PostMapping("/findUserData")
+    public ResponseEntity<MyDataResponse> getUserData(@RequestParam("userUID") String uid) {
+        MyDataResponse data = userDataService.getMyDataByUID(uid);
+        return ResponseEntity.ok(data);
+    }
+
     // 닉네임 변경
     @PatchMapping("/modifyNickname")
     public ResponseEntity<UpdateResponse> modifyNickName(@RequestHeader("Authorization") String token, @RequestBody UpdateNickname modifyNickname) {
@@ -238,7 +245,8 @@ public class UserController {
     }
 
     // 미디어 부분 서버업로드
-    private String uploadPath = "/Users/sihyun/Documents/uploads/";
+    @Value("${upload.path}")
+    private String uploadPath;
 
     @PostMapping("/updateProfileImg")
     public ResponseEntity<UpdateResponse> updateProfileImg(@RequestHeader("Authorization") String token, @RequestParam(value="fileMedia", required=false) MultipartFile file) throws IllegalStateException, IOException {
@@ -297,6 +305,12 @@ public class UserController {
         String jwtToken = token.substring(7);
         UpdateResponse response = userDataService.modifyAppeal(jwtToken, appeal);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<Long> countOppositeGender(@RequestParam String gender, @RequestParam String region) {
+        long count = userService.getOppositeGenderCount(gender, region);
+        return ResponseEntity.ok(count); // 이성 사용자 수를 반환
     }
     
 	public UserRepository getUserRepository() {

@@ -1,11 +1,30 @@
 import React from 'react';
-import { Image, FlatList, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Image, FlatList, View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 
 const MatchingList = () => {
     const navigation = useNavigation(); // 화면 전환에 사용
     const route = useRoute(); // 전달받은 추천 리스트
     const { recommend } = route.params; // 추천 리스트 데이터 추출
+
+    const handlePress = (item) => {
+        Alert.alert(
+            "선택하세요",
+            "이동할 화면을 선택해주세요.",
+            [
+                {
+                    text: "프로필",
+                    onPress: () => navigation.navigate('OpProfileScreen', { userUID: item.userUID })
+                },
+                {
+                    text: "채팅",
+                    onPress: () => navigation.navigate('ChatchatScreen', { partner: item })
+                },
+                { text: "취소", style: "cancel" }
+            ]
+        );
+    };
 
     return (
         <FlatList
@@ -25,10 +44,7 @@ const MatchingList = () => {
             renderItem={({ item }) => (
                 <TouchableOpacity
                     style={styles.card}
-                    onPress={() => {
-                        // 프로필 클릭 시 채팅 화면으로 이동
-                        navigation.navigate('ChatchatScreen', { partner: item });
-                    }}
+                    onPress={() => {handlePress(item)}}
                 >
                     <View style={styles.profile}>
                         <Image
@@ -40,7 +56,7 @@ const MatchingList = () => {
                             style={styles.profileImg}
                             defaultSource={require('../../../assets/default-profile.png')}
                         />
-                        <Text style={styles.name}>{item.name ?? 'ㅇㅇㅇ'}</Text>
+                        <Text style={styles.name}>{item.username ?? 'ㅇㅇㅇ'}</Text>
                     </View>
 
                     <View style={styles.box}>
