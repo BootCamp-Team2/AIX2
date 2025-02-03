@@ -1,6 +1,5 @@
 import React from 'react';
 import { Image, FlatList, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 
 const MatchingList = () => {
@@ -15,11 +14,11 @@ const MatchingList = () => {
             ListHeaderComponent={
                 <View style={styles.header}>
                     <Text style={styles.top}>
-                        <Icon name="menu" size={40} color="black" />
+                        
                         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("MatchingChatScreen")}>
-                        <Text style={styles.topText}>소개팅 리스트</Text>
+                        <Text style={styles.topText}>매칭 리스트-여길 누르면 1:1 채팅창으로 이동해요</Text>
                         </TouchableOpacity>
-                        <Icon name="check" size={40} color="black" />
+                        
                     </Text>
                 </View>
             }
@@ -73,7 +72,7 @@ const styles = StyleSheet.create({
     },
     topText: {
         color: 'black',
-        fontSize: 24,
+        fontSize: 14,
         textAlign: 'center',
         flex: 1,
     },
