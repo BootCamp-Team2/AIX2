@@ -204,6 +204,9 @@ def chat_history():
             content = message.content[0].text.value  # 메시지의 텍스트 추출
             message_list.append({"role": role, "content": content})
 
+        # 오래된 순으로 정렬
+        message_list.reverse()
+
         return jsonify({"messages": message_list}), 200
     except Exception as e:
         logging.error(f"Error fetching chat history: {e}")

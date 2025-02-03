@@ -28,15 +28,17 @@ const AIchat = ({ route }) => {
           body: JSON.stringify({ threadKey, userUID }),
         });
         const data = await response.json();
+  
+        // 메시지를 오래된 순으로 표시 (백엔드에서 이미 reverse 적용됨)
         setMessages(data.messages || []);
       } catch (error) {
         console.error("Error fetching chat history:", error);
       }
     };
-
+  
     fetchMessages();
-  }, [threadKey, userUID]);
-
+  }, [threadKey, userUID]);  
+  
   const sendMessage = async () => {
     if (!inputText.trim()) return;
 
