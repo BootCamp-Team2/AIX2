@@ -105,7 +105,7 @@ def start_conversation():
         data = request.get_json()
         userUID = data.get("userUID")
         partner_id = data.get("partner_id")
-        ideal_photo = data.get("idealPhoto") or "love-project/assets/default-profile-male.png"
+        ideal_photo = data.get("idealPhoto") or r"love-project\assets\default-profile-male.png"
 
         if not userUID or not partner_id:
             return jsonify({"error": "userUID와 partner_id는 필수입니다."}), 400
@@ -185,27 +185,28 @@ def chat():
         logging.error(f"Chat error: {e}")
         return jsonify({"error": "서버 오류가 발생했습니다."}), 500
 
-@app.route('/get-profile-picture', methods=['GET'])
-def get_profile_picture():
+@app.route('/chat-history', methods=['POST'])
+def chat_history():
     try:
-        user_uid = request.args.get('userUID')
-        if not user_uid:
-            return jsonify({"error": "userUID is required"}), 400
+        data = request.get_json()
+        thread_key = data.get("threadKey")
 
-        # 사용자 프로필 사진 조회
-        cursor.execute("SELECT profile_picture FROM users WHERE useruid = %s", (user_uid,))
-        result = cursor.fetchone()
+        if not thread_key:
+            return jsonify({"error": "threadKey is required"}), 400
 
-        # 프로필 사진이 없을 경우 기본 이미지 경로 반환
-        if not result or not result.get('profile_picture'):
-            default_image_path = "love-project\assets\default-profile-male.png"
-            return jsonify({"profilePicture": default_image_path}), 200
+        # OpenAI API에서 대화 기록 가져오기
+        messages = client.beta.threads.messages.list(thread_key)
+        
+        # JSON 응답 형식 변환
+        message_list = []
+        for message in messages.data:
+            role = "assistant" if message.role == "assistant" else "user"
+            content = message.content[0].text.value  # 메시지의 텍스트 추출
+            message_list.append({"role": role, "content": content})
 
-        # 프로필 사진이 있는 경우 해당 URL 반환
-        return jsonify({"profilePicture": result['profile_picture']}), 200
-
+        return jsonify({"messages": message_list}), 200
     except Exception as e:
-        logging.error(f"Error fetching profile picture: {e}")
+        logging.error(f"Error fetching chat history: {e}")
         return jsonify({"error": "Server error"}), 500
 
 @app.route('/uploads/<filename>', methods=['GET'])
