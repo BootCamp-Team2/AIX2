@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
+  ScrollView,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
@@ -67,10 +68,32 @@ const AIchat = ({ route }) => {
     }
   };
 
+  const sendForCoaching = async () => {
+    try {
+      const response = await fetch(`${serverURL}/dating-coaching`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_history: messages.map((msg) => msg.content), // 채팅 기록만 추출
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch coaching response");
+      }
+
+      const data = await response.json();
+      navigation.navigate("CoachingScreen", { coachingResponse: data.response });
+    } catch (error) {
+      console.error("Error fetching coaching response:", error);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>어시스턴트와 대화</Text>
-      <View style={styles.chatContainer}>
+
+      <ScrollView contentContainerStyle={styles.chatContainer}>
         {messages.map((msg, index) => (
           <View
             key={index}
@@ -92,7 +115,8 @@ const AIchat = ({ route }) => {
             </Text>
           </View>
         ))}
-      </View>
+      </ScrollView>
+
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
@@ -104,10 +128,8 @@ const AIchat = ({ route }) => {
           <Text style={styles.sendButtonText}>SEND</Text>
         </TouchableOpacity>
       </View>
-      <TouchableOpacity
-        style={styles.coachingButton}
-        onPress={() => navigation.navigate("CoachingScreen")}
-      >
+
+      <TouchableOpacity style={styles.coachingButton} onPress={sendForCoaching}>
         <Text style={styles.coachingButtonText}>대화 평가 ➡</Text>
       </TouchableOpacity>
     </View>
@@ -124,7 +146,7 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   chatContainer: {
-    flex: 1,
+    flexGrow: 1,
     padding: 10,
     borderWidth: 1,
     borderColor: "#ddd",
