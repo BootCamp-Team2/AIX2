@@ -34,7 +34,7 @@ public class MessageController {
      */
     @GetMapping("/{userUID}")
     public List<Message> getMessages(@PathVariable String userUID) {
-        return messageService.getMessagesForUser(userUID);  // 수정 없음
+        return messageService.getMessagesForUser(userUID);  // 사용자별 메시지 조회
     }
 
     /**
@@ -48,7 +48,7 @@ public class MessageController {
     public List<Message> getChatMessages(
             @PathVariable String userUID,
             @PathVariable String recipientUID) {
-        return messageService.getMessagesBetweenUsers(userUID, recipientUID);  // 수정 없음
+        return messageService.getMessagesBetweenUsers(userUID, recipientUID);  // 1대1 채팅 메시지 조회
     }
 
     /**
@@ -59,7 +59,7 @@ public class MessageController {
      */
     @GetMapping("/{userUID}/unread")
     public List<Message> getUnreadMessages(@PathVariable String userUID) {
-        return messageService.getUnreadMessagesForUser(userUID);  // 추가된 부분
+        return messageService.getUnreadMessagesForUser(userUID);  // 읽지 않은 메시지 조회
     }
 
     /**
@@ -70,7 +70,6 @@ public class MessageController {
      */
     @PutMapping("/markAsDelivered/{messageId}")
     public Message markAsDelivered(@PathVariable Long messageId) {
-        return messageService.markAsDelivered(messageId);  // 추가된 부분
+        return messageService.markAsDelivered(messageId);  // 메시지 읽음 처리
     }
 }
-

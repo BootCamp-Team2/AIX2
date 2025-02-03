@@ -33,9 +33,11 @@ const MatchingList = () => {
             ListHeaderComponent={
                 <View style={styles.header}>
                     <Text style={styles.top}>
-                        <Icon name="menu" size={40} color="black" />
-                        <Text style={styles.topText}>소개팅 리스트</Text>
-                        <Icon name="check" size={40} color="black" />
+                        
+                        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("MatchingChatScreen")}>
+                        <Text style={styles.topText}>매칭 리스트-여길 누르면 1:1 채팅창으로 이동해요</Text>
+                        </TouchableOpacity>
+                        
                     </Text>
                 </View>
             }
@@ -83,11 +85,15 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
+        height: 40,
+        alignItems: 'center',
+        justifyContent: 'center',
+        alignSelf: 'center',
+        textAlign:'center',
     },
     topText: {
         color: 'black',
-        fontSize: 24,
-        textAlign: 'center',
+        fontSize: 16,        
         flex: 1,
     },
     box: {

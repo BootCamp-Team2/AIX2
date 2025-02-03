@@ -11,13 +11,13 @@ import {
 import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
 
-const serverURL = "http://192.168.1.30:5000"; // 서버 URL 전역 변수
+const serverURL = "http://192.168.1.32:5000"; // 서버 URL 전역 변수
 
 const AssistantSelect = ({ navigation, route }) => {
-  const { userUID, gender } = route.params;
+  const { userUID, gender, idealPhoto: initialIdealPhoto } = route.params;
   const [selectedAssistant, setSelectedAssistant] = useState("");
   const [availableAssistants, setAvailableAssistants] = useState([]);
-  const [idealPhoto, setIdealPhoto] = useState(null);
+  const [idealPhoto, setIdealPhoto] = useState(initialIdealPhoto || null);
   const [threadExists, setThreadExists] = useState(false);
 
   useEffect(() => {
@@ -116,7 +116,7 @@ const AssistantSelect = ({ navigation, route }) => {
     try {
       // 이미지 선택 요청
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaType.All, // MediaType 사용
+        mediaTypes: ImagePicker.MediaTypeOptions.Image, // MediaType 사용
         allowsEditing: true,
         aspect: [4, 3],
         quality: 1,

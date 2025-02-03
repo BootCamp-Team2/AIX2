@@ -2,9 +2,10 @@ package com.example.love_chat.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.io.Serializable; // Serializable 추가
 
 @Entity
-public class Message {
+public class Message implements Serializable {  // Serializable 구현
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,6 +25,10 @@ public class Message {
 
     @Column(nullable = false)
     private boolean delivered;  // 메시지가 전달되었는지 여부를 추적하는 필드
+
+    // 기본 생성자 추가
+    public Message() {
+    }
 
     // Getters and Setters
     public Long getId() {
@@ -80,5 +85,10 @@ public class Message {
         if (this.timestamp == null) {
             this.timestamp = LocalDateTime.now();
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Message{sender='" + sender + "', receiver='" + receiver + "', content='" + content + "', timestamp=" + timestamp + ", delivered=" + delivered + "}";
     }
 }

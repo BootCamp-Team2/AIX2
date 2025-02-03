@@ -1,4 +1,3 @@
-// AIchat.js
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -7,20 +6,20 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
+  ScrollView,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
-const serverURL = "http://192.168.1.30:5000"; // 서버 URL 전역 변수
+const serverURL = "http://192.168.1.32:5000"; // 서버 URL 전역 변수
 
 const AIchat = ({ route }) => {
   const navigation = useNavigation();
   const { threadKey, assistantId, userUID, idealPhoto } = route.params;
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState("");
-  const [profilePicture, setProfilePicture] = useState(null);
 
   useEffect(() => {
-    // Fetch initial messages
+    // 채팅 기록 가져오기
     const fetchMessages = async () => {
       try {
         const response = await fetch(`${serverURL}/chat-history`, {
@@ -29,28 +28,17 @@ const AIchat = ({ route }) => {
           body: JSON.stringify({ threadKey, userUID }),
         });
         const data = await response.json();
+  
+        // 메시지를 오래된 순으로 표시 (백엔드에서 이미 reverse 적용됨)
         setMessages(data.messages || []);
       } catch (error) {
         console.error("Error fetching chat history:", error);
       }
     };
-
-    // Fetch user profile picture
-    const fetchProfilePicture = async () => {
-      try {
-        const response = await fetch(`${serverURL}/get-profile-picture?userUID=${userUID}`);
-        const data = await response.json();
-        setProfilePicture(data.profilePicture || "../love-project/assets/default-profile-male.png");
-      } catch (error) {
-        console.error("Error fetching profile picture:", error);
-        setProfilePicture("../love-project/assets/default-profile-male.png");
-      }
-    };
-
+  
     fetchMessages();
-    fetchProfilePicture();
-  }, [threadKey, userUID]);
-
+  }, [threadKey, userUID]);  
+  
   const sendMessage = async () => {
     if (!inputText.trim()) return;
 
@@ -73,16 +61,41 @@ const AIchat = ({ route }) => {
         }),
       });
       const data = await response.json();
-      setMessages((prevMessages) => [...prevMessages, { role: "assistant", content: data.response }]);
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { role: "assistant", content: data.response },
+      ]);
     } catch (error) {
       console.error("Error sending message:", error);
+    }
+  };
+
+  const sendForCoaching = async () => {
+    try {
+      const response = await fetch(`${serverURL}/dating-coaching`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_history: messages.map((msg) => msg.content), // 채팅 기록만 추출
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch coaching response");
+      }
+
+      const data = await response.json();
+      navigation.navigate("CoachingScreen", { coachingResponse: data.response });
+    } catch (error) {
+      console.error("Error fetching coaching response:", error);
     }
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>어시스턴트와 대화</Text>
-      <View style={styles.chatContainer}>
+
+      <ScrollView contentContainerStyle={styles.chatContainer}>
         {messages.map((msg, index) => (
           <View
             key={index}
@@ -91,10 +104,12 @@ const AIchat = ({ route }) => {
               msg.role === "user" ? styles.userRow : styles.assistantRow,
             ]}
           >
-            <Image
-              source={{ uri: msg.role === "user" ? profilePicture : idealPhoto }}
-              style={styles.profileImage}
-            />
+            {msg.role === "assistant" && (
+              <Image
+                source={{ uri: idealPhoto }} // 챗봇 이미지만 표시
+                style={styles.profileImage}
+              />
+            )}
             <Text
               style={msg.role === "user" ? styles.userMessage : styles.assistantMessage}
             >
@@ -102,7 +117,8 @@ const AIchat = ({ route }) => {
             </Text>
           </View>
         ))}
-      </View>
+      </ScrollView>
+
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
@@ -114,10 +130,8 @@ const AIchat = ({ route }) => {
           <Text style={styles.sendButtonText}>SEND</Text>
         </TouchableOpacity>
       </View>
-      <TouchableOpacity
-        style={styles.coachingButton}
-        onPress={() => navigation.navigate("CoachingScreen")}
-      >
+
+      <TouchableOpacity style={styles.coachingButton} onPress={sendForCoaching}>
         <Text style={styles.coachingButtonText}>대화 평가 ➡</Text>
       </TouchableOpacity>
     </View>
@@ -134,7 +148,7 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   chatContainer: {
-    flex: 1,
+    flexGrow: 1,
     padding: 10,
     borderWidth: 1,
     borderColor: "#ddd",

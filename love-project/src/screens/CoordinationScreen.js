@@ -1,37 +1,191 @@
-import React, { useState, useEffect } from 'react';
-import { GiftedChat } from 'react-native-gifted-chat';
+import { View, Text, TouchableOpacity, StyleSheet, Platform, Modal, ScrollView } from 'react-native';
 
-const ChatAI = () => {
-  const [messages, setMessages] = useState([]);
+const CoordinationScreen = () => {
+    return(
+        <ScrollView>
+        <View>
+                    <Text style={styles.top}>
+                        <Text style={styles.topText}>AI 스타일 코디</Text>               
+                    </Text>
+                    <Text style={styles.main}>
+                        나에게 어울리는 스타일을{'\n'}찾아보세요!
+                    </Text>
+                    
+                    <TouchableOpacity style={styles.img} onPress={() => navigation.navigate("IdealTypeImg")}>
+                        <Text style={styles.imgText}>
+                        적용할 이미지를{'\n'}넣으세요!
+                        </Text>
+                    </TouchableOpacity>
 
-  useEffect(() => {
-    // 초기 메시지 설정
-    setMessages([
-      {
-        _id: 1,
-        text: '안녕하세요! 채팅을 시작해보세요.',
-        createdAt: new Date(),
-        user: {
-          _id: 2,
-          name: '상대방',
-        },
-      },
-    ]);
-  }, []);
+                    <TouchableOpacity style={styles.cloth} onPress={() => navigation.navigate("IdealTypeImg")}>
+                        <Text style={styles.clothText}>
+                        적용할 옷 스타일을{'\n'}입력하세요!
+                        </Text>
+                    </TouchableOpacity>
+        
+        
+                    <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("IdealTypeImg")}>
+                        <Text style={styles.buttonText}>
+                            이미지 생성
+                        </Text>
+                    </TouchableOpacity>
 
-  const onSend = (newMessages = []) => {
-    setMessages((previousMessages) => GiftedChat.append(previousMessages, newMessages));
-  };
+                    <View style={styles.square} />
 
-  return (
-    <GiftedChat
-      messages={messages}
-      onSend={(newMessages) => onSend(newMessages)}
-      user={{
-        _id: 1, // 현재 사용자 ID
-      }}
-    />
-  );
-};
+                    <TouchableOpacity style={styles.down} onPress={() => navigation.navigate("IdealTypeImg")}>
+                        <Text style={styles.downText}>
+                            이미지 다운로드
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+            </ScrollView>
+            );
+        };
+        
+        const styles = StyleSheet.create({
+          
+            top: { 
+                backgroundColor: '#FFF0F0', 
+                alignSelf: 'center',
+                marginBottom: 30,  
+                padding:15, 
+                textAlign:'center', 
+                width: '100%',  
+                height: 70,
+            },
+        
+            topText: { 
+                color : 'black',
+                alignSelf: 'center',
+                fontSize:24,        
+                textAlign:'center',        
+            },
+            
+            main: { 
+                fontSize: 23,
+                height: 90, 
+                fontWeight: 'bold', 
+                marginBottom: 5, 
+                color : '#3EB265', 
+                textAlign:'center', 
+                alignSelf: 'center' 
+            },            
+        
+            img: {
+                padding:10,
+                backgroundColor: 'transparent',
+                borderRadius: 30, 
+                width: '80%',
+                height: 200,  
+                marginBottom: 20, 
+                textAlign:'center', 
+                alignSelf: 'center',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderColor: '#3EB265',
+                borderWidth: 2,                
+            },
+        
+            imgText: {
+                fontSize:21,
+                color : 'black', 
+                width: '80%',
+                height: 75, 
+                alignItems: 'center', 
+                textAlign:'center', 
+                alignSelf: 'center'
+            },
 
-export default ChatAI;
+            cloth: {
+                padding:10,
+                backgroundColor: 'transparent',
+                borderRadius: 30, 
+                width: '80%',
+                height: 120,  
+                marginBottom: 20, 
+                textAlign:'center', 
+                alignSelf: 'center',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderColor: '#3EB265',
+                borderWidth: 2,
+            },
+        
+            clothText: {
+                fontSize:21,
+                color : 'black', 
+                width: '80%',
+                height: 75, 
+                alignItems: 'center', 
+                textAlign:'center', 
+                alignSelf: 'center'
+            },
+
+            button: {
+                padding:10,
+                backgroundColor: '#81C999',
+                borderRadius: 25, 
+                width: '80%',
+                height: 60, 
+                alignItems: 'center', 
+                marginBottom: 10, 
+                textAlign:'center', 
+                fontWeight: 'bold',
+                alignSelf: 'center',                
+            },
+        
+            buttonText: {
+                fontSize:21,
+                color : 'white', 
+                width: '80%',
+                height: 75, 
+                alignItems: 'center', 
+                textAlign:'center', 
+                alignSelf: 'center',
+                marginVertical: 5,
+            },
+
+            square: {
+                padding:10,
+                backgroundColor: 'transparent',
+                borderRadius: 30, 
+                width: '80%',
+                height: 200,  
+                marginBottom: 20, 
+                textAlign:'center', 
+                alignSelf: 'center',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderColor: '#3EB265',
+                borderWidth: 2,
+            },
+
+            down: {
+                padding:10,
+                backgroundColor: 'transparent',
+                borderRadius: 20, 
+                width: '80%',
+                height: 60, 
+                alignItems: 'center', 
+                marginBottom: 10, 
+                textAlign:'center', 
+                fontWeight: 'bold',
+                alignSelf: 'center',
+                borderWidth: 2,
+                borderColor: '#3EB265',                
+            },
+        
+            downText: {
+                fontSize:21,
+                color : '#3EB265', 
+                width: '80%',
+                height: 75, 
+                alignItems: 'center', 
+                textAlign:'center', 
+                alignSelf: 'center',
+                marginVertical: 5,
+                justifyContent: 'center',
+            },
+    });
+
+export default CoordinationScreen;

@@ -25,6 +25,7 @@ import Login from './src/screens/Login.js';
 import CoachingScreen from './src/screens/Simulation/CoachingScreen.js';
 import ChatchatScreen from './src/screens/Matching/ChatchatScreen'; // ChatchatScreen 임포트
 import ChattingList from './src/screens/ChattingList';
+import ChatScreen from './src/screens/ChatScreen';
 
 const Stack = createStackNavigator(); // 스택 내비게이션 생성
 
@@ -158,6 +159,11 @@ const MainNavigator = () => {
         <Stack.Screen
           name="ChattingList"
           component={ChattingList}
+          options={{ headerTitle: '채팅 화면', headerTitleAlign: 'center' }}
+        />
+        <Stack.Screen
+          name="ChatScreen"
+          component={ChatScreen}
           options={{ headerTitle: '채팅 화면', headerTitleAlign: 'center' }}
         />
       </Stack.Navigator>
