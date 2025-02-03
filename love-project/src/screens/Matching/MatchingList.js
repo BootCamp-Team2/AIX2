@@ -16,7 +16,9 @@ const MatchingList = () => {
                 <View style={styles.header}>
                     <Text style={styles.top}>
                         <Icon name="menu" size={40} color="black" />
+                        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("MatchingChatScreen")}>
                         <Text style={styles.topText}>소개팅 리스트</Text>
+                        </TouchableOpacity>
                         <Icon name="check" size={40} color="black" />
                     </Text>
                 </View>
