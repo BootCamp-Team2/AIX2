@@ -123,19 +123,19 @@ const CoordinationScreen = () => {
 
             button: {
                 padding:10,
-                backgroundColor: '#3EB265',
-                borderRadius: 30, 
+                backgroundColor: '#81C999',
+                borderRadius: 25, 
                 width: '80%',
-                height: 70, 
+                height: 60, 
                 alignItems: 'center', 
                 marginBottom: 10, 
                 textAlign:'center', 
                 fontWeight: 'bold',
-                alignSelf: 'center'
+                alignSelf: 'center',                
             },
         
             buttonText: {
-                fontSize:23,
+                fontSize:21,
                 color : 'white', 
                 width: '80%',
                 height: 75, 
@@ -184,6 +184,7 @@ const CoordinationScreen = () => {
                 textAlign:'center', 
                 alignSelf: 'center',
                 marginVertical: 5,
+                justifyContent: 'center',
             },
     });
 
