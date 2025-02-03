@@ -33,7 +33,7 @@ const MatchingScreen = () => {
                 const formData = new FormData();
                 formData.append("uid", userData.userUID);
 
-                const response = await axios.post("http://컴퓨터.주소:2000/getMyInfo", formData, {
+                const response = await axios.post("http://192.168.1.10:2000/getMyInfo", formData, {
                     headers: {'Content-Type': 'multipart/form-data'},
                 });
         
@@ -55,7 +55,7 @@ const MatchingScreen = () => {
             const formData = new FormData();
             formData.append("uid", userData.userUID);
 
-            const response = await axios.post("http://컴퓨터.주소:2000/recommend", formData, {
+            const response = await axios.post("http://192.168.1.10:2000/recommend", formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
