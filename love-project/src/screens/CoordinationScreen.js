@@ -215,10 +215,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   suggestionBtn: {
-    width: 220, 
-    height: 65, 
+    width: 250, 
+    height: 55, 
     borderRadius: 10, 
-    marginTop: 50,
+    marginTop: 70,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#81C999'
@@ -226,7 +226,8 @@ const styles = StyleSheet.create({
   suggestionText: {
     fontSize: 20,
     textAlign: 'center',
-    color: '#fff'
+    color: '#fff',
+    fontWeight: 'bold',     
   },
   resultContainer: { 
     padding: 15, 
