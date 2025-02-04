@@ -1,328 +1,326 @@
-import React, { useState }  from 'react';
-
-import { ActivityIndicator, KeyboardAvoidingView, Platform, TextInput, View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert} from 'react-native';
+// ConversationScreen.js
+import React, { useState } from 'react';
+import {
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  TextInput,
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  Alert,
+} from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import axios from 'axios';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ConversationScreen = () => {
-    const route = useRoute();
-    const { userUID } = route.params;
+  const route = useRoute();
+  const { userUID } = route.params;
+  const navigation = useNavigation();
 
-    const navigation = useNavigation();
-    const [simulatorUri, setSimulatorUri] = useState(null);
-    const [loading, setLoading] = useState(null);
-    const [inputValue, setInputValue] = useState('');
-    const [gender, setGender] = useState(null);
+  const [simulatorUri, setSimulatorUri] = useState(null);
+  const [loading, setLoading] = useState(null);
+  const [inputValue, setInputValue] = useState('');
+  const [gender, setGender] = useState(null);
 
-    const CreateMySim = async () => {
-        if(inputValue == '') {
-            alert('이상형을 입력해주세요.');
-            return;
-        }
+  const CreateMySim = async () => {
+    if (inputValue === '') {
+      alert('이상형을 입력해주세요.');
+      return;
+    }
 
-        if(gender == null) {
-            alert("성별을 선택해주세요.");
-            return;
-        }
+    if (gender == null) {
+      alert("성별을 선택해주세요.");
+      return;
+    }
 
-        const formData = new FormData();
-        formData.append("ideal_type", inputValue);
-        formData.append("gender", gender);
-        formData.append("userUID", userUID);
-        
-        console.log(`Your Input idealType: ${inputValue}`)
-
-        try {
-            setLoading(true);
-          
-            const sel_formData = new FormData();
-            sel_formData.append("type", "sim");
-            const select_r = await axios.post("http://192.168.1.10:1000/select-server", sel_formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
-            if (select_r.data)
-                if (select_r.data.server_ip == "") {
-                    Alert.alert("서버가 혼잡합니다. 잠시 후에 다시 시도해주세요.")
-                    setLoading(null);
-                    return;
-                }
-            
-            console.log("사용가능한 서버: ", select_r.data.server_ip)
-            const response = await axios.post(`${select_r.data.server_ip}/sim/create`, formData, {
-              headers: {
-                'Content-Type': 'multipart/form-data',
-              },
-            });
-      
-            // Replace navigation to IdealTypeImg with AssistantSelect
-            if (response.data && response.data.simUrl) {
-            console.log(response.data.simUrl);
-            setSimulatorUri(response.data.simUrl); // 서버에서 반환된 아바타 URL 저장
-            
-            // 이미지 생성 완료 후 AssistantSelect로 이동
-            navigation.navigate("AssistantSelect", { 
-            userUID, 
-            gender, 
-            idealPhoto: `http://192.168.1.10:1000/output/${userUID}/mySimulator.jpg` 
-            });
-            }
-        } catch (error) {
-            setLoading(null);
-            console.error('request failed:', error.message);
-        } 
-        setLoading(false);
-    };
+    const formData = new FormData();
+    formData.append("ideal_type", inputValue);
+    formData.append("gender", gender);
+    formData.append("userUID", userUID);
     
-    return(
+    console.log(`Your Input idealType: ${inputValue}`)
+
+    try {
+      setLoading(true);
+      
+      const sel_formData = new FormData();
+      sel_formData.append("type", "sim");
+      const select_r = await axios.post("http://192.168.1.10:1000/select-server", sel_formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      if (select_r.data)
+        if (select_r.data.server_ip === "") {
+          Alert.alert("서버가 혼잡합니다. 잠시 후에 다시 시도해주세요.")
+          setLoading(null);
+          return;
+        }
+      
+      console.log("사용가능한 서버: ", select_r.data.server_ip)
+      const response = await axios.post(`${select_r.data.server_ip}/sim/create`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+  
+      if (response.data && response.data.simUrl) {
+        console.log(response.data.simUrl);
+        setSimulatorUri(response.data.simUrl);
+
+        // 서버에서 생성된 이미지 URL (예시)
+        const generatedPhoto = `http://192.168.1.10:1000/output/${userUID}/mySimulator.jpg`;
+
+        // AsyncStorage에 저장 (다음에 불러올 수 있도록)
+        await AsyncStorage.setItem("idealPhoto", generatedPhoto);
+        
+        // 이미지 생성 완료 후 AssistantSelect로 이동 (파라미터로도 전달)
+        navigation.navigate("AssistantSelect", { 
+          userUID, 
+          gender, 
+          idealPhoto: generatedPhoto 
+        });
+      }
+    } catch (error) {
+      setLoading(null);
+      console.error('request failed:', error.message);
+    }
+    setLoading(false);
+  };
+
+  return (
     <KeyboardAvoidingView 
-        // style={styles.container} 
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // iOS와 Android에 따라 키보드 회피 방식 설정
-        keyboardVerticalOffset={50} // 키보드로 인해 뷰가 올라가는 정도 조정
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={50}
     >
-        <ScrollView contentContainerStyle={styles.containerScroll}>       
-            <View style={styles.container}>
-                {/* <View style={styles.header}>
-                    <View style={styles.menu}>                   
-                    <Icon name="menu" size={40} color="black"/>
-                    </View> 
-                                   
-                    <Text style={styles.headerText}>AI 대화 연습</Text>  
-                    
-                    <View style={styles.check}>                    
-                    <Icon name="check" size={40} color="black"/>
-                    </View>
-                </View> */}
-                <Text style={styles.main}>
-                    AI와 대화를 시작하기 전에 {'\n'}
-                    나의 이상형을 만드세요!
-                </Text>
-                <Text style={styles.middle}>
-                    이상형 성별을 선택해 주세요!!
-                </Text>
-                
-                <View style={styles.selectBox}>
-                <TouchableOpacity style={[styles.select, gender === "male" && styles.buttonSelected]}
-                    onPress={() => setGender('male')}>
-                    <Text style={styles.selectText}>
-                        남성
-                    </Text>            
-                </TouchableOpacity>
-                <TouchableOpacity style={[styles.select, gender === "female" && styles.buttonSelected]}
-                    onPress={() => setGender('female')}>
-                    <Text style={styles.selectText}>
-                         여성
-                    </Text>            
-                </TouchableOpacity>
-                </View>
+      <ScrollView contentContainerStyle={styles.containerScroll}>       
+        <View style={styles.container}>
+          <Text style={styles.main}>
+            AI와 대화를 시작하기 전에 {'\n'}
+            나의 이상형을 만드세요!
+          </Text>
+          <Text style={styles.middle}>
+            이상형 성별을 선택해 주세요!!
+          </Text>
+          
+          <View style={styles.selectBox}>
+            <TouchableOpacity 
+              style={[styles.select, gender === "male" && styles.buttonSelected]}
+              onPress={() => setGender('male')}
+            >
+              <Text style={styles.selectText}>남성</Text>            
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={[styles.select, gender === "female" && styles.buttonSelected]}
+              onPress={() => setGender('female')}
+            >
+              <Text style={styles.selectText}>여성</Text>            
+            </TouchableOpacity>
+          </View>
 
-                <Text style={styles.middle}>
-                    나의 이상형을 입력하세요
-                </Text>
+          <Text style={styles.middle}>
+            나의 이상형을 입력하세요
+          </Text>
 
-                <TextInput style={styles.textBox}          
-                    placeholder="텍스트를 입력하세요"                    
-                    value={inputValue}
-                    onChangeText={(inputValue) => setInputValue(inputValue)} // 텍스트 변경 시 상태 업데이트
-                />
+          <TextInput 
+            style={styles.textBox}          
+            placeholder="텍스트를 입력하세요"                    
+            value={inputValue}
+            onChangeText={(inputValue) => setInputValue(inputValue)}
+          />
 
-                <TouchableOpacity style={styles.button} onPress={() =>  {
-                        if(loading == null) {CreateMySim();}
-                        else { if(!loading) {
-                            navigation.navigate("AssistantSelect", {simUri: simulatorUri});} 
-                        }
-                    }} disabled={loading}>
-                    <Text style={styles.buttonText}>
-                        {loading == null ? "나의 이상형 생성!" : loading ? "나의 이상형 생성중..." : "생성완료!"}
-                    </Text>
-                </TouchableOpacity>  
+          <TouchableOpacity 
+            style={styles.button} 
+            onPress={() => {
+              if(loading == null) {
+                CreateMySim();
+              } else { 
+                if(!loading) {
+                  navigation.navigate("AssistantSelect", { simUri: simulatorUri });
+                } 
+              }
+            }} 
+            disabled={loading}
+          >
+            <Text style={styles.buttonText}>
+              {loading == null ? "나의 이상형 생성!" : loading ? "나의 이상형 생성중..." : "생성완료!"}
+            </Text>
+          </TouchableOpacity>  
 
-                 {loading && ( // loading이 true일 때 로딩 인디케이터 표시
-                        <ActivityIndicator size="large" color="#FFB89A" style={styles.loader} />
-                    )}
+          {loading && (
+            <ActivityIndicator size="large" color="#FFB89A" style={styles.loader} />
+          )}
 
-                <TouchableOpacity style={styles.button2} onPress={() => navigation.navigate("AssistantSelect", {userUID, gender})}>
-                    <Text style={styles.button2Text}>
-                                AI 대화 바로가기
-                    </Text>            
-                </TouchableOpacity>
-
-                              
-            </View>
-        </ScrollView>
+          <TouchableOpacity 
+            style={styles.button2} 
+            onPress={() => navigation.navigate("AssistantSelect", { userUID, gender })}
+          >
+            <Text style={styles.button2Text}>AI 대화 바로가기</Text>            
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
     </KeyboardAvoidingView>
-    );
+  );
 };
 
 const styles = StyleSheet.create({
+  containerScroll: {
+    flexGrow: 1,
+  },
+  loader: {
+    marginTop: 20,
+  },
+  container: { 
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',    
+  },
+  menu: {
+    position: 'absolute',
+    top: 15,
+    left: 10,
+    width: '20%'
+  },
+  check: {
+    position: 'absolute',
+    top: 15,
+    right: -20,
+    width: '20%'
+  },
+  header: { 
+    backgroundColor: '#FFF0F0',
+    marginBottom: 20, 
+    fontSize: 26, 
+    paddingTop: 15, 
+    width: '100%',  
+    height: 70,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    textAlign: 'center', 
+    alignSelf: 'center',
+  },
+  headerText: {
+    position: 'absolute',
+    textAlign: 'center',
+    color : 'black',
+    alignSelf: 'center',
+    justifyContent: 'center',
+    fontSize: 26,  
+    width: '100%',
+    marginTop: 15     
+  },
+  main: { 
+    fontSize: 24,
+    height: 70, 
+    fontWeight: 'bold',
+    marginTop: 20, 
+    marginBottom: 10, 
+    color : '#FFB89A', 
+    textAlign: 'center', 
+    alignSelf: 'center' 
+  },
+  middle: { 
+    fontSize: 24, 
+    fontWeight: 'bold', 
+    marginBottom: 20, 
+    color : '#FFB89A', 
+    textAlign: 'center',
+    alignSelf: 'center'
+  },
+  selectBox: {
+    flexDirection: 'row',
+  },
+  select: {
+    paddingTop: 10,
+    backgroundColor: '#ccc',
+    borderRadius: 23, 
+    width: '35%',
+    height: 55, 
+    alignItems: 'center', 
+    marginBottom: 10, 
+    textAlign: 'center', 
+    fontWeight: 'bold',
+    alignSelf: 'center',
+    marginHorizontal: 15
+  },
+  buttonSelected: {
+    backgroundColor: '#FFB89A'
+  },
+  selectText: {
+    marginTop: 8,
+    fontSize: 20,
+    color : 'white', 
+    width: '80%',
+    height: 50, 
+    alignItems: 'center', 
+    textAlign: 'center', 
+    fontWeight: 'bold',
+    alignSelf: 'center',
+    justifyContent: 'center',
+  },
+  textBox: {
+    textAlign: 'center',
+    width: 300,   
+    height: 200,
+    borderRadius: 35,
+    marginBottom: 30, 
+    borderWidth: 2,
+    borderColor: '#FFB89A',
+    backgroundColor: 'transparent',
+    fontSize: 21,      
+    paddingHorizontal: 10,
+  },
+  button: {
+    paddingTop: 15,
+    backgroundColor: '#FFB89A',
+    borderRadius: 23, 
+    width: '75%',
+    height: 60, 
+    alignItems: 'center', 
+    marginBottom: 10, 
+    textAlign: 'center', 
+    fontWeight: 'bold',
+    alignSelf: 'center'
+  },
+  buttonText: {
+    fontSize: 25,
+    color: 'white', 
+    width: '80%',
+    height: 50, 
+    alignItems: 'center', 
+    textAlign: 'center', 
+    fontWeight: 'bold',
+    alignSelf: 'center'
+  },
+  button2: {
+    paddingTop: 15,
+    backgroundColor: '#FFB89A',
+    borderRadius: 23, 
+    width: '75%',
+    height: 60, 
+    alignItems: 'center', 
+    marginBottom: 10, 
+    textAlign: 'center', 
+    fontWeight: 'bold',
+    alignSelf: 'center'
+  },
+  button2Text: {
+    fontSize: 25,
+    color: 'white', 
+    width: '65%',
+    height: 50, 
+    alignItems: 'center', 
+    textAlign: 'center', 
+    fontWeight: 'bold',
+    alignSelf: 'center'
+  },
+});
 
-    containerScroll:{
-        flexGrow: 1,               // ScrollView가 자식 요소의 크기만큼 확장됨
-    },
-
-    loader: {
-        marginTop: 20,
-    },
-
-    container: { 
-        flex: 1, // 전체 화면을 가득 채움
-        flexDirection: 'column', // 세로 방향으로 배치
-        justifyContent: 'center',
-        alignItems: 'center',    
-      },
-
-    menu: {
-        position: 'absolute', // 절대 위치 지정
-        top: 15, // 상단에서 50px
-        left: 10, // 왼쪽에서 20px
-        width:'20%'
-    },
-
-    check: {
-        position: 'absolute', // 절대 위치 지정
-        top: 15, // 상단에서 50px
-        right: -20, // 왼쪽에서 20px
-        width:'20%'
-    },
-
-    header: { 
-        backgroundColor: '#FFF0F0',
-        marginBottom: 20, 
-        fontSize:26, 
-        paddingTop:15, 
-        width: '100%',  
-        height: 70,
-        flexDirection: 'row', // Arrange children in a row
-        alignItems: 'center', // Vertically center all items
-        justifyContent: 'center',
-        textAlign:'center', 
-        alignSelf: 'center',
-    },
-
-    headerText: {
-        position: 'absolute',
-        textAlign: 'center', // Center text horizontally within its space
-        color : 'black',
-        alignSelf: 'center',
-        justifyContent: 'center',
-        fontSize:26,  
-        width:'100%',
-        marginTop:15     
-    },
-    
-    main: { 
-        fontSize: 24,
-        height: 70, 
-        fontWeight: 'bold',
-        marginTop: 20, 
-        marginBottom: 10, 
-        color : '#FFB89A', 
-        textAlign:'center', 
-        alignSelf: 'center' 
-    },
-     
-    middle: { fontSize: 24, 
-        fontWeight: 'bold', 
-        marginBottom: 20, 
-        color : '#FFB89A', 
-        textAlign:'center',
-        alignSelf: 'center'
-    },
-    selectBox:{
-        flexDirection: 'row',
-    },
-
-    select:{paddingTop:10,
-        backgroundColor: '#ccc',
-        borderRadius: 23, 
-        width: '35%',
-        height: 55, 
-        alignItems: 'center', 
-        marginBottom: 10, 
-        textAlign:'center', 
-        fontWeight: 'bold',
-        alignSelf: 'center',
-        marginHorizontal:15
-    },
-  
-    buttonSelected:{
-        backgroundColor: '#FFB89A'
-    },
-  
-    selectText:{
-        marginTop:8,
-        fontSize:20,
-        color : 'white', 
-        width: '80%',
-        height: 50, 
-        alignItems: 'center', 
-        textAlign:'center', 
-        fontWeight: 'bold',
-        alignSelf: 'center',
-        justifyContent: 'center',
-    },
-
-    textBox: {
-        textAlign:'center',
-        width: 300,   
-        height: 200,
-        borderRadius: 35,
-        marginBottom: 30, 
-        borderWidth: 2,
-        borderColor: '#FFB89A', // Color of the square border
-        backgroundColor: 'transparent',  // Transparent inside the square
-        fontSize: 21,      
-        paddingHorizontal: 10,
-        },
-
-    button: {paddingTop:15,
-        backgroundColor: '#FFB89A',
-        borderRadius: 23, 
-        width: '75%',
-        height: 60, 
-        alignItems: 'center', 
-        marginBottom: 10, 
-        textAlign:'center', 
-        fontWeight: 'bold',
-        alignSelf: 'center'
-    },
-
-    buttonText: {
-        fontSize:25,
-        color : 'white', 
-        width: '80%',
-        height: 50, 
-        alignItems: 'center', 
-        textAlign:'center', 
-        fontWeight: 'bold',
-        alignSelf: 'center'
-    },
-
-    button2: {paddingTop:15,
-        backgroundColor: '#FFB89A',
-        borderRadius: 23, 
-        width: '75%',
-        height: 60, 
-        alignItems: 'center', 
-        marginBottom: 10, 
-        textAlign:'center', 
-        fontWeight: 'bold',
-        alignSelf: 'center'
-    },
-
-    button2Text: {
-        fontSize:25,
-        color : 'white', 
-        width: '65%',
-        height: 50, 
-        alignItems: 'center', 
-        textAlign:'center', 
-        fontWeight: 'bold',
-        alignSelf: 'center'
-    },
-  });
-
-export default ConversationScreen
+export default ConversationScreen;

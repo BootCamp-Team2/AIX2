@@ -10,8 +10,9 @@ import {
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const serverURL = "http://192.168.1.32:5000"; // 서버 URL 전역 변수
+const serverURL = "http://192.168.1.32:5000";
 
 const AssistantSelect = ({ navigation, route }) => {
   const { userUID, gender, idealPhoto: initialIdealPhoto } = route.params;
@@ -21,7 +22,23 @@ const AssistantSelect = ({ navigation, route }) => {
   const [threadExists, setThreadExists] = useState(false);
 
   useEffect(() => {
-    // Check if thread exists
+    // AsyncStorage에서 이전에 저장된 이상형 이미지 불러오기
+    const loadIdealPhoto = async () => {
+      try {
+        const storedPhoto = await AsyncStorage.getItem("idealPhoto");
+        if (storedPhoto !== null) {
+          setIdealPhoto(storedPhoto);
+        } else if (initialIdealPhoto) {
+          setIdealPhoto(initialIdealPhoto);
+        }
+      } catch (e) {
+        console.error("AsyncStorage에서 이상형 이미지 로드 중 에러:", e);
+      }
+    };
+
+    loadIdealPhoto();
+
+    // 스레드 존재 여부 확인
     const checkThread = async () => {
       try {
         const response = await fetch(`${serverURL}/get-thread`, {
@@ -41,7 +58,7 @@ const AssistantSelect = ({ navigation, route }) => {
 
     checkThread();
 
-    // Set assistants based on gender
+    // 성별에 따라 어시스턴트 설정
     if (gender === "male") {
       setAvailableAssistants([{ label: "Hwarang", value: "HWARANG" }]);
     } else if (gender === "female") {
@@ -49,7 +66,7 @@ const AssistantSelect = ({ navigation, route }) => {
     } else {
       Alert.alert("Error", "유효하지 않은 성별입니다.");
     }
-  }, [gender, userUID]);
+  }, [gender, userUID, initialIdealPhoto]);
 
   const handleStartConversation = async () => {
     try {
@@ -80,7 +97,7 @@ const AssistantSelect = ({ navigation, route }) => {
         threadKey: data.thread_key,
         assistantId: data.assistant_key,
         userUID,
-        idealPhoto: selectedPhoto, // 이미지 전달
+        idealPhoto: selectedPhoto,
       });
     } catch (error) {
       console.error("Error starting conversation:", error);
@@ -114,18 +131,19 @@ const AssistantSelect = ({ navigation, route }) => {
 
   const handleImagePicker = async () => {
     try {
-      // 이미지 선택 요청
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Image, // MediaType 사용
+        mediaTypes: ImagePicker.MediaTypeOptions.Image,
         allowsEditing: true,
         aspect: [4, 3],
         quality: 1,
       });
   
       if (!result.canceled) {
-        // 선택된 이미지 경로를 상태에 저장
-        console.log("Selected Photo URI:", result.assets[0].uri);
-        setIdealPhoto(result.assets[0].uri);
+        const newUri = result.assets[0].uri;
+        console.log("Selected Photo URI:", newUri);
+        setIdealPhoto(newUri);
+        // 선택한 이미지 URI를 AsyncStorage에 저장
+        await AsyncStorage.setItem("idealPhoto", newUri);
       } else {
         console.log("Image picker canceled.");
       }
