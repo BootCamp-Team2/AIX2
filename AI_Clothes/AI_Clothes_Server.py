@@ -34,7 +34,7 @@ def naver_search_api(items):
         response = requests.get(url, headers = headers, params = params)
         if response.status_code == 200:
             response = response.json()
-            result.append({"title": response["items"][0]["title"], "img": response["items"][0]["link"]})
+            result.append({"img": response["items"][0]["link"]})
 
     return result
         
@@ -59,7 +59,7 @@ def call_vision_api(image_data):
                     },
                     {
                         "type": "text",
-                        "text": "백틱 사용하지 말고 다음과 같은 JSON 형식으로 출력해줬으면 좋겠어. {성별: , 얼굴형: , 이목구비: , 피부색: , 체형: , 코디: [{아이템: [], 이유: }]}",
+                        "text": "백틱 사용하지 말고 다음과 같은 JSON 형식으로 출력해줬으면 좋겠어. {\"성별\": , \"얼굴형\": , \"이목구비\": , \"피부색\": , \"체형\": , \"코디\": [{\"아이템\": [], \"이유\": }]}",
                     },
                     {
                         "type": "image_url",
@@ -118,14 +118,19 @@ async def clothes_recommend(img : UploadFile = File(...)):
         padded_image_bytes = BytesIO(buffer)
 
         image_bytes_base64 = base64.b64encode(padded_image_bytes.getvalue()).decode("utf-8")
-        response = call_vision_api(image_bytes_base64).replace("json", "").replace("'", '"')
+        response = call_vision_api(image_bytes_base64)
+
+        response = response.replace("'", '"')  # 홑따옴표 -> 쌍따옴표 변환
+        match = re.search(r'\{.*\}', response, re.DOTALL)  # JSON 부분만 추출
+        if match:
+            response = match.group()
 
         if (response):
             search_response = []; fashion_data = json.loads(response)
             for outfit in fashion_data["코디"]:
                     search_response.append(naver_search_api(outfit["아이템"]))
 
-            return {"message": "Success!", "result_msg": response, "result_search": search_response}
+            return {"message": "Success!", "result_msg": response, "result_search": json.dumps(search_response)}
         else:
             return {"message": "Error!", "result_msg": None, "result_search": None}
         
