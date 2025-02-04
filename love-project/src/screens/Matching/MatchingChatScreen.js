@@ -5,19 +5,41 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage'; // AsyncStorage 임포트
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Font from 'react-native-vector-icons/FontAwesome';
-import GaugeBar from '../GaugeBar'; // GaugeBar 컴포넌트 import
+
+// 한국어 감정 사전 (예시)
+const koreanSentimentDict = {
+  좋아: 2,
+  사랑: 3,
+  행복: 2,
+  최고: 3,
+  싫어: -2,
+  화남: -3,
+  슬퍼: -2,
+  최악: -3,
+};
+
+// 한국어 텍스트 감정 분석 함수
+const analyzeKoreanSentiment = (text) => {
+  let score = 0;
+  for (const word in koreanSentimentDict) {
+    if (text.includes(word)) {
+      score += koreanSentimentDict[word];
+    }
+  }
+  return score;
+};
 
 const MatchingChatScreen = ({ route }) => {
     const [messages, setMessages] = useState([]);
     const [socket, setSocket] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
-  
+
+    const [affectionScore, setAffectionScore] = useState(0); // 호감도 점수
     const [liked, setLiked] = useState(false); //UI
     const scaleValue = new Animated.Value(1); //UI
     const [text, setText] = useState(''); // 입력값 상태 추가
   
-    //사랑의 온도 게이지바 구현 
-    const [progress, setProgress] = useState(7);  // 초기값을 7%로 설정
+    
   
     // const { partner } = route.params; // 추천 리스트에서 선택된 사람의 정보
     const userID = "2"; // 현재 사용자 ID (예: 로그인된 사용자 ID)
@@ -142,6 +164,18 @@ const MatchingChatScreen = ({ route }) => {
     }, [isLoading]);
   
     const onSend = async (newMessages = []) => {
+      // 새로운 메시지를 추가
+    setMessages((previousMessages) =>
+      GiftedChat.append(previousMessages, newMessages),
+    );
+
+    // 상대방의 메시지를 분석하여 호감도 점수 업데이트
+    const receivedMessage = newMessages[0].text; // 상대방의 메시지
+    const score = analyzeKoreanSentiment(receivedMessage); // 감정 분석
+    setAffectionScore((prevScore) => {
+      const newScore = prevScore + score;
+      return Math.max(-10, Math.min(10, newScore)); // 점수를 -10 ~ 10 사이로 제한
+    });
       const message = newMessages[0];
       const messageToSend = {
         senderUID: userID,
@@ -167,16 +201,7 @@ const MatchingChatScreen = ({ route }) => {
           console.error("Error saving message to AsyncStorage:", error);
         }
   
-        // 채팅 메시지가 추가될 때마다 progress 증가
-        setMessages((previousMessages) =>
-          GiftedChat.append(previousMessages, newMessages),
-        );
-        setProgress((prevProgress) => {
-          const newProgress = prevProgress + 10; // 채팅 1회당 1% 증가
-          return newProgress > 100 ? 100 : newProgress; // 최대 100%로 제한
-        });
-    
-        return updatedMessages; // 새로 추가된 메시지 포함된 상태를 반환
+        
       });
   
       // 메시지를 로컬에 저장
@@ -323,20 +348,22 @@ const MatchingChatScreen = ({ route }) => {
                       }}
       />                       
     </View>
-  </View>
-  
-    <View style={styles.degree}>
-      <Text style={styles.degreeText}>사랑의 온도</Text> 
-        <View style={styles.verticalLine} />
-          
-          <View style={styles.appContainer}>
-            {/* 게이지 바 */}
-            <GaugeBar progress={progress} /> 
-          {/* <View style={styles.verticalLine} />      */}
+  </View>  
+
+  <View style={styles.box}>
+      {/* 호감도 점수 표시 */}
+      <View style={styles.scoreBox}>
+        <Text style={styles.scoreText}>호감도: {affectionScore}</Text>
+        <View style={styles.gaugeBarBox}>
+          <View
+            style={[
+              styles.gaugeBar,
+              { width: `${((affectionScore + 10) / 20) * 100}%` }, // 점수에 따라 너비 조정
+            ]}
+          />
         </View>
-        <Text style={styles.progressText}>{progress.toFixed(1)}%</Text>      
-    </View>
-  
+      </View>
+    </View> 
   
   
       <GiftedChat
@@ -364,6 +391,31 @@ const MatchingChatScreen = ({ route }) => {
   
   // 스타일 정의
   const styles = StyleSheet.create({
+    box: {
+      flex: 1,
+    },
+    scoreBox: {
+      padding: 16,
+      backgroundColor: '#f5f5f5',
+      borderBottomWidth: 1,
+      borderBottomColor: '#ddd',
+    },
+    scoreText: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      marginBottom: 8,
+    },
+    gaugeBarBox: {
+      height: 10,
+      backgroundColor: '#e0e0e0',
+      borderRadius: 5,
+      overflow: 'hidden',
+    },
+    gaugeBar: {
+      height: '100%',
+      backgroundColor: '#4caf50', // 초록색 게이지바
+      borderRadius: 5,
+    },
     container: {
       flex: 1,
       backgroundColor: '#f5f5f5', // 채팅 화면 배경
