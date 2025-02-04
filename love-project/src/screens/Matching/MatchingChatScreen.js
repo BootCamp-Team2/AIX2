@@ -6,9 +6,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage'; // AsyncSt
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Font from 'react-native-vector-icons/FontAwesome';
 
-// 한국어 감정 사전 (예시)
+// 한국어 감정 사전
 const koreanSentimentDict = {
-  좋아: 2,
+  좋아: 2, 매력:2, 긍정:1, 칭찬:1, 재밌어요:1, 웃겨요:1, 
   사랑: 3,
   행복: 2,
   최고: 3,
@@ -34,7 +34,7 @@ const MatchingChatScreen = ({ route }) => {
     const [socket, setSocket] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
-    const [affectionScore, setAffectionScore] = useState(0); // 호감도 점수
+    const [affectionScore, setAffectionScore] = useState(36.5); // 첫 호감도 점수: 36.5
     const [liked, setLiked] = useState(false); //UI
     const scaleValue = new Animated.Value(1); //UI
     const [text, setText] = useState(''); // 입력값 상태 추가
@@ -164,17 +164,13 @@ const MatchingChatScreen = ({ route }) => {
     }, [isLoading]);
   
     const onSend = async (newMessages = []) => {
-      // 새로운 메시지를 추가
-    setMessages((previousMessages) =>
-      GiftedChat.append(previousMessages, newMessages),
-    );
-
+     
     // 상대방의 메시지를 분석하여 호감도 점수 업데이트
     const receivedMessage = newMessages[0].text; // 상대방의 메시지
     const score = analyzeKoreanSentiment(receivedMessage); // 감정 분석
     setAffectionScore((prevScore) => {
       const newScore = prevScore + score;
-      return Math.max(-10, Math.min(10, newScore)); // 점수를 -10 ~ 10 사이로 제한
+      return Math.max(0, Math.min(100, newScore)); // 점수를 0 ~ 100 사이로 제한
     });
       const message = newMessages[0];
       const messageToSend = {
@@ -200,7 +196,7 @@ const MatchingChatScreen = ({ route }) => {
         } catch (error) {
           console.error("Error saving message to AsyncStorage:", error);
         }
-  
+        return updatedMessages; // 새로 추가된 메시지 포함된 상태를 반환
         
       });
   
@@ -248,7 +244,9 @@ const MatchingChatScreen = ({ route }) => {
         {...props}
         containerStyle={{
           backgroundColor: '#fff', // 입력창 배경색
-          borderTopColor: '#E5E5EA', // 입력창 상단 테두리 색상
+          borderColor: '#FF9AAB', // 입력창 상단 테두리 색상
+          borderWidth: 2,
+          borderRadius: 7,
         }}
       />
     );
@@ -296,24 +294,7 @@ const MatchingChatScreen = ({ route }) => {
     );
   };
   
-  // 메시지 상태 표시 (예: 전송 중, 전송 완료)
-  const renderFooter = (props) => {
-    const { currentMessage } = props;
-    if (currentMessage && currentMessage.sent) {
-      return (
-        <View style={styles.footerContainer}>
-          <Text style={styles.footerText}>전송 완료</Text>
-        </View>
-      );
-    } else if (currentMessage && currentMessage.pending) {
-      return (
-        <View style={styles.footerContainer}>
-          <Text style={styles.footerText}>전송 중...</Text>
-        </View>
-      );
-    }
-    return null;
-  };
+  
   
   return (
   <View style={styles.container}>
@@ -350,15 +331,15 @@ const MatchingChatScreen = ({ route }) => {
     </View>
   </View>  
 
-  <View style={styles.box}>
+  <View>
       {/* 호감도 점수 표시 */}
       <View style={styles.scoreBox}>
-        <Text style={styles.scoreText}>호감도: {affectionScore}</Text>
+        <Text style={styles.scoreText}>상대방 호감도 : {affectionScore}%</Text>
         <View style={styles.gaugeBarBox}>
           <View
             style={[
               styles.gaugeBar,
-              { width: `${((affectionScore + 10) / 20) * 100}%` }, // 점수에 따라 너비 조정
+              { width: `${affectionScore}%` }, // 점수에 따라 너비 조정
             ]}
           />
         </View>
@@ -382,7 +363,6 @@ const MatchingChatScreen = ({ route }) => {
         renderSend={renderSend}
         renderAvatar={renderAvatar}
         renderTime={renderTime}
-        renderFooter={renderFooter}
         alwaysShowSend
       />
   </View>
@@ -390,57 +370,20 @@ const MatchingChatScreen = ({ route }) => {
   };
   
   // 스타일 정의
-  const styles = StyleSheet.create({
-    box: {
-      flex: 1,
-    },
-    scoreBox: {
-      padding: 16,
-      backgroundColor: '#f5f5f5',
-      borderBottomWidth: 1,
-      borderBottomColor: '#ddd',
-    },
-    scoreText: {
-      fontSize: 16,
-      fontWeight: 'bold',
-      marginBottom: 8,
-    },
-    gaugeBarBox: {
-      height: 10,
-      backgroundColor: '#e0e0e0',
-      borderRadius: 5,
-      overflow: 'hidden',
-    },
-    gaugeBar: {
-      height: '100%',
-      backgroundColor: '#4caf50', // 초록색 게이지바
-      borderRadius: 5,
-    },
+  const styles = StyleSheet.create({    
     container: {
       flex: 1,
-      backgroundColor: '#f5f5f5', // 채팅 화면 배경
-    },
-  footerContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 5,
-  },
-  footerText: {
-    fontSize: 12,
-    color: '#667',
-  },
+      backgroundColor: '#fff', // 채팅 화면 배경
+    }, 
   matching:{
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 20
-  },
-  
-  
+    marginBottom: 3,
+  },  
   heart: {
       color : '#FF9AAB',
-  },
-  
+  },  
   heartText: {
       fontSize:21,
       color : '#FF9AAB', 
@@ -448,39 +391,32 @@ const MatchingChatScreen = ({ route }) => {
       height: 75, 
       alignItems: 'center', 
       textAlign:'center', 
-      alignSelf: 'center'
+      alignSelf: 'center',
   }, 
-  
-  degree:{
-    alignSelf: 'center',
+    scoreBox: {
+    backgroundColor: '#fff',
+    height: 65,
+    textAlign:'center',
+    justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#FF9AAB',
+  },
+  scoreText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 8,
+    textAlign:'center',
+  },
+  gaugeBarBox: {
     width: '95%',
-    height: 45,
-    borderRadius: 10,
-    flexDirection: 'row',
-  
+    height: 30,
+    backgroundColor: '#e0e0e0',
+    borderRadius: 7,
+    overflow: 'hidden',
   },
-  
-  degreeText:{
-    color: 'white',
-    fontSize: 15,
-    marginLeft: 10,
-  },
-  appContainer: {
-    flex: 1,  
-  },
-  progressText: {
-    marginRight: 10,
-    fontSize: 14,
-    color: 'white'
-  },
-  verticalLine: {
-    width: 1.5, // 선의 두께
-    height: '80%', // 선의 높이 (부모 컨테이너의 높이에 맞춤)
-    backgroundColor: 'white', // 선의 색상
-    marginLeft: 5
-  },
-  
+  gaugeBar: {    
+    height: 30,
+    backgroundColor: '#FF9AAB', 
+    borderRadius: 5,
+  }, 
   });
 export default MatchingChatScreen;
