@@ -61,9 +61,9 @@ const MatchingScreen = () => {
                 },
             });
 
-            // console.log(response.data);
+            console.log(response.data);
 
-            if(!response.data) {
+            if(!response.data || response.data.recommend == []) {
                 Alert.alert("추천 유저가 없거나, 오류가 발생했습니다.")
                 setLoading(false);
                 return;

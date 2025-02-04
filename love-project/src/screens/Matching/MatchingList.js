@@ -1,12 +1,42 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { Image, FlatList, View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import axios from 'axios';
 
 const MatchingList = () => {
     const navigation = useNavigation(); // 화면 전환에 사용
     const route = useRoute(); // 전달받은 추천 리스트
     const { recommend } = route.params; // 추천 리스트 데이터 추출
+    const [recommendUserData, setRecommendUserData] = useState([]);
+
+    useEffect(() => {
+        const loadRecommendUserData = async () => {
+            if (recommend.length === 0) return;
+
+            try {
+                const responses = await Promise.all(
+                    recommend.map(async (data) => {
+                        const formData = new FormData();
+                        formData.append("userUID", data.userUID);
+    
+                        const response = await axios.post("http://192.168.1.29:8080/users/findUserData", formData, { 
+                            headers: { "Content-Type": "multipart/form-data" }
+                        });
+    
+                        return response.data;
+                    })
+                );
+
+                console.log(responses);
+                setRecommendUserData(responses);
+            } catch(error) {
+                console.error("추천 사용자 데이터 로드 중 오류 발생:", error);
+            }
+        };
+    
+        loadRecommendUserData();
+    }, [recommend]);
 
     const handlePress = (item) => {
         Alert.alert(
@@ -28,8 +58,8 @@ const MatchingList = () => {
 
     return (
         <FlatList
-            data={recommend}
-            keyExtractor={(item) => item.uid ? item.uid.toString() : Math.random().toString()} // uid가 없으면 임의의 숫자를 사용
+            data={recommendUserData}
+            keyExtractor={(item) => item.userUID ? item.userUID.toString() : Math.random().toString()} // uid가 없으면 임의의 숫자를 사용
             ListHeaderComponent={
                 <View style={styles.header}>
                     <Text style={styles.top}>
@@ -44,24 +74,22 @@ const MatchingList = () => {
             renderItem={({ item }) => (
                 <TouchableOpacity
                     style={styles.card}
-                    onPress={() => {handlePress(item)}}
+                    onPress={() => {handlePress(item.user)}}
                 >
                     <View style={styles.profile}>
                         <Image
                             source={
-                                item.myGender === '남성'
-                                    ? require('../../../assets/default-profile-male.png')
-                                    : require('../../../assets/default-profile-female.png')
+                                item.user.profilePicture ? { uri: `http://192.168.1.29:8080/${item.user.profilePicture}`} : require('../../../assets/default-profile.png')
                             }
                             style={styles.profileImg}
                             defaultSource={require('../../../assets/default-profile.png')}
                         />
-                        <Text style={styles.name}>{item.username ?? 'ㅇㅇㅇ'}</Text>
+                        <Text style={styles.name}>{item.user.username}</Text>
                     </View>
 
                     <View style={styles.box}>
                         <Text style={styles.boxText}>
-                            자연스러운 만남을 추구합니다~ 서로 얘기 나누며 친해져 가요~~
+                            {item.user.introduce}
                         </Text>
                     </View>
                 </TouchableOpacity>
