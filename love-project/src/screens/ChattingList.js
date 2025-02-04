@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, FlatList, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import axios from 'axios';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { io } from 'socket.io-client'; // WebSocket 추가
 import { v4 as uuidv4 } from 'uuid';
 
@@ -9,9 +9,11 @@ const Chattinglist = () => {
   const [chatList, setChatList] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const navigation = useNavigation();
-  const userUID = "9980593714"; // 현재 사용자 UID
 
-  const socket = io("http://192.168.1.23:8080"); // WebSocket 서버 주소
+  const route = useRoute();
+  const { userUID } = route.params;
+
+  const socket = io("http://192.168.1.23:8088"); // WebSocket 서버 주소
 
   // 채팅 목록을 불러오는 함수
   const loadChatList = async () => {
@@ -82,7 +84,7 @@ const Chattinglist = () => {
 
   // 채팅방을 클릭했을 때 이동
   const handleChatSelect = (partnerUID) => {
-    navigation.navigate("ChatchatScreen", { chatlists: { userUID, partnerUID } });
+    navigation.navigate("MatchingChatScreen", { chatlists: { userUID, partnerUID } });
   };
 
   if (isLoading) {

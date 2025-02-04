@@ -49,7 +49,7 @@ const MatchingList = () => {
                 },
                 {
                     text: "채팅",
-                    onPress: () => navigation.navigate('ChatchatScreen', { partner: item })
+                    onPress: () => navigation.navigate('MatchingChatScreen', { partner: item })
                 },
                 { text: "취소", style: "cancel" }
             ]

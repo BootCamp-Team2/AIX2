@@ -100,7 +100,7 @@ const MainScreen = () => {
         </Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("ChattingList")}>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("ChattingList", {userUID: userData.userUID})}>
         <View>
           <Image source={require('../../assets/MainScreen/mat.jpg')} 
               style={styles.imageStyle}
