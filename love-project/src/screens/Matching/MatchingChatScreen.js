@@ -8,7 +8,7 @@ import Font from 'react-native-vector-icons/FontAwesome';
 
 // 한국어 감정 사전 (예시)
 const koreanSentimentDict = {
-  좋아: 2,
+  좋아: 2, 
   사랑: 3,
   행복: 2,
   최고: 3,
@@ -165,16 +165,16 @@ const MatchingChatScreen = ({ route }) => {
   
     const onSend = async (newMessages = []) => {
       // 새로운 메시지를 추가
-    setMessages((previousMessages) =>
-      GiftedChat.append(previousMessages, newMessages),
-    );
+    // setMessages((previousMessages) =>
+    //   GiftedChat.append(previousMessages, newMessages),
+    // );
 
     // 상대방의 메시지를 분석하여 호감도 점수 업데이트
     const receivedMessage = newMessages[0].text; // 상대방의 메시지
     const score = analyzeKoreanSentiment(receivedMessage); // 감정 분석
     setAffectionScore((prevScore) => {
       const newScore = prevScore + score;
-      return Math.max(-10, Math.min(10, newScore)); // 점수를 -10 ~ 10 사이로 제한
+      return Math.max(0, Math.min(100, newScore)); // 점수를 0 ~ 100 사이로 제한
     });
       const message = newMessages[0];
       const messageToSend = {
@@ -200,7 +200,7 @@ const MatchingChatScreen = ({ route }) => {
         } catch (error) {
           console.error("Error saving message to AsyncStorage:", error);
         }
-  
+        return updatedMessages; // 새로 추가된 메시지 포함된 상태를 반환
         
       });
   
@@ -353,12 +353,12 @@ const MatchingChatScreen = ({ route }) => {
   <View style={styles.box}>
       {/* 호감도 점수 표시 */}
       <View style={styles.scoreBox}>
-        <Text style={styles.scoreText}>호감도: {affectionScore}</Text>
+        <Text style={styles.scoreText}>호감도: {affectionScore}%</Text>
         <View style={styles.gaugeBarBox}>
           <View
             style={[
               styles.gaugeBar,
-              { width: `${((affectionScore + 10) / 20) * 100}%` }, // 점수에 따라 너비 조정
+              { width: `${affectionScore}%` }, // 점수에 따라 너비 조정
             ]}
           />
         </View>
@@ -390,32 +390,7 @@ const MatchingChatScreen = ({ route }) => {
   };
   
   // 스타일 정의
-  const styles = StyleSheet.create({
-    box: {
-      flex: 1,
-    },
-    scoreBox: {
-      padding: 16,
-      backgroundColor: '#f5f5f5',
-      borderBottomWidth: 1,
-      borderBottomColor: '#ddd',
-    },
-    scoreText: {
-      fontSize: 16,
-      fontWeight: 'bold',
-      marginBottom: 8,
-    },
-    gaugeBarBox: {
-      height: 10,
-      backgroundColor: '#e0e0e0',
-      borderRadius: 5,
-      overflow: 'hidden',
-    },
-    gaugeBar: {
-      height: '100%',
-      backgroundColor: '#4caf50', // 초록색 게이지바
-      borderRadius: 5,
-    },
+  const styles = StyleSheet.create({    
     container: {
       flex: 1,
       backgroundColor: '#f5f5f5', // 채팅 화면 배경
@@ -450,37 +425,30 @@ const MatchingChatScreen = ({ route }) => {
       textAlign:'center', 
       alignSelf: 'center'
   }, 
-  
-  degree:{
-    alignSelf: 'center',
-    alignItems: 'center',
-    backgroundColor: '#FF9AAB',
-    width: '95%',
-    height: 45,
-    borderRadius: 10,
-    flexDirection: 'row',
-  
+  box: {
+    flex: 1,
   },
-  
-  degreeText:{
-    color: 'white',
-    fontSize: 15,
-    marginLeft: 10,
+  scoreBox: {
+    padding: 16,
+    backgroundColor: '#f5f5f5',
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
   },
-  appContainer: {
-    flex: 1,  
+  scoreText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 8,
   },
-  progressText: {
-    marginRight: 10,
-    fontSize: 14,
-    color: 'white'
+  gaugeBarBox: {
+    height: 30,
+    backgroundColor: '#e0e0e0',
+    borderRadius: 7,
+    overflow: 'hidden',
   },
-  verticalLine: {
-    width: 1.5, // 선의 두께
-    height: '80%', // 선의 높이 (부모 컨테이너의 높이에 맞춤)
-    backgroundColor: 'white', // 선의 색상
-    marginLeft: 5
-  },
-  
+  gaugeBar: {
+    height: '100%',
+    backgroundColor: '#FF9AAB', 
+    borderRadius: 5,
+  }, 
   });
 export default MatchingChatScreen;
