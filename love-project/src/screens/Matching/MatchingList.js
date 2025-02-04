@@ -45,11 +45,11 @@ const MatchingList = () => {
             [
                 {
                     text: "프로필",
-                    onPress: () => navigation.navigate('OpProfileScreen', { userUID: item.userUID })
+                    onPress: () => navigation.navigate('OpProfileScreen', { userData: item })
                 },
                 {
                     text: "채팅",
-                    onPress: () => navigation.navigate('ChatchatScreen', { partner: item })
+                    onPress: () => navigation.navigate('MatchingChatScreen', { partner: item })
                 },
                 { text: "취소", style: "cancel" }
             ]

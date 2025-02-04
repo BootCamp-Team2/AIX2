@@ -21,24 +21,8 @@ const OpProfileScreen = () => {
     const [avatarImg, setAvatarImg] = useState(null);
     const [numColumns, setNumColumns] = useState(2); // numColumns 상태 관리
 
-    const [userData, setUserData] = useState({});
-    const { userUID } = route.params;
-    useEffect(() => {
-        const loadUserData = async () => {
-            if(userUID) {
-                const formData = new FormData();
-                formData.append("userUID", userUID);
-    
-                const response = await axios.post("http://192.168.1.29:8080/users/findUserData", formData, {
-                    headers: {"Content-Type": "multipart/form-data"}
-                });
-    
-                if(response.data) { setUserData(response.data.user); }
-            }
-        };
-
-        loadUserData();
-    }, [route.params]);
+    const { userData } = route.params;
+    // console.log(userData);
 
     useEffect(() => {
         const loadProfileData = () => {
@@ -97,23 +81,21 @@ const OpProfileScreen = () => {
                         ]}
                     />
                     {/* 겹치는 원 */}
-                    <Image
-                        source={
-                            avatarImg
-                            ? { uri: `http://192.168.1.10:1000/${avatarImg}` } // 적용된 아바타 URI 사용
-                            : require('../../../assets/testProfile/kimgoeunProfile.png') // 기본 이미지
-                        }
-                        style={[
-                            styles.overlappingCircle,
-                            {
-                            zIndex: isCircleFront ? 1 : 0,
-                            left: isCircleFront ? 115 : 155,
-                            width: isCircleFront ? 100 : 80,
-                            height: isCircleFront ? 100 : 80,
-                            top: isCircleFront ? 0 : 10,
-                            },
-                        ]}
-                    />
+                    {avatarImg && ( // 아바타 이미지 있을때에만 나오게 지정
+                        <Image
+                            source={{ uri: `http://192.168.1.10:1000/${avatarImg}` }} // avatarImg가 있을 때 URI 사용
+                            style={[
+                                styles.overlappingCircle,
+                                {
+                                    zIndex: isCircleFront ? 1 : 0,
+                                    left: isCircleFront ? 115 : 155,
+                                    width: isCircleFront ? 100 : 80,
+                                    height: isCircleFront ? 100 : 80,
+                                    top: isCircleFront ? 0 : 10,
+                                },
+                            ]}
+                        />
+                    )}
                     {/* 프로필 변경 버튼 */}
                     <TouchableOpacity style={styles.switchButton} onPress={() => {
                         handleSwitch();
@@ -188,12 +170,12 @@ const OpProfileScreen = () => {
                                         <View style={styles.mediaItem}>
                                             {item.type === 'image' ? (
                                                 <Image 
-                                                    source={{ uri: item.uri }} 
+                                                    source={{ uri: `http://192.168.1.29:8080/${item.uri}` }} 
                                                     style={styles.mediaPreview} 
                                                 />
                                             ) : (
                                                 <Video
-                                                    source={{ uri: item.uri }}
+                                                    source={{ uri: `http://192.168.1.29:8080/${item.uri}` }}
                                                     style={styles.mediaPreview}
                                                     resizeMode="cover"
                                                     shouldPlay={false}

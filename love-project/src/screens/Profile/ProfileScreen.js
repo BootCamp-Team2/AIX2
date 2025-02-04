@@ -74,32 +74,36 @@ const ProfileScreen = () => {
     // 수정 버튼을 눌렀을 때 저장 처리
     const handleSaveEdit = async (title, value) => {
         if (editMode !== null) {
-            // 수정 모드일 때 추가 정보 수정
-            setAdditionalInfo( async (prev) => {
-                const updatedInfo = [...prev];
-                updatedInfo[editMode] = { title, value }; // 수정된 항목 업데이트
-
-                await axios.post("http://192.168.1.29:8080/users/updateAppeal", {appeal: JSON.stringify(updatedInfo)},
-                    { headers: { "Content-Type": "application/json", 'Authorization': `Bearer ${await AsyncStorage.getItem('token')}` }}
-                );
-                return updatedInfo;
-            });
+            console.log("Before: ", additionalInfo);
+    
+            // 수정된 항목 업데이트 (상태 업데이트 전)
+            const updatedInfo = [...additionalInfo];
+            updatedInfo[editMode] = { title, value };
+    
+            // 비동기 API 호출
+            await axios.post("http://192.168.1.29:8080/users/updateAppeal", { appeal: JSON.stringify(updatedInfo) },
+                { headers: { "Content-Type": "application/json", 'Authorization': `Bearer ${await AsyncStorage.getItem('token')}` }}
+            );
+    
+            // API 호출 후 상태 업데이트
+            setAdditionalInfo(updatedInfo);
+    
+            console.log("After: ", updatedInfo);  // 상태 업데이트 후
         } else {
-            // 기본 정보 수정 모드일 때 (예: MBTI, 나이, 지역 등)
-            const newProfileData = {...profileData, [title]: value};
+            // 기본 정보 수정
+            const newProfileData = { ...profileData, [title]: value };
             console.log(newProfileData);
             setProfileData((profileData) => ({
                 ...profileData,
-                [title]: value, // 수정된 기본 정보 항목만 업데이트
+                [title]: value,
             }));
         }
     
-        // 수정/추가 모달 닫기
+        // 모달 닫기
         setEditBasicProfileModalVisible(false);
         setEditProfileModalVisible(false);
         setAddProfileModalVisible(false);
     };
-    
 
     const handleBasicSaveEdit = async (updatedItem) => {
         const newProfileData = {
@@ -345,7 +349,7 @@ const ProfileScreen = () => {
                         source={
                             avatarImg
                             ? { uri: `http://192.168.1.10:1000/${avatarImg}` } // 적용된 아바타 URI 사용
-                            : require('../../../assets/testProfile/kimgoeunProfile.png') // 기본 이미지
+                            : require('../../../assets/nothing.png') // 기본 이미지
                         }
                         style={[
                             styles.overlappingCircle,
