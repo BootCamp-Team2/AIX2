@@ -41,7 +41,7 @@ const AIchat = ({ route }) => {
   
   const sendMessage = async () => {
     if (!inputText.trim()) return;
-
+ 
     const newMessage = {
       role: "user",
       content: inputText,
