@@ -53,6 +53,8 @@ const CoordinationScreen = () => {
 
       const data = await response.json();
 
+      console.log("🔍 서버 응답 데이터:", data);
+
       // result_msg에서 분석 결과 및 추천 코디 데이터를 파싱
       const resultMsg = JSON.parse(data.result_msg); // JSON 문자열을 객체로 변환
 
@@ -73,17 +75,30 @@ const CoordinationScreen = () => {
       setRecommendations(recs);
 
       // result_search에서 추천 이미지 URL을 추출 (undefined 방지)
-      const resultSearch = resultMsg["result_search"];
+      const resultSearch = JSON.parse(data.result_search);
+
+      console.log("🔍 result_search 데이터:", resultSearch);
+
 
       if (Array.isArray(resultSearch)) {
-        const imageUrls = resultSearch
-          .flat() // 중첩 배열을 평탄화
-          .map((imgObj) => imgObj.uri) // 각 객체에서 uri 추출
-          .filter(Boolean); // undefined 방지
-      
-        setRecommendationImages(imageUrls);
+        // const imageUrls = resultSearch
+        //   .flat()  // 2차원 배열을 평탄화하여 1차원 배열로 변환
+        //   .map((imgObj) => imgObj.img) // 각 객체에서 uri 추출
+        //   .filter(Boolean); // undefined 방지
+
+        // 각 그룹별로 이미지를 추출해서 저장할 배열을 준비
+        const group1Images = resultSearch[0].map((imgObj) => imgObj.img).filter(Boolean);
+        const group2Images = resultSearch[1].map((imgObj) => imgObj.img).filter(Boolean);
+        const group3Images = resultSearch[2].map((imgObj) => imgObj.img).filter(Boolean);
+
+        const imageUrls = [group1Images, group2Images, group3Images];
+
+
+        console.log(imageUrls);
+        setRecommendationImages(imageUrls); // 이미지 URL 상태 업데이트
       } else {
         console.error("result_search가 예상된 형식이 아닙니다.", resultSearch);
+        console.error("result_search가 예상된 형식이 아닙니다.", error);
       }
 
     } catch (error) {
@@ -100,7 +115,7 @@ const CoordinationScreen = () => {
         {image ? (
           <Image source={{ uri: image }} style={styles.selectImage} />
         ) : (
-          <Text style={styles.uploadText}>전신사진을 업로드 하세요</Text>
+          <Text style={styles.uploadText}>얼굴 사진을 업로드 하세요</Text>
       )}</TouchableOpacity> 
 
       <View style={styles.subontainer}>
@@ -132,31 +147,31 @@ const CoordinationScreen = () => {
           {recommendations.map((rec, index) => (
             <View key={index} style={styles.recommendationCard}>
               <Text style={styles.recommendationTitle}>추천 {index + 1}</Text>
-              <View style={styles.recommendationImages}>
+              <ScrollView horizontal style={styles.scrollView}>
+              <View style={styles.recommendationContainer}>
+              {/* 추천 아이템 텍스트 */}
+              <View style={styles.recommendationTextContainer}>
                 {rec.items.map((item, idx) => (
                   <Text key={idx} style={styles.recommendationText}>{item}</Text>
                 ))}
-
-                <Image source={{ uri: rec.topImage }} style={styles.clothingImage} />
-                <Image source={{ uri: rec.bottomImage }} style={styles.clothingImage} />
-                <Image source={{ uri: rec.shoesImage }} style={styles.clothingImage} />
               </View>
+              <View>
+                {/* 추천 이미지들: recommendationImages에서 index에 맞는 이미지를 가져오기 */}
+                <View style={styles.recommendationImages}>
+                  {recommendationImages[index]?.map((imgUri, imgIdx) => (
+                    <Image key={imgIdx} source={{ uri: imgUri }} style={styles.clothingImage} />
+                  ))}
+                </View>
+              </View>
+              </View>
+              </ScrollView>
+
+              {/* 추천 이유 텍스트 */}
               <Text style={styles.recommendationReason}>💡 {rec.reason}</Text>
             </View>
           ))}
         </View>
       )}
-      
-      {/* {recommendationImages.length > 0 && (
-        <View style={styles.recommendationImagesContainer}>
-          <Text style={styles.sectionTitle}>🖼 추천 이미지</Text>
-          <View style={styles.imagesRow}>
-            {recommendationImages.map((imgUri, index) => (
-              <Image key={index} source={{ uri: imgUri }} style={styles.recommendationImage} />
-            ))}
-          </View>
-        </View>
-      )} */}
     </ScrollView>
   );
 };
@@ -180,7 +195,7 @@ const styles = StyleSheet.create({
   image: { 
     marginTop: 30,
     width: 250, 
-    height: 300, 
+    height: 290, 
     borderRadius: 10, 
     borderWidth: 2, 
     borderColor: '#81C999', 
@@ -189,7 +204,7 @@ const styles = StyleSheet.create({
   },
   selectImage: {
     width: 250, 
-    height: 300, 
+    height: 290, 
     borderRadius: 10, 
     borderWidth: 2, 
     borderColor: '#81C999' 
@@ -200,24 +215,24 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   suggestionBtn: {
-    width: 200, 
-    height: 50, 
+    width: 220, 
+    height: 65, 
     borderRadius: 10, 
+    marginTop: 50,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#81C999'
   },
   suggestionText: {
-    fontSize: 16,
+    fontSize: 20,
     textAlign: 'center',
-    color: 'fff'
+    color: '#fff'
   },
   resultContainer: { 
-    marginTop: 20, 
     padding: 15, 
     backgroundColor: '#fff', 
     borderRadius: 10, 
-    idth: '100%', 
+    width: 200, 
     shadowColor: '#000', 
     shadowOpacity: 0.1, 
     shadowRadius: 5, 
@@ -254,7 +269,7 @@ const styles = StyleSheet.create({
     width: '100%' 
   },
   recommendationCard: { 
-    backgroundColor: '#eee', 
+    backgroundColor: '#e4ede7', 
     padding: 10, 
     borderRadius: 8, 
     marginBottom: 15, 
@@ -263,17 +278,32 @@ const styles = StyleSheet.create({
   recommendationTitle: {
     fontSize: 18, 
     fontWeight: 'bold', 
-    marginBottom: 10 
+    marginBottom: 10 ,
+    color: '#2f5e3e'
+  },
+  recommendationContainer:{
+    backgroundColor: '#c8e0d0',
+    borderRadius: 8,
+    padding: 7,
+    marginBottom: 10,
+  },
+  recommendationTextContainer: { 
+    flexDirection: 'row', 
+    justifyContent: 'center', 
+    gap: 10,
   },
   recommendationImages: { 
     flexDirection: 'row', 
     justifyContent: 'center', 
-    gap: 10 
+    gap: 10,
   },
   recommendationText: 
-  { fontSize: 16, 
-    color: '#444' 
-
+  { 
+    fontSize: 16, 
+    color: '#444',
+    width: 100,
+    height: 25,
+    textAlign: 'center', // 텍스트 중앙 정렬
   },
   recommendationReason: 
   { fontSize: 14, 
@@ -305,6 +335,13 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 2,
     borderColor: '#81C999',
+  },
+  clothingImage: {
+    width: 100, // 각 이미지의 가로 크기
+    height: 100, // 각 이미지의 세로 크기
+    borderRadius: 8, // 이미지의 모서리 둥글게 만들기
+    borderWidth: 2, // 테두리 추가
+    borderColor: '#e4ede7', // 테두리 색상 설정
   },
 });
 
