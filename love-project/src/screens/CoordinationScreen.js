@@ -122,13 +122,24 @@ const CoordinationScreen = () => {
         <Text style={styles.horizontalLine} />         
       </View>
 
+      {showButton && !image && (
+        <View style={styles.suggestionPhrase}>
+          <Text style={styles.suggestionPhraseText}>얼굴 분석을 통해{'\n'}나만의 스타일을 찾아드려요!</Text>
+        </View>
+      )}
+
       {showButton && image && (
         <TouchableOpacity style={styles.suggestionBtn} onPress={analyzeImage}>
           <Text style={styles.suggestionText}>추천 받기</Text>
         </TouchableOpacity>
       )}
 
-      {loading && <ActivityIndicator size="large" color="#81C999" style={styles.loader} />}
+      {loading && (
+        <View style={styles.loaderContainer}>
+          <ActivityIndicator size="large" color="#81C999" style={styles.loader} />
+          <Text style={styles.loaderText}>생성 중...</Text>
+        </View>
+      )}
 
       {analysis && (
         <View style={styles.resultContainer}>
@@ -214,6 +225,21 @@ const styles = StyleSheet.create({
     color: '#aaa',
     textAlign: 'center',
   },
+  suggestionPhrase: {
+    width: 250, 
+    height: 55, 
+    borderRadius: 10, 
+    marginTop: 70,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  suggestionPhraseText: {
+    fontSize: 20,
+    textAlign: 'center',
+    color: '#6eba87',
+    fontWeight: 'bold',   
+    height: 55, 
+  },
   suggestionBtn: {
     width: 250, 
     height: 55, 
@@ -233,7 +259,7 @@ const styles = StyleSheet.create({
     padding: 15, 
     backgroundColor: '#fff', 
     borderRadius: 10, 
-    width: 200, 
+    width: 250, 
     shadowColor: '#000', 
     shadowOpacity: 0.1, 
     shadowRadius: 5, 
@@ -343,6 +369,21 @@ const styles = StyleSheet.create({
     borderRadius: 8, // 이미지의 모서리 둥글게 만들기
     borderWidth: 2, // 테두리 추가
     borderColor: '#e4ede7', // 테두리 색상 설정
+  },
+  loaderContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    //flexDirection: 'row',  // 아이콘과 텍스트가 가로로 배치되도록
+    padding: 20,
+    marginTop: 60,
+  },
+  loader: {
+    marginBottom: 5, // 텍스트와의 간격을 위해
+  },
+  loaderText: {
+    fontSize: 16,
+    color: '#81C999',
+    fontWeight: 'bold',
   },
 });
 
