@@ -67,6 +67,10 @@ const ProfileScreen = () => {
         loadProfileData();
     }, [userData]);
 
+    const handleReload = () => {
+        window.location.reload();
+    };
+
     // 수정 버튼을 눌렀을 때 저장 처리
     const handleSaveEdit = async (title, value) => {
         if (editMode !== null) {
@@ -129,8 +133,6 @@ const ProfileScreen = () => {
         });
 
         if (!pickerResult.cancelled) {
-            alert('set profile photo!');
-
             const formData = new FormData();
             formData.append('fileMedia', {
                 uri: pickerResult.assets[0].uri,
@@ -145,10 +147,12 @@ const ProfileScreen = () => {
                 }
             });
 
-            console.log(response.data.newData);
+            // console.log(response.data.newData);
+            // await setTimeout(1000);
 
             setProfileImg(response.data.newData)
             alert('completed to set profile photo!');
+            handleReload();
         }else{
             alert('cancelled!');
         }
@@ -250,7 +254,7 @@ const ProfileScreen = () => {
             });
 
             const newMedia = {
-                uri: `http://192.168.1.29:8080/${responsePath.data}`,
+                uri: `${responsePath.data}`,
                 type: pickerResult.assets[0].type,
             };
 
@@ -523,12 +527,12 @@ const ProfileScreen = () => {
                                         <View style={styles.mediaItem}>
                                             {item.type === 'image' ? (
                                                 <Image 
-                                                    source={{ uri: item.uri }} 
+                                                    source={{ uri: `http://192.168.1.29:8080/${item.uri}` }} 
                                                     style={styles.mediaPreview} 
                                                 />
                                             ) : (
                                                 <Video
-                                                    source={{ uri: item.uri }}
+                                                    source={{ uri: `http://192.168.1.29:8080/${item.uri}` }}
                                                     style={styles.mediaPreview}
                                                     resizeMode="cover"
                                                     shouldPlay={false}
