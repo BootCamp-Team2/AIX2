@@ -127,7 +127,7 @@ const MainNavigator = () => {
         <Stack.Screen
           name="AvatarScreen"
           component={AvatarScreen}
-          options={{ headerTitle: '아바타 생성', headerTitleAlign: 'center' }}
+          options={{ headerTitle: '아바타 생성', headerTitleAlign: 'center', headerStyle: { backgroundColor: '#d9e0fc' } }}
         />
         <Stack.Screen
           name="AIchat"
