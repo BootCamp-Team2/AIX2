@@ -349,7 +349,7 @@ const ProfileScreen = () => {
                         source={
                             avatarImg
                             ? { uri: `http://192.168.1.10:1000/${avatarImg}` } // 적용된 아바타 URI 사용
-                            : require('../../../assets/testProfile/kimgoeunProfile.png') // 기본 이미지
+                            : require('../../../assets/nothing.png') // 기본 이미지
                         }
                         style={[
                             styles.overlappingCircle,
