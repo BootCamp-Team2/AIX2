@@ -6,6 +6,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage'; // AsyncStorage 임포트
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Font from 'react-native-vector-icons/FontAwesome';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 // 한국어 감정 사전
 const koreanSentimentDict = {
@@ -339,21 +340,22 @@ const MatchingChatScreen = ({ route }) => {
           </View>
         </View>
       </View> 
-              
+            
       <KeyboardAvoidingView 
-              style={{flex: 1}} 
-              behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // iOS와 Android에 따라 키보드 회피 방식 설정
+        style={{ flex: 1 }} 
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
+        keyboardVerticalOffset={Platform.OS === 'ios' ? -160 : 0}
       >
         <GiftedChat
           messages={messages}
           onSend={newMessages => onSend(newMessages)}
           user={{
-            _id: userData.userUID, // 사용자 ID
-            name: userData.username, // 사용자 이름
-            avatar: `http://192.168.1.27:8080/${userData.profilePicture}`, // 사용자 아바타 URL
+            _id: userData.userUID,
+            name: userData.username,
+            avatar: `http://192.168.1.27:8080/${userData.profilePicture}`,
           }}
           textInputProps={{
-            placeholder: '메시지를 입력하세요...', // 원하는 텍스트로 변경
+            placeholder: '메시지를 입력하세요...',
           }}
           renderBubble={renderBubble}
           renderInputToolbar={renderInputToolbar}

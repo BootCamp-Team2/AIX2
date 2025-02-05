@@ -7,6 +7,8 @@ import {
   StyleSheet,
   Image,
   ScrollView,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
@@ -92,6 +94,10 @@ const AIchat = ({ route }) => {
   };
 
   return (
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+       keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
+      style={styles.container}>
     <View style={styles.container}>
       <Text style={styles.title}>어시스턴트와 대화</Text>
 
@@ -135,6 +141,7 @@ const AIchat = ({ route }) => {
         <Text style={styles.coachingButtonText}>대화 평가 ➡</Text>
       </TouchableOpacity>
     </View>
+    </KeyboardAvoidingView>
   );
 };
 
