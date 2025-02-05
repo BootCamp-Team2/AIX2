@@ -23,6 +23,6 @@ const styles = StyleSheet.create({
     fontSize: 18, 
     textAlign: 'center', 
     marginVertical: 20,
-    color: '#2F4F4F',
+    color: '#d94e66',
     },
 });

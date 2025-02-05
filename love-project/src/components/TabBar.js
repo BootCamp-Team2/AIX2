@@ -4,7 +4,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icon2 from 'react-native-vector-icons/Ionicons';
 import MainScreen from '../screens/MainScreen';
 import ProfileScreen from '../screens/Profile/ProfileScreen';
-import SettingScreen from '../screens/SettingScreen';
+import SettingScreen from '../screens/Setting/SettingScreen';
 import { useNavigation, useRoute } from '@react-navigation/native';
 const Tab = createBottomTabNavigator();
 

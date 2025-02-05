@@ -63,13 +63,14 @@ const styles = StyleSheet.create({
   cancelText: {
     fontWeight: 'bold',
     textAlign: 'center',
+    color: '#595858'
   },
   confirmButton: {
     padding: 10,
     borderRadius: 5,
     flex: 1,
     marginLeft: 5,
-    backgroundColor: '#2F4F4F',
+    backgroundColor: '#d94e66',
   },
   confirmText: {
     color: 'white',
