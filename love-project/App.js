@@ -153,7 +153,7 @@ const MainNavigator = () => {
         <Stack.Screen
           name="TabBar"
           component={TabBar}
-          options={{ headerTitle: '', headerTitleAlign: 'center' }}
+          options={{ headerShown: false, headerTitle: '', headerTitleAlign: 'center' }}
         />
         
         {/* ChatchatScreen을 네비게이터에 추가 */}

@@ -45,6 +45,19 @@ const ProfileScreen = () => {
     }, []);
 
     useEffect(() => {
+        const checkUserData = async () => {
+            const storedData = await AsyncStorage.getItem('userData');
+            if (storedData && JSON.stringify(userData) !== storedData) {
+                console.log('🔄 변경 감지: 데이터 다시 불러오기');
+                setUserData(JSON.parse(storedData));
+            }
+        };
+    
+        const interval = setInterval(checkUserData, 3000); // 🔄 3초마다 확인
+        return () => clearInterval(interval); // 🔹 컴포넌트 언마운트 시 정리
+    }, [userData]);
+
+    useEffect(() => {
         const loadProfileData = () => {
             if(!userData) return;
 
@@ -140,17 +153,14 @@ const ProfileScreen = () => {
                 name: pickerResult.assets[0].uri.split('/').pop(),
             });
 
-            const response = await axios.post("http://192.168.1.27:8080/users/updateProfileImg", formData, {
+            await axios.post("http://192.168.1.27:8080/users/updateProfileImg", formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${await AsyncStorage.getItem('token')}`
                 }
             });
 
-            // console.log(response.data.newData);
-            // await setTimeout(1000);
-
-            setProfileImg(response.data.newData)
+            setProfileImg(pickerResult.assets[0].uri)
             alert('completed to set profile photo!');
             handleReload();
         }else{
@@ -328,7 +338,7 @@ const ProfileScreen = () => {
                 <View style={styles.photoContainer}>
                     {/* 프로필 사진 */}
                     <Image
-                        source={profileImg ? { uri: `http://192.168.1.27:8080/${profileImg}` } : require('../../../assets/testProfile/kimgoeunProfile.png')} // 기본 이미지 설정
+                        source={profileImg ? profileImg.includes("uploads") ? { uri: `http://192.168.1.27:8080/${profileImg}` } : profileImg : require('../../../assets/testProfile/kimgoeunProfile.png')} // 기본 이미지 설정
                         style={[
                             styles.profilePhoto,
                             {
@@ -343,9 +353,9 @@ const ProfileScreen = () => {
                     {/* 겹치는 원 */}
                     <Image
                         source={
-                            avatarImg
+                            avatarImg ? avatarImg.includes("output")
                             ? { uri: `http://192.168.1.10:1000/${avatarImg}` } // 적용된 아바타 URI 사용
-                            : require('../../../assets/nothing.png') // 기본 이미지
+                            : avatarImg : require('../../../assets/nothing.png') // 기본 이미지
                         }
                         style={[
                             styles.overlappingCircle,
