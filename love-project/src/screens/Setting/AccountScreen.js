@@ -3,6 +3,7 @@ import { View, Text, Button, Alert, StyleSheet, TouchableOpacity } from 'react-n
 import { MaterialIcons } from '@expo/vector-icons';
 import LogoutModal from '../../components/Modal/LogoutModal.js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import AccountDeletionModal from '../../components/Modal/AccountDeletionModal.js';
 import { useNavigation } from '@react-navigation/native';
 import Icon1 from 'react-native-vector-icons/AntDesign'
 import Icon2 from 'react-native-vector-icons/Feather';
@@ -35,6 +36,32 @@ const AccountScreen = () => {
     }
   };
 
+  const handleAccountDeletion = async () => {
+    try {
+      // 예시: API 요청 - 실제 URL과 헤더는 서버에 맞게 수정
+      const response = await fetch('https://your-api-url.com/delete-account', {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${await AsyncStorage.getItem('token')}`, // 토큰 인증
+        },
+      });
+  
+      if (response.ok) {
+        // 토큰 삭제 및 성공 메시지
+        await AsyncStorage.removeItem('token');
+        Alert.alert("회원탈퇴 완료", "정상적으로 탈퇴 처리되었습니다.");
+        navigation.navigate('LoginScreen'); // 로그인 화면으로 리디렉션
+      } else {
+        Alert.alert("오류", "회원탈퇴 중 문제가 발생했습니다.");
+      }
+    } catch (error) {
+      console.error('회원탈퇴 중 오류:', error);
+      Alert.alert("오류", "네트워크 오류가 발생했습니다.");
+    } finally {
+      setDeleteModalVisible(false);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.settingBox} onPress={() => setLogoutModalVisible(true)}>
@@ -49,6 +76,11 @@ const AccountScreen = () => {
         visible={logoutModalVisible} 
         onClose={() => setLogoutModalVisible(false)} 
         onConfirm={handleLogout}
+      />
+      <AccountDeletionModal 
+        visible={deleteModalVisible} 
+        onClose={closeModal} 
+        onConfirm={handleAccountDeletion}
       />
     </View>
   );

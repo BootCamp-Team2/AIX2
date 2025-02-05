@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
   cancelText: {
     fontWeight: 'bold',
     textAlign: 'center',
-    color: '#595858'
+    color: '#fff'
   },
   confirmButton: {
     padding: 10,
