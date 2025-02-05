@@ -49,7 +49,6 @@ const AccountScreen = () => {
   const handleAccountDeletion = async () => {
     try {
       // 예시: API 요청 - 실제 URL과 헤더는 서버에 맞게 수정
-      console.log(userData.password);
       const response = await axios.delete('http://192.168.1.27:8080/users/deleteUser', {
         headers: {
           Authorization: `Bearer ${await AsyncStorage.getItem('token')}`, // 토큰 인증
