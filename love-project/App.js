@@ -12,7 +12,8 @@ import ModifyMatchInfo from './src/screens/Matching/ModifyMatchInfo';
 import ProfileScreen from './src/screens/Profile/ProfileScreen';
 import OpProfileScreen from './src/screens/Profile/OpProfileScreen';
 import AvatarScreen from './src/screens/Profile/AvatarScreen';
-import SettingScreen from './src/screens/SettingScreen';
+import SettingScreen from './src/screens/Setting/SettingScreen';
+import AccountScreen from './src/screens/Setting/AccountScreen';
 import SignUpScreen from './src/screens/SignUpScreen';
 import IdealTypeImg from './src/screens/Simulation/IdealTypeImg';
 import IdealTypeSet from './src/screens/Simulation/IdealTypeSet';
@@ -78,6 +79,11 @@ const MainNavigator = () => {
           name="SettingScreen"
           component={SettingScreen}
           options={{ headerTitle: '설정 화면', headerTitleAlign: 'center' }}
+        />
+        <Stack.Screen
+          name="AccountScreen"
+          component={AccountScreen}
+          options={{ headerTitle: '계정', headerTitleAlign: 'center' }}
         />
         <Stack.Screen
           name="MatchingList"
