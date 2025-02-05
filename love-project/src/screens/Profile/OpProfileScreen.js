@@ -29,7 +29,7 @@ const OpProfileScreen = () => {
                 const formData = new FormData();
                 formData.append("userUID", userUID);
     
-                const response = await axios.post("http://192.168.1.29:8080/users/findUserData", formData, {
+                const response = await axios.post("http://192.168.1.27:8080/users/findUserData", formData, {
                     headers: {"Content-Type": "multipart/form-data"}
                 });
     
@@ -84,7 +84,7 @@ const OpProfileScreen = () => {
                 <View style={styles.photoContainer}>
                     {/* 프로필 사진 */}
                     <Image
-                        source={profileImg ? { uri: `http://192.168.1.29:8080/${profileImg}` } : require('../../../assets/testProfile/kimgoeunProfile.png')} // 기본 이미지 설정
+                        source={profileImg ? { uri: `http://192.168.1.27:8080/${profileImg}` } : require('../../../assets/testProfile/kimgoeunProfile.png')} // 기본 이미지 설정
                         style={[
                             styles.profilePhoto,
                             {

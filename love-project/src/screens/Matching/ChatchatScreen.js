@@ -16,13 +16,17 @@ const ChatScreen = ({ route }) => {
   const { partner, chatlists } = route.params;
 
   useEffect(() => {
-    if (partner) {
-      setUserID("9980593714"); // 현재 사용자 ID
-      setPartnerID(partner.userUID); // 선택된 파트너의 ID
-    } else if (chatlists) {
-      setUserID(chatlists.userUID);
-      setPartnerID(chatlists.partnerUID);
-    }
+    const loadChatInit = async () => {
+      if (partner) {
+        setUserID(JSON.parse(await AsyncStorage.getItem("userData")).userUID); // 현재 사용자 ID
+        setPartnerID(partner.userUID); // 선택된 파트너의 ID
+      } else if (chatlists) {
+        setUserID(chatlists.userUID);
+        setPartnerID(chatlists.partnerUID);
+      }
+    };
+
+    loadChatInit();
   }, [partner, chatlists]);
 
   // 채팅 기록 로컬 저장소에서 불러오기
@@ -68,7 +72,8 @@ const ChatScreen = ({ route }) => {
   useEffect(() => {
     loadMessagesFromStorage();
 
-    const newSocket = new WebSocket(`ws://192.168.1.23:8088/ws/chat?userUID=${userID}`);
+    const newSocket = new WebSocket(`ws://192.168.1.11:8088/ws/chat?userUID=${userID}`);
+    console.log(newSocket);
     setSocket(newSocket);
 
     newSocket.onmessage = async (event) => {

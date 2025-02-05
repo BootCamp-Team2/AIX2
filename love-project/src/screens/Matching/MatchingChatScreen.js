@@ -6,9 +6,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage'; // AsyncSt
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Font from 'react-native-vector-icons/FontAwesome';
 
-// 한국어 감정 사전 (예시)
+// 한국어 감정 사전
 const koreanSentimentDict = {
-  좋아: 2,
+  좋아: 2, 매력:2, 긍정:1, 칭찬:1, 재밌어요:1, 웃겨요:1, 
   사랑: 3,
   행복: 2,
   최고: 3,
@@ -33,24 +33,38 @@ const MatchingChatScreen = ({ route }) => {
     const [messages, setMessages] = useState([]);
     const [socket, setSocket] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    const giftChatRef = useRef();
 
-    const [affectionScore, setAffectionScore] = useState(0); // 호감도 점수
+    const [affectionScore, setAffectionScore] = useState(36.5); // 첫 호감도 점수: 36.5
     const [liked, setLiked] = useState(false); //UI
     const scaleValue = new Animated.Value(1); //UI
     const [text, setText] = useState(''); // 입력값 상태 추가
   
-    
+    const [userData, setUserData] = useState({});
+    const [partnerData, setPartnerData] = useState({});
   
-    // const { partner } = route.params; // 추천 리스트에서 선택된 사람의 정보
-    const userID = "2"; // 현재 사용자 ID (예: 로그인된 사용자 ID)
-    const partnerID = "1"; // 선택된 파트너의 ID
+    const { partner, chatlists } = route.params;
+    useEffect(() => {
+      const loadChatInit = async () => {
+        if (partner) {
+          setUserData(JSON.parse(await AsyncStorage.getItem("userData"))); // 현재 사용자 ID
+          setPartnerData(partner); // 선택된 파트너의 ID
+        } else if (chatlists) {
+          setUserData(chatlists.userData);
+          setPartnerData(chatlists.partnerData);
+        }
+      };
+  
+      loadChatInit();
+    }, [partner, chatlists]);
   
     // 채팅 기록 로컬 저장소에서 불러오기
     const loadMessagesFromStorage = async () => {
       try {
-        const savedMessages = await AsyncStorage.getItem(`chat_${userID}`);
+        const savedMessages = await AsyncStorage.getItem(`chat_${userData.userUID}_${partnerData.userUID}`);
         if (savedMessages) {
-          setMessages(JSON.parse(savedMessages)); // 로컬 저장소에서 메시지를 불러와 상태에 설정
+          const parsedMessages = JSON.parse(savedMessages);
+          setMessages(parsedMessages);
         }
       } catch (error) {
         console.error("Error loading messages from AsyncStorage:", error);
@@ -60,7 +74,7 @@ const MatchingChatScreen = ({ route }) => {
     // 메시지 불러오기
     const onLoadMessages = async () => {
       try {
-        const response = await axios.get("http://192.168.1.29:3000/get-chat", {
+        const response = await axios.get("http://192.168.1.27:3000/get-chat", {
           params: { userUID: userID, partnerUID: partnerID }
         });
   
@@ -86,102 +100,75 @@ const MatchingChatScreen = ({ route }) => {
     };
   
     useEffect(() => {
-      // console.log("Selected partner data:", partner); // partner 데이터 확인용
-  
-      // 이전 채팅 기록 불러오기
       loadMessagesFromStorage();
   
-      // WebSocket 연결 설정
-      const newSocket = new WebSocket(`ws://192.168.1.29:8080/ws/chat?userUID=${userID}`);
+      const newSocket = new WebSocket(`ws://192.168.1.11:8088/ws/chat?userUID=${userData.userUID}`);
+      // console.log(newSocket);
       setSocket(newSocket);
   
-      // WebSocket 메시지 수신 처리
       newSocket.onmessage = async (event) => {
         const messageData = JSON.parse(event.data);
-        console.log("Received message:", messageData);
+        // console.log("Received message:", messageData);
+
+        const score = analyzeKoreanSentiment(messageData.message)
+        setAffectionScore((prevScore) => {
+          const newScore = prevScore + score;
+          return Math.max(0, Math.min(100, newScore));
+        });
   
-        // 메시지가 partner와 관련된 메시지라면 GiftedChat에 추가
-        if (messageData.senderUID === partnerID || messageData.receiverUID === partnerID) {
-          const timestamp = messageData.timestamp ? new Date(messageData.timestamp) : new Date(); // timestamp가 없으면 현재 시간 사용
+        if (messageData.senderUID === partnerData.userUID || messageData.receiverUID === partnerData.userUID) {
+          const timestamp = messageData.timestamp ? new Date(messageData.timestamp) : new Date();
   
           const formattedMessage = {
             _id: messageData.id || new Date().getTime(),
             text: messageData.message,
-            createdAt: timestamp, // 유효한 timestamp를 사용
+            createdAt: timestamp,
             user: {
               _id: messageData.senderUID,
-              name: messageData.senderUID === userID ? '나' : "1".userUID,
+              name: messageData.senderUID === userData.userUID ? userData.username : partnerData.username,
+              avatar: messageData.senderUID === userData.userUID ? `http://192.168.1.27:8080/${userData.profilePicture}` : `http://192.168.1.27:8080/${partnerData.profilePicture}`
             },
-            delivered: messageData.delivered, // delivered 상태 포함
+            delivered: messageData.delivered,
           };
   
           setMessages((previousMessages) => {
             const updatedMessages = GiftedChat.append(previousMessages, [formattedMessage]);
-          
-            // 새로운 메시지가 도착할 때마다 로컬에 저장
+  
             try {
-              AsyncStorage.setItem(`chat_${userID}_${partnerID}`, JSON.stringify(updatedMessages));
+              AsyncStorage.setItem(`chat_${userData.userUID}_${partnerData.userUID}`, JSON.stringify(updatedMessages));
             } catch (error) {
               console.error("Error saving message to AsyncStorage:", error);
             }
-          
+  
             return updatedMessages;
           });
-          
         }
       };
   
-      // WebSocket 연결 상태 확인 후 로딩 종료
       newSocket.onopen = () => {
         console.log("WebSocket connection established.");
         setIsLoading(false);
       };
   
-      // WebSocket 에러 핸들러 추가
       newSocket.onerror = (error) => {
         console.error("WebSocket error:", error);
-        setIsLoading(false); // 연결 실패 시 로딩 종료
+        setIsLoading(false);
       };
   
-      // WebSocket 연결 종료 처리
       return () => {
         if (newSocket && newSocket.readyState === WebSocket.OPEN) {
           newSocket.close();
         }
       };
-    }, [userID, partnerID]);
-  
-    // WebSocket 연결 타임아웃 처리
-    useEffect(() => {
-      const timeout = setTimeout(() => {
-        if (isLoading) {
-          console.error("WebSocket connection timeout.");
-          setIsLoading(false);
-        }
-      }, 10000); // 10초 타임아웃
-  
-      return () => clearTimeout(timeout);
-    }, [isLoading]);
+    }, [userData, partnerData]);
   
     const onSend = async (newMessages = []) => {
-      // 새로운 메시지를 추가
-    setMessages((previousMessages) =>
-      GiftedChat.append(previousMessages, newMessages),
-    );
-
-    // 상대방의 메시지를 분석하여 호감도 점수 업데이트
-    const receivedMessage = newMessages[0].text; // 상대방의 메시지
-    const score = analyzeKoreanSentiment(receivedMessage); // 감정 분석
-    setAffectionScore((prevScore) => {
-      const newScore = prevScore + score;
-      return Math.max(-10, Math.min(10, newScore)); // 점수를 -10 ~ 10 사이로 제한
-    });
       const message = newMessages[0];
       const messageToSend = {
-        senderUID: userID,
-        receiverUID: partnerID,
+        senderUID: userData.userUID,
+        receiverUID: partnerData.userUID,
         content: message.text,
-        delivered: false, // 메시지가 아직 전달되지 않았음을 표시
+        delivered: false,
       };
   
       if (socket && socket.readyState === WebSocket.OPEN) {
@@ -192,21 +179,23 @@ const MatchingChatScreen = ({ route }) => {
       }
   
       setMessages((previousMessages) => {
-        const updatedMessages = GiftedChat.append(previousMessages, newMessages); // 기존 메시지와 새로운 메시지 합치기
-    
-        // 로컬 저장소에 새로운 메시지를 저장
+        const updatedMessages = GiftedChat.append(previousMessages, newMessages);
+  
         try {
-          AsyncStorage.setItem(`chat_${userID}_${partnerID}`, JSON.stringify(updatedMessages)); // 메시지 저장
+          AsyncStorage.setItem(`chat_${userData.userUID}_${partnerData.userUID}`, JSON.stringify(updatedMessages));
         } catch (error) {
           console.error("Error saving message to AsyncStorage:", error);
         }
   
-        
+        return updatedMessages;
       });
-  
-      // 메시지를 로컬에 저장
-      await AsyncStorage.setItem(`chat_${userID}_${partnerID}`, JSON.stringify([...messages, ...newMessages]));
     };
+  
+    useEffect(() => {
+      if (giftChatRef.current) {
+        giftChatRef.current.scrollToBottom();
+      }
+    }, [messages]);
   
     if (isLoading) {
       return (
@@ -248,7 +237,9 @@ const MatchingChatScreen = ({ route }) => {
         {...props}
         containerStyle={{
           backgroundColor: '#fff', // 입력창 배경색
-          borderTopColor: '#E5E5EA', // 입력창 상단 테두리 색상
+          borderColor: '#FF9AAB', // 입력창 상단 테두리 색상
+          borderWidth: 2,
+          borderRadius: 7,
         }}
       />
     );
@@ -296,31 +287,14 @@ const MatchingChatScreen = ({ route }) => {
     );
   };
   
-  // 메시지 상태 표시 (예: 전송 중, 전송 완료)
-  const renderFooter = (props) => {
-    const { currentMessage } = props;
-    if (currentMessage && currentMessage.sent) {
-      return (
-        <View style={styles.footerContainer}>
-          <Text style={styles.footerText}>전송 완료</Text>
-        </View>
-      );
-    } else if (currentMessage && currentMessage.pending) {
-      return (
-        <View style={styles.footerContainer}>
-          <Text style={styles.footerText}>전송 중...</Text>
-        </View>
-      );
-    }
-    return null;
-  };
+  
   
   return (
   <View style={styles.container}>
     
   <View style={styles.matching}>
     <View >
-      <Image source={require('../../../assets/MainScreen/ima.jpg')} 
+      <Image source={partnerData.profilePicture ? {uri: `http://192.168.1.27:8080/${partnerData.profilePicture}`} : require('../../../assets/default-profile.png')} 
               style={{width : 60, 
                       height : 60,
                       borderRadius: 30,
@@ -339,7 +313,7 @@ const MatchingChatScreen = ({ route }) => {
     </Animated.View>
         
     <View>
-      <Image source={require('../../../assets/MainScreen/ima.jpg')} 
+      <Image source={userData.profilePicture ? {uri: `http://192.168.1.27:8080/${userData.profilePicture}`} : require('../../../assets/default-profile.png')} 
               style={{width : 60, 
                       height : 60,
                       borderRadius: 30,
@@ -350,15 +324,15 @@ const MatchingChatScreen = ({ route }) => {
     </View>
   </View>  
 
-  <View style={styles.box}>
+  <View>
       {/* 호감도 점수 표시 */}
       <View style={styles.scoreBox}>
-        <Text style={styles.scoreText}>호감도: {affectionScore}</Text>
+        <Text style={styles.scoreText}>상대방 호감도 : {affectionScore}%</Text>
         <View style={styles.gaugeBarBox}>
           <View
             style={[
               styles.gaugeBar,
-              { width: `${((affectionScore + 10) / 20) * 100}%` }, // 점수에 따라 너비 조정
+              { width: `${affectionScore}%` }, // 점수에 따라 너비 조정
             ]}
           />
         </View>
@@ -370,9 +344,9 @@ const MatchingChatScreen = ({ route }) => {
         messages={messages}
         onSend={newMessages => onSend(newMessages)}
         user={{
-          _id: 2, // 사용자 ID
-          name: 'User', // 사용자 이름
-          avatar: 'https://static.cdn.kmong.com/gigs/sdatI1688375010.jpg', // 사용자 아바타 URL
+          _id: userData.userUID, // 사용자 ID
+          name: userData.username, // 사용자 이름
+          avatar: `http://192.168.1.27:8080/${userData.profilePicture}`, // 사용자 아바타 URL
         }}
         textInputProps={{
           placeholder: '메시지를 입력하세요...', // 원하는 텍스트로 변경
@@ -382,7 +356,6 @@ const MatchingChatScreen = ({ route }) => {
         renderSend={renderSend}
         renderAvatar={renderAvatar}
         renderTime={renderTime}
-        renderFooter={renderFooter}
         alwaysShowSend
       />
   </View>
@@ -390,57 +363,20 @@ const MatchingChatScreen = ({ route }) => {
   };
   
   // 스타일 정의
-  const styles = StyleSheet.create({
-    box: {
-      flex: 1,
-    },
-    scoreBox: {
-      padding: 16,
-      backgroundColor: '#f5f5f5',
-      borderBottomWidth: 1,
-      borderBottomColor: '#ddd',
-    },
-    scoreText: {
-      fontSize: 16,
-      fontWeight: 'bold',
-      marginBottom: 8,
-    },
-    gaugeBarBox: {
-      height: 10,
-      backgroundColor: '#e0e0e0',
-      borderRadius: 5,
-      overflow: 'hidden',
-    },
-    gaugeBar: {
-      height: '100%',
-      backgroundColor: '#4caf50', // 초록색 게이지바
-      borderRadius: 5,
-    },
+  const styles = StyleSheet.create({    
     container: {
       flex: 1,
-      backgroundColor: '#f5f5f5', // 채팅 화면 배경
-    },
-  footerContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 5,
-  },
-  footerText: {
-    fontSize: 12,
-    color: '#667',
-  },
+      backgroundColor: '#fff', // 채팅 화면 배경
+    }, 
   matching:{
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 20
-  },
-  
-  
+    marginBottom: 3,
+  },  
   heart: {
       color : '#FF9AAB',
-  },
-  
+  },  
   heartText: {
       fontSize:21,
       color : '#FF9AAB', 
@@ -448,39 +384,32 @@ const MatchingChatScreen = ({ route }) => {
       height: 75, 
       alignItems: 'center', 
       textAlign:'center', 
-      alignSelf: 'center'
+      alignSelf: 'center',
   }, 
-  
-  degree:{
-    alignSelf: 'center',
+    scoreBox: {
+    backgroundColor: '#fff',
+    height: 65,
+    textAlign:'center',
+    justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#FF9AAB',
+  },
+  scoreText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 8,
+    textAlign:'center',
+  },
+  gaugeBarBox: {
     width: '95%',
-    height: 45,
-    borderRadius: 10,
-    flexDirection: 'row',
-  
+    height: 30,
+    backgroundColor: '#e0e0e0',
+    borderRadius: 7,
+    overflow: 'hidden',
   },
-  
-  degreeText:{
-    color: 'white',
-    fontSize: 15,
-    marginLeft: 10,
-  },
-  appContainer: {
-    flex: 1,  
-  },
-  progressText: {
-    marginRight: 10,
-    fontSize: 14,
-    color: 'white'
-  },
-  verticalLine: {
-    width: 1.5, // 선의 두께
-    height: '80%', // 선의 높이 (부모 컨테이너의 높이에 맞춤)
-    backgroundColor: 'white', // 선의 색상
-    marginLeft: 5
-  },
-  
+  gaugeBar: {    
+    height: 30,
+    backgroundColor: '#FF9AAB', 
+    borderRadius: 5,
+  }, 
   });
 export default MatchingChatScreen;

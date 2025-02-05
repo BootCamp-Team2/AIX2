@@ -79,7 +79,7 @@ const ProfileScreen = () => {
                 const updatedInfo = [...prev];
                 updatedInfo[editMode] = { title, value }; // 수정된 항목 업데이트
 
-                await axios.post("http://192.168.1.29:8080/users/updateAppeal", {appeal: JSON.stringify(updatedInfo)},
+                await axios.post("http://192.168.1.27:8080/users/updateAppeal", {appeal: JSON.stringify(updatedInfo)},
                     { headers: { "Content-Type": "application/json", 'Authorization': `Bearer ${await AsyncStorage.getItem('token')}` }}
                 );
                 return updatedInfo;
@@ -107,7 +107,7 @@ const ProfileScreen = () => {
             [updatedItem.key]: updatedItem.value, // 키는 유지하고 값만 업데이트
         };
 
-        await axios.post("http://192.168.1.29:8080/users/updateProfile", newProfileData,
+        await axios.post("http://192.168.1.27:8080/users/updateProfile", newProfileData,
             { headers: { "Content-Type": "application/json", 'Authorization': `Bearer ${await AsyncStorage.getItem('token')}` }}
         );
 
@@ -140,7 +140,7 @@ const ProfileScreen = () => {
                 name: pickerResult.assets[0].uri.split('/').pop(),
             });
 
-            const response = await axios.post("http://192.168.1.29:8080/users/updateProfileImg", formData, {
+            const response = await axios.post("http://192.168.1.27:8080/users/updateProfileImg", formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${await AsyncStorage.getItem('token')}`
@@ -166,7 +166,7 @@ const ProfileScreen = () => {
             setAddProfileModalVisible(false); // 추가 후 모달 닫기
             setNewInfo({ title: '', value: '' }); // 입력 필드 초기화
 
-            await axios.post("http://192.168.1.29:8080/users/updateAppeal", {appeal: JSON.stringify([...additionalInfo, { title: newInfo.title, value: newInfo.value }])},
+            await axios.post("http://192.168.1.27:8080/users/updateAppeal", {appeal: JSON.stringify([...additionalInfo, { title: newInfo.title, value: newInfo.value }])},
                 { headers: { "Content-Type": "application/json", 'Authorization': `Bearer ${await AsyncStorage.getItem('token')}` }}
             );
         } else {
@@ -188,7 +188,7 @@ const ProfileScreen = () => {
         const updatedInfo = additionalInfo.filter((_, i) => i !== index);
         setAdditionalInfo(updatedInfo);
 
-        await axios.post("http://192.168.1.29:8080/users/updateAppeal", {appeal: JSON.stringify(updatedInfo)},
+        await axios.post("http://192.168.1.27:8080/users/updateAppeal", {appeal: JSON.stringify(updatedInfo)},
             { headers: {"Content-Type": "application/json", 'Authorization': `Bearer ${await AsyncStorage.getItem('token')}`}} 
         );
     };
@@ -246,7 +246,7 @@ const ProfileScreen = () => {
                 name: pickerResult.assets[0].uri.split('/').pop(),
             });
 
-            const responsePath = await axios.post("http://192.168.1.29:8080/users/uploadMedia", formData, {
+            const responsePath = await axios.post("http://192.168.1.27:8080/users/uploadMedia", formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${await AsyncStorage.getItem('token')}`
@@ -260,7 +260,7 @@ const ProfileScreen = () => {
 
             setMediaList([newMedia, ...mediaList]);
     
-            await axios.post("http://192.168.1.29:8080/users/updateMedia", {media: JSON.stringify([newMedia, ...mediaList])},
+            await axios.post("http://192.168.1.27:8080/users/updateMedia", {media: JSON.stringify([newMedia, ...mediaList])},
                 {headers: {"Content-Type": "application/json", "Authorization": `Bearer ${await AsyncStorage.getItem('token')}`,}}
             );
         }
@@ -271,7 +271,7 @@ const ProfileScreen = () => {
         const updatedMediaList = mediaList.filter((_, i) => i !== index);
         setMediaList(updatedMediaList);
 
-        await axios.post("http://192.168.1.29:8080/users/updateMedia", {media: JSON.stringify(updatedMediaList)},
+        await axios.post("http://192.168.1.27:8080/users/updateMedia", {media: JSON.stringify(updatedMediaList)},
             {headers: {"Content-Type": "application/json", "Authorization": `Bearer ${await AsyncStorage.getItem('token')}`,}}
         );
     };
@@ -328,7 +328,7 @@ const ProfileScreen = () => {
                 <View style={styles.photoContainer}>
                     {/* 프로필 사진 */}
                     <Image
-                        source={profileImg ? { uri: `http://192.168.1.29:8080/${profileImg}` } : require('../../../assets/testProfile/kimgoeunProfile.png')} // 기본 이미지 설정
+                        source={profileImg ? { uri: `http://192.168.1.27:8080/${profileImg}` } : require('../../../assets/testProfile/kimgoeunProfile.png')} // 기본 이미지 설정
                         style={[
                             styles.profilePhoto,
                             {
@@ -527,12 +527,12 @@ const ProfileScreen = () => {
                                         <View style={styles.mediaItem}>
                                             {item.type === 'image' ? (
                                                 <Image 
-                                                    source={{ uri: `http://192.168.1.29:8080/${item.uri}` }} 
+                                                    source={{ uri: `http://192.168.1.27:8080/${item.uri}` }} 
                                                     style={styles.mediaPreview} 
                                                 />
                                             ) : (
                                                 <Video
-                                                    source={{ uri: `http://192.168.1.29:8080/${item.uri}` }}
+                                                    source={{ uri: `http://192.168.1.27:8080/${item.uri}` }}
                                                     style={styles.mediaPreview}
                                                     resizeMode="cover"
                                                     shouldPlay={false}
