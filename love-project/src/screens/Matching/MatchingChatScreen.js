@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { Button, Easing, TouchableOpacity, Animated, Image, Text, StyleSheet, View, ActivityIndicator} from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { GiftedChat, Bubble, InputToolbar, Send, Time, Avatar } from 'react-native-gifted-chat';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage'; // AsyncStorage 임포트
@@ -30,6 +31,7 @@ const analyzeKoreanSentiment = (text) => {
 };
 
 const MatchingChatScreen = ({ route }) => {
+    const navigation = useNavigation(); // 화면 전환에 사용
     const [messages, setMessages] = useState([]);
     const [socket, setSocket] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -356,6 +358,7 @@ const MatchingChatScreen = ({ route }) => {
         renderSend={renderSend}
         renderAvatar={renderAvatar}
         renderTime={renderTime}
+        onPressAvatar={() => navigation.navigate('OpProfileScreen', { userData: partnerData })}
         alwaysShowSend
       />
   </View>
@@ -367,6 +370,7 @@ const MatchingChatScreen = ({ route }) => {
     container: {
       flex: 1,
       backgroundColor: '#fff', // 채팅 화면 배경
+      padding: 20
     }, 
   matching:{
     flexDirection: 'row',
