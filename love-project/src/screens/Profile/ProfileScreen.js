@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image, Alert, TextInput, ScrollView, KeyboardAvoidingView, Platform, FlatList, Modal } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image, Alert, TextInput, ScrollView, KeyboardAvoidingView, Platform, FlatList, Modal, LogBox } from 'react-native';
 import { useNavigation, useFocusEffect, useRoute } from "@react-navigation/native";
 import { MaterialIcons } from '@expo/vector-icons'; // Expo Icons 추가
 import * as ImagePicker from 'expo-image-picker'; // ImagePicker 추가
@@ -13,6 +13,10 @@ import EditBasiccProfileModal from '../../components/Modal/EditBasicProfileModal
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import Video from 'react-native-video';
+
+LogBox.ignoreLogs([
+    'VirtualizedLists should never be nested', // 이 경고 메시지 무시
+]);
 
 const ProfileScreen = () => {
     const navigation = useNavigation();
@@ -530,6 +534,7 @@ const ProfileScreen = () => {
                             </TouchableOpacity>
                             <FlatList
                                 data={mediaList}
+                                nestedScrollEnabled={true} // 이 옵션을 추가하면 오류 해결 가능
                                 keyExtractor={(item, index) => index.toString()}
                                 numColumns={numColumns}  // numColumns 상태에 따라 렌더링
                                 key={numColumns}  // numColumns가 변경될 때마다 새로 렌더링
