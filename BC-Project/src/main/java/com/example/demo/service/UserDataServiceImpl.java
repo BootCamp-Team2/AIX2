@@ -225,9 +225,8 @@ public class UserDataServiceImpl implements UserDataService {
     // 회원 탈퇴
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Response deleteUser(String jwtToken, Password passwordRequest) {
+    public Response deleteUser(String jwtToken) {
         String userId = jwtUtil.extractEmail(jwtToken);
-        String inputPassword = passwordRequest.getPw();
         Optional<User> userOptional = userDataRepository.findByEmail(userId);
 
         // 사용자가 존재하지 않을 경우 처리
@@ -236,11 +235,6 @@ public class UserDataServiceImpl implements UserDataService {
         }
 
         User user = userOptional.get();
-
-        // 비밀번호가 일치하지 않을 경우
-        if (!passwordEncoder.matches(inputPassword, user.getPassword())) {
-            return new Response(false, "비밀번호가 일치하지 않습니다");
-        }
 
         // 사용자 삭제
         userDataRepository.delete(user);

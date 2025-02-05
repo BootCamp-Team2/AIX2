@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, Button, Alert, StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import LogoutModal from '../../components/Modal/LogoutModal.js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AccountDeletionModal from '../../components/Modal/AccountDeletionModal.js';
 import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
 import Icon1 from 'react-native-vector-icons/AntDesign'
 import Icon2 from 'react-native-vector-icons/Feather';
 import Icon3 from 'react-native-vector-icons/Ionicons'; 
@@ -15,6 +16,15 @@ const AccountScreen = () => {
   const navigation = useNavigation(); // 네비게이션 가져오기
   const [logoutModalVisible, setLogoutModalVisible] = useState(false);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [userData, setUserData] = useState({});
+
+  useEffect(() => {
+    const loadUserData = async () => {
+      setUserData(JSON.parse(await AsyncStorage.getItem('userData')));
+    };
+
+    loadUserData();
+  }, []);
 
   const closeModal = () => {
     setLogoutModalVisible(false);
@@ -39,8 +49,8 @@ const AccountScreen = () => {
   const handleAccountDeletion = async () => {
     try {
       // 예시: API 요청 - 실제 URL과 헤더는 서버에 맞게 수정
-      const response = await fetch('https://your-api-url.com/delete-account', {
-        method: 'DELETE',
+      console.log(userData.password);
+      const response = await axios.delete('http://192.168.1.27:8080/users/deleteUser', {
         headers: {
           Authorization: `Bearer ${await AsyncStorage.getItem('token')}`, // 토큰 인증
         },
