@@ -199,7 +199,9 @@ const AvatarScreen = () => {
         await AsyncStorage.setItem('userData', JSON.stringify(newUserData.data.user));
 
         Alert.alert("성공적으로 프로필이 적용되었습니다.");
-        navigation.replace('TabBar');
+        setTimeout(() => {
+          navigation.reset({index: 0, routes: [{name: "MainScreen"}]})
+        }, 1000);
       }
     }
   };

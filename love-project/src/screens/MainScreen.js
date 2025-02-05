@@ -18,6 +18,19 @@ const MainScreen = () => {
     loadUserData();
   }, []);
 
+  useEffect(() => {
+    const checkUserData = async () => {
+        const storedData = await AsyncStorage.getItem('userData');
+        if (storedData && JSON.stringify(userData) !== storedData) {
+            console.log('🔄 변경 감지: 데이터 다시 불러오기');
+            setUserData(JSON.parse(storedData));
+        }
+    };
+
+    const interval = setInterval(checkUserData, 3000); // 🔄 3초마다 확인
+    return () => clearInterval(interval); // 🔹 컴포넌트 언마운트 시 정리
+  }, [userData]);
+
   const fetchOppositeGenderCount = async (gender, region) => {
     const oppositeGender = gender === '남성' ? '여성' : '남성';
 
