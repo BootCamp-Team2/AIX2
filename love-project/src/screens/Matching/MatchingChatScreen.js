@@ -56,6 +56,9 @@ const MatchingChatScreen = ({ route }) => {
           setUserData(chatlists.userData);
           setPartnerData(chatlists.partnerData);
         }
+
+        // const affect = await AsyncStorage.getItem(`chat_${userData.userUID}_${partnerData.userUID}_percentage`);
+        // setAffectionScore(setAffectionScore ? json.parse(affect) : 36.5);
       };
   
       loadChatInit();
@@ -134,7 +137,7 @@ const MatchingChatScreen = ({ route }) => {
             delivered: messageData.delivered,
           };
   
-          setMessages((previousMessages) => {
+          setMessages(async (previousMessages) => {
             const updatedMessages = GiftedChat.append(previousMessages, [formattedMessage]);
   
             try {
@@ -186,6 +189,7 @@ const MatchingChatScreen = ({ route }) => {
   
         try {
           AsyncStorage.setItem(`chat_${userData.userUID}_${partnerData.userUID}`, JSON.stringify(updatedMessages));
+          // AsyncStorage.setItem(`chat_${userData.userUID}_${partnerData.userUID}_percentage`, JSON.stringify(affectionScore));
         } catch (error) {
           console.error("Error saving message to AsyncStorage:", error);
         }
@@ -329,7 +333,7 @@ const MatchingChatScreen = ({ route }) => {
     <View>
         {/* 호감도 점수 표시 */}
         <View style={styles.scoreBox}>
-          <Text style={styles.scoreText}>상대방 호감도 : {affectionScore}%</Text>
+          <Text style={styles.scoreText}>서로의 호감도 : {affectionScore}%</Text>
           <View style={styles.gaugeBarBox}>
             <View
               style={[
