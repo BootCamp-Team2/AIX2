@@ -49,6 +49,14 @@ const OpProfileScreen = () => {
         setIsCircleFront(!isCircleFront); // 상태 스위치
     };
 
+    const [modalVisible, setModalVisible] = useState(false); // 모달의 상태
+    const [selectedImageUri, setSelectedImageUri] = useState(null); // 선택된 이미지 URI
+
+    const handleImagePress = (uri) => {
+        setSelectedImageUri(uri);  // 클릭한 이미지의 URI 저장
+        setModalVisible(true);  // 모달 열기
+    };
+
     return (
         <KeyboardAvoidingView 
             style={styles.container} 
@@ -168,10 +176,12 @@ const OpProfileScreen = () => {
                                 renderItem={({ item, index }) => (
                                         <View style={styles.mediaItem}>
                                             {item.type === 'image' ? (
-                                                <Image 
-                                                    source={{ uri: `http://192.168.1.27:8080/${item.uri}` }} 
-                                                    style={styles.mediaPreview} 
-                                                />
+                                                <TouchableOpacity onPress={() => handleImagePress(item.uri)}>
+                                                    <Image 
+                                                        source={{ uri: `http://192.168.1.27:8080/${item.uri}` }} 
+                                                        style={styles.mediaPreview} 
+                                                    />
+                                                </TouchableOpacity>
                                             ) : (
                                                 <Video
                                                     source={{ uri: `http://192.168.1.27:8080/${item.uri}` }}
@@ -183,6 +193,29 @@ const OpProfileScreen = () => {
                                         </View>
                                 )}
                             />
+
+                            {/* 이미지 모달 */}
+                            {selectedImageUri && (
+                                <Modal
+                                visible={modalVisible}
+                                transparent={true}
+                                animationType="fade"
+                                onRequestClose={() => setModalVisible(false)} // 모달 닫기
+                                >
+                                <View style={styles.modalOverlay}>
+                                    <TouchableOpacity
+                                    style={styles.modalCloseButton}
+                                    onPress={() => setModalVisible(false)} // 모달 닫기
+                                    >
+                                    <Text style={styles.modalCloseText}>닫기</Text>
+                                    </TouchableOpacity>
+                                    <Image
+                                    source={{ uri: `http://192.168.1.27:8080/${selectedImageUri}` }}
+                                    style={styles.modalImage}
+                                    />
+                                </View>
+                                </Modal>
+                            )}
                             </View>
                     </KeyboardAvoidingView>
                 )}
@@ -489,7 +522,30 @@ const styles = StyleSheet.create({
         // elevation: 5, // 안드로이드 그림자
         marginTop: 8, // 상단 여백
     },  
-    
+    modalOverlay: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.8)', // 반투명 배경
+      },
+      modalImage: {
+        width: '90%',
+        height: '80%',
+        resizeMode: 'contain',
+      },
+      modalCloseButton: {
+        position: 'absolute',
+        top: 40,
+        right: 20,
+        backgroundColor: '#fff',
+        padding: 10,
+        borderRadius: 20,
+      },
+      modalCloseText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#000',
+      },
 });
 
 export default OpProfileScreen;
