@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
-import { Button, Easing, TouchableOpacity, Animated, Image, Text, StyleSheet, View, ActivityIndicator} from 'react-native';
+import { Button, Easing, TouchableOpacity, Animated, Image, Text, StyleSheet, View, ActivityIndicator, KeyboardAvoidingView, Platform} from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { GiftedChat, Bubble, InputToolbar, Send, Time, Avatar } from 'react-native-gifted-chat';
 import axios from 'axios';
@@ -292,76 +292,79 @@ const MatchingChatScreen = ({ route }) => {
   
   
   return (
-  <View style={styles.container}>
-    
-  <View style={styles.matching}>
-    <View >
-      <Image source={partnerData.profilePicture ? {uri: `http://192.168.1.27:8080/${partnerData.profilePicture}`} : require('../../../assets/default-profile.png')} 
-              style={{width : 60, 
-                      height : 60,
-                      borderRadius: 30,
-                      marginRight: 7,
-                      marginLeft: 7,
-                      }}
-      />
-    </View>
-    
-    <Animated.View style={{ transform: [{ scale: scaleValue }] }}>
-      <Font style={styles.heart}                    
-      name={liked ? 'heart' : 'heart-o'} 
-      size={30} 
-      color={liked ? 'red' : 'black'} 
-      />
-    </Animated.View>
-        
-    <View>
-      <Image source={userData.profilePicture ? {uri: `http://192.168.1.27:8080/${userData.profilePicture}`} : require('../../../assets/default-profile.png')} 
-              style={{width : 60, 
-                      height : 60,
-                      borderRadius: 30,
-                      marginRight: 7,
-                      marginLeft: 7,
-                      }}
-      />                       
-    </View>
-  </View>  
-
-  <View>
-      {/* 호감도 점수 표시 */}
-      <View style={styles.scoreBox}>
-        <Text style={styles.scoreText}>상대방 호감도 : {affectionScore}%</Text>
-        <View style={styles.gaugeBarBox}>
-          <View
-            style={[
-              styles.gaugeBar,
-              { width: `${affectionScore}%` }, // 점수에 따라 너비 조정
-            ]}
-          />
-        </View>
+    <View style={styles.container}>
+    <View style={styles.matching}>
+      <View >
+        <Image source={partnerData.profilePicture ? {uri: `http://192.168.1.27:8080/${partnerData.profilePicture}`} : require('../../../assets/default-profile.png')} 
+                style={{width : 60, 
+                        height : 60,
+                        borderRadius: 30,
+                        marginRight: 7,
+                        marginLeft: 7,
+                        }}
+        />
       </View>
-    </View> 
-  
-  
-      <GiftedChat
-        messages={messages}
-        onSend={newMessages => onSend(newMessages)}
-        user={{
-          _id: userData.userUID, // 사용자 ID
-          name: userData.username, // 사용자 이름
-          avatar: `http://192.168.1.27:8080/${userData.profilePicture}`, // 사용자 아바타 URL
-        }}
-        textInputProps={{
-          placeholder: '메시지를 입력하세요...', // 원하는 텍스트로 변경
-        }}
-        renderBubble={renderBubble}
-        renderInputToolbar={renderInputToolbar}
-        renderSend={renderSend}
-        renderAvatar={renderAvatar}
-        renderTime={renderTime}
-        onPressAvatar={() => navigation.navigate('OpProfileScreen', { userData: partnerData })}
-        alwaysShowSend
-      />
-  </View>
+      
+      <Animated.View style={{ transform: [{ scale: scaleValue }] }}>
+        <Font style={styles.heart}                    
+        name={liked ? 'heart' : 'heart-o'} 
+        size={30} 
+        color={liked ? 'red' : 'black'} 
+        />
+      </Animated.View>
+          
+      <View>
+        <Image source={userData.profilePicture ? {uri: `http://192.168.1.27:8080/${userData.profilePicture}`} : require('../../../assets/default-profile.png')} 
+                style={{width : 60, 
+                        height : 60,
+                        borderRadius: 30,
+                        marginRight: 7,
+                        marginLeft: 7,
+                        }}
+        />                       
+      </View>
+    </View>  
+
+    <View>
+        {/* 호감도 점수 표시 */}
+        <View style={styles.scoreBox}>
+          <Text style={styles.scoreText}>상대방 호감도 : {affectionScore}%</Text>
+          <View style={styles.gaugeBarBox}>
+            <View
+              style={[
+                styles.gaugeBar,
+                { width: `${affectionScore}%` }, // 점수에 따라 너비 조정
+              ]}
+            />
+          </View>
+        </View>
+      </View> 
+              
+      <KeyboardAvoidingView 
+              style={{flex: 1}} 
+              behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // iOS와 Android에 따라 키보드 회피 방식 설정
+      >
+        <GiftedChat
+          messages={messages}
+          onSend={newMessages => onSend(newMessages)}
+          user={{
+            _id: userData.userUID, // 사용자 ID
+            name: userData.username, // 사용자 이름
+            avatar: `http://192.168.1.27:8080/${userData.profilePicture}`, // 사용자 아바타 URL
+          }}
+          textInputProps={{
+            placeholder: '메시지를 입력하세요...', // 원하는 텍스트로 변경
+          }}
+          renderBubble={renderBubble}
+          renderInputToolbar={renderInputToolbar}
+          renderSend={renderSend}
+          renderAvatar={renderAvatar}
+          renderTime={renderTime}
+          onPressAvatar={() => navigation.navigate('OpProfileScreen', { userData: partnerData })}
+          alwaysShowSend
+        />
+      </KeyboardAvoidingView>
+    </View>
   );
   };
   
@@ -370,7 +373,9 @@ const MatchingChatScreen = ({ route }) => {
     container: {
       flex: 1,
       backgroundColor: '#fff', // 채팅 화면 배경
-      padding: 20
+      paddingHorizontal: 5,
+      paddingTop: 5,
+      paddingBottom: 10,
     }, 
   matching:{
     flexDirection: 'row',
