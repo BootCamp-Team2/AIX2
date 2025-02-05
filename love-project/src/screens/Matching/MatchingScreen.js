@@ -249,6 +249,7 @@ const styles = StyleSheet.create({
         textAlign:'center', 
         fontWeight: 'bold',
         alignSelf: 'center',
+        paddingHorizontal: 25,
     },
 
     informationText: {
@@ -266,7 +267,7 @@ const styles = StyleSheet.create({
         color : 'white', 
         width: '90%',
         height: 75, 
-        marginLeft: 15,
+        marginLeft: 10,
         marginVertical: 5,
     },
 

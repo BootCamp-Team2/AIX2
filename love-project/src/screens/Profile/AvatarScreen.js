@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { View, Button, Image, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { View, Button, Image, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
@@ -205,18 +205,18 @@ const AvatarScreen = () => {
   };
 
   return (
-    <ScrollView>
+    <ScrollView contentContainerStyle={styles.containerScroll}>
     <View style={styles.container}>
       <Text style={styles.title}>Upload Your Avatar</Text>
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={takePhoto}>
           <Ionicons name="camera" size={24} color="white" />
-          <Text style={styles.buttonText}>Take Photo</Text>
+          <Text style={styles.buttonText}>사진 찍기</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={chooseImage}>
           <Ionicons name="image" size={24} color="white" />
-          <Text style={styles.buttonText}>Choose Image</Text>
+          <Text style={styles.buttonText}>사진 선택</Text>
         </TouchableOpacity>
       </View>
 
@@ -235,27 +235,36 @@ const AvatarScreen = () => {
           style={[styles.genderButton, gender === 'male' && styles.genderButtonSelected]}
           onPress={() => setGender('male')}
         >
-          <Text style={styles.genderButtonText}>Male</Text>
+          <Text style={styles.genderButtonText}>남자</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.genderButton, gender === 'female' && styles.genderButtonSelected]}
           onPress={() => setGender('female')}
         >
-          <Text style={styles.genderButtonText}>Female</Text>
+          <Text style={styles.genderButtonText}>여자</Text>
         </TouchableOpacity>
       </View>
 
+      {/*이미지 업로드 버튼*/}
       <TouchableOpacity
         style={[styles.uploadButton, loading && styles.uploadButtonLoading]}
         onPress={uploadImage}
         disabled={loading}
       >
         <Text style={styles.uploadButtonText}>
-          {loading ? 'Uploading...' : 'Upload Image'}
+          아바타 생성하기
         </Text>
       </TouchableOpacity>
 
-      
+      {/*로딩*/}
+      {loading && (
+        <View style={styles.loaderContainer}>
+          <ActivityIndicator size="large" color="#9AAEFF" style={styles.loader} />
+          <Text style={styles.loaderText}>생성 중...</Text>
+        </View>
+      )}
+
+
 
       {uploadStatus && <Text style={styles.uploadStatus}>{uploadStatus}</Text>}
 
@@ -269,11 +278,11 @@ const AvatarScreen = () => {
           />
           <TouchableOpacity style={styles.button} onPress={saveAvatar}>
             <Ionicons name="save" size={24} color="white" />
-            <Text style={styles.buttonText}>Save Avatar</Text>
+            <Text style={styles.buttonText}>아바타 저장하기</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={handleApplyToProfile}>
             <Ionicons name="checkmark-circle" size={24} color="white" />
-            <Text style={styles.buttonText}>Apply to Profile</Text>
+            <Text style={styles.buttonText}>아바타 적용하기</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -283,6 +292,11 @@ const AvatarScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  containerScroll:{
+    flexGrow: 1,               // ScrollView가 자식 요소의 크기만큼 확장됨
+    justifyContent: 'center',  // 세로 중앙 정렬
+    alignItems: 'center',      // 가로 중앙 정렬
+  },
   container: {
     flex: 1,
     justifyContent: 'center',
@@ -305,6 +319,7 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: '#9AAEFF',
+    width: 150,
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 10,
@@ -376,7 +391,7 @@ const styles = StyleSheet.create({
   avatarTitle: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#fff',
+    color: '#9AAEFF',
     marginBottom: 15,
   },
   avatarImage: {
@@ -403,6 +418,21 @@ const styles = StyleSheet.create({
   genderButtonText: {
     color: '#fff',
     fontWeight: '600',
+  },
+  loaderContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    //flexDirection: 'row',  // 아이콘과 텍스트가 가로로 배치되도록
+    padding: 20,
+    marginTop: 35,
+  },
+  loader: {
+    marginBottom: 5, // 텍스트와의 간격을 위해
+  },
+  loaderText: {
+    fontSize: 16,
+    color: '#9AAEFF',
+    fontWeight: 'bold',
   },
 });
 

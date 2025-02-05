@@ -74,32 +74,32 @@ const ProfileScreen = () => {
     // 수정 버튼을 눌렀을 때 저장 처리
     const handleSaveEdit = async (title, value) => {
         if (editMode !== null) {
-            // 수정 모드일 때 추가 정보 수정
-            setAdditionalInfo( async (prev) => {
-                const updatedInfo = [...prev];
-                updatedInfo[editMode] = { title, value }; // 수정된 항목 업데이트
-
-                await axios.post("http://192.168.1.27:8080/users/updateAppeal", {appeal: JSON.stringify(updatedInfo)},
-                    { headers: { "Content-Type": "application/json", 'Authorization': `Bearer ${await AsyncStorage.getItem('token')}` }}
-                );
-                return updatedInfo;
-            });
+            // 수정된 항목 업데이트 (상태 업데이트 전)
+            const updatedInfo = [...additionalInfo];
+            updatedInfo[editMode] = { title, value };
+    
+            // 비동기 API 호출
+            await axios.post("http://192.168.1.27:8080/users/updateAppeal", { appeal: JSON.stringify(updatedInfo) },
+                { headers: { "Content-Type": "application/json", 'Authorization': `Bearer ${await AsyncStorage.getItem('token')}` }}
+            );
+    
+            // API 호출 후 상태 업데이트
+            setAdditionalInfo(updatedInfo);
         } else {
-            // 기본 정보 수정 모드일 때 (예: MBTI, 나이, 지역 등)
-            const newProfileData = {...profileData, [title]: value};
+            // 기본 정보 수정
+            const newProfileData = { ...profileData, [title]: value };
             console.log(newProfileData);
             setProfileData((profileData) => ({
                 ...profileData,
-                [title]: value, // 수정된 기본 정보 항목만 업데이트
+                [title]: value,
             }));
         }
     
-        // 수정/추가 모달 닫기
+        // 모달 닫기
         setEditBasicProfileModalVisible(false);
         setEditProfileModalVisible(false);
         setAddProfileModalVisible(false);
     };
-    
 
     const handleBasicSaveEdit = async (updatedItem) => {
         const newProfileData = {
@@ -345,7 +345,7 @@ const ProfileScreen = () => {
                         source={
                             avatarImg
                             ? { uri: `http://192.168.1.10:1000/${avatarImg}` } // 적용된 아바타 URI 사용
-                            : require('../../../assets/testProfile/kimgoeunProfile.png') // 기본 이미지
+                            : require('../../../assets/nothing.png') // 기본 이미지
                         }
                         style={[
                             styles.overlappingCircle,
@@ -405,7 +405,7 @@ const ProfileScreen = () => {
                     <View style={styles.infoRow}>
                         {['MBTI', '나이', '지역'].map((key) => (
                             <View key={key} style={styles.infoBox}>
-                                <Text style={styles.infoText}>{key}: {profileData[key]}</Text>
+                                <Text style={styles.infoTextOriginal}>{key}: {profileData[key]}</Text>
                                 {showEditButtons && (
                                         <TouchableOpacity 
                                             onPress={() => handleBasicEdit(key)} 
@@ -649,7 +649,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',  // 수직 중앙 정렬
         alignItems: 'center',  // 수평 중앙 정렬
         paddingVertical: 15,       // 상하 여백을 추가
-        backgroundColor: '#FFFFFF',
+        backgroundColor: '#b0c0ff',
         borderRadius: 10,
         borderWidth: 1,
         borderColor: '#E0E0E0',
@@ -662,6 +662,13 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         elevation: 2,
         marginHorizontal: 3,
+    },
+    infoTextOriginal: {
+        fontSize: 18,            // 더 큰 폰트 크기
+        lineHeight: 22, // 텍스트 간 여백 추가
+        color: '#333',           // 텍스트 색상 변경 (조금 더 어두운 색상)
+        textAlign: 'left',       // 왼쪽 정렬
+        //marginBottom: 10,        // 항목 간 간격 추가
     },
     infoText: {
         fontSize: 18,            // 더 큰 폰트 크기
@@ -681,7 +688,7 @@ const styles = StyleSheet.create({
         marginVertical: 10,      // 각 항목 간 세로 간격
         paddingHorizontal: 15,   // 좌우 여백 추가
         borderBottomWidth: 1,    // 구분선 추가
-        borderColor: '#ccc',     // 구분선 색상
+        borderColor: '#9fa9cc',     // 구분선 색상
         paddingBottom: 10,       // 구분선과 내용 사이 여백
     },
     editButtonText: {

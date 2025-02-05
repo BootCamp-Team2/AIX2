@@ -107,7 +107,7 @@ const MainNavigator = () => {
         <Stack.Screen
           name="CoordinationScreen"
           component={CoordinationScreen}
-          options={{ headerTitle: '코디 화면', headerTitleAlign: 'center', headerStyle: { backgroundColor: '#d1e8d9' } }}
+          options={{ headerTitle: 'AI 스타일 코디 화면', headerTitleAlign: 'center', headerStyle: { backgroundColor: '#d1e8d9' } }}
         />
         <Stack.Screen
           name="IdealTypeImg"
@@ -127,7 +127,7 @@ const MainNavigator = () => {
         <Stack.Screen
           name="AvatarScreen"
           component={AvatarScreen}
-          options={{ headerTitle: '아바타 생성', headerTitleAlign: 'center' }}
+          options={{ headerTitle: '아바타 생성', headerTitleAlign: 'center', headerStyle: { backgroundColor: '#d9e0fc' } }}
         />
         <Stack.Screen
           name="AIchat"

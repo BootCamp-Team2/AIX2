@@ -79,23 +79,21 @@ const OpProfileScreen = () => {
                         ]}
                     />
                     {/* 겹치는 원 */}
-                    <Image
-                        source={
-                            avatarImg
-                            ? { uri: `http://192.168.1.10:1000/${avatarImg}` } // 적용된 아바타 URI 사용
-                            : require('../../../assets/testProfile/kimgoeunProfile.png') // 기본 이미지
-                        }
-                        style={[
-                            styles.overlappingCircle,
-                            {
-                            zIndex: isCircleFront ? 1 : 0,
-                            left: isCircleFront ? 115 : 155,
-                            width: isCircleFront ? 100 : 80,
-                            height: isCircleFront ? 100 : 80,
-                            top: isCircleFront ? 0 : 10,
-                            },
-                        ]}
-                    />
+                    {avatarImg && ( // 아바타 이미지 있을때에만 나오게 지정
+                        <Image
+                            source={{ uri: `http://192.168.1.10:1000/${avatarImg}` }} // avatarImg가 있을 때 URI 사용
+                            style={[
+                                styles.overlappingCircle,
+                                {
+                                    zIndex: isCircleFront ? 1 : 0,
+                                    left: isCircleFront ? 115 : 155,
+                                    width: isCircleFront ? 100 : 80,
+                                    height: isCircleFront ? 100 : 80,
+                                    top: isCircleFront ? 0 : 10,
+                                },
+                            ]}
+                        />
+                    )}
                     {/* 프로필 변경 버튼 */}
                     <TouchableOpacity style={styles.switchButton} onPress={() => {
                         handleSwitch();
