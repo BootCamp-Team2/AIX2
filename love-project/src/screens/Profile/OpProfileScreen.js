@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image, Alert, TextInput, ScrollView, KeyboardAvoidingView, Platform, FlatList, Modal } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image, Alert, TextInput, ScrollView, KeyboardAvoidingView, Platform, FlatList, Modal, SafeAreaView } from 'react-native';
 import { useNavigation, useFocusEffect, useRoute } from "@react-navigation/native";
 import { MaterialIcons } from '@expo/vector-icons'; // Expo Icons 추가
 import Icon2 from 'react-native-vector-icons/Feather';
@@ -55,6 +55,7 @@ const OpProfileScreen = () => {
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // iOS와 Android에 따라 키보드 회피 방식 설정
             keyboardVerticalOffset={50} // 키보드로 인해 뷰가 올라가는 정도 조정
         >
+            <SafeAreaView>
             <ScrollView 
                 contentContainerStyle={styles.scrollContainer} 
                 keyboardShouldPersistTaps='handled' // 키보드가 올라갔을 때 스크롤 유지
@@ -186,7 +187,7 @@ const OpProfileScreen = () => {
                     </KeyboardAvoidingView>
                 )}
             </ScrollView>
-
+            </SafeAreaView>
             
         </KeyboardAvoidingView>
     );
@@ -202,7 +203,7 @@ const styles = StyleSheet.create({
     },
     header: {
         marginBottom: 20,
-        // marginTop: -37,
+        marginTop: -37,
         alignItems: 'center',
         flexDirection: 'center',
         justifyContent: 'space-between',
@@ -279,7 +280,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',  // 수직 중앙 정렬
         alignItems: 'center',  // 수평 중앙 정렬
         paddingVertical: 15,       // 상하 여백을 추가
-        backgroundColor: '#FFFFFF',
+        backgroundColor: '#b0c0ff',
         borderRadius: 10,
         borderWidth: 1,
         borderColor: '#E0E0E0',
@@ -292,6 +293,13 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         elevation: 2,
         marginHorizontal: 3,
+    },
+    infoTextOriginal: {
+        fontSize: 18,            // 더 큰 폰트 크기
+        lineHeight: 22, // 텍스트 간 여백 추가
+        color: '#333',           // 텍스트 색상 변경 (조금 더 어두운 색상)
+        textAlign: 'left',       // 왼쪽 정렬
+        //marginBottom: 10,        // 항목 간 간격 추가
     },
     infoText: {
         fontSize: 18,            // 더 큰 폰트 크기
@@ -311,7 +319,7 @@ const styles = StyleSheet.create({
         marginVertical: 10,      // 각 항목 간 세로 간격
         paddingHorizontal: 15,   // 좌우 여백 추가
         borderBottomWidth: 1,    // 구분선 추가
-        borderColor: '#ccc',     // 구분선 색상
+        borderColor: '#9fa9cc',     // 구분선 색상
         paddingBottom: 10,       // 구분선과 내용 사이 여백
     },
     editButtonText: {
