@@ -45,7 +45,7 @@ const MatchingList = () => {
             [
                 {
                     text: "프로필",
-                    onPress: () => navigation.navigate('OpProfileScreen', { userUID: item.userUID })
+                    onPress: () => navigation.navigate('OpProfileScreen', { userData: item })
                 },
                 {
                     text: "채팅",

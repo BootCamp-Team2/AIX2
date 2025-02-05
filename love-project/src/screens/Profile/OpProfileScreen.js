@@ -21,25 +21,7 @@ const OpProfileScreen = () => {
     const [avatarImg, setAvatarImg] = useState(null);
     const [numColumns, setNumColumns] = useState(2); // numColumns 상태 관리
 
-    const [userData, setUserData] = useState({});
-    const { userUID } = route.params;
-    useEffect(() => {
-        const loadUserData = async () => {
-            if(userUID) {
-                const formData = new FormData();
-                formData.append("userUID", userUID);
-    
-                const response = await axios.post("http://192.168.1.27:8080/users/findUserData", formData, {
-                    headers: {"Content-Type": "multipart/form-data"}
-                });
-    
-                if(response.data) { setUserData(response.data.user); }
-            }
-        };
-
-        loadUserData();
-    }, [route.params]);
-
+    const { userData } = route.params;
     useEffect(() => {
         const loadProfileData = () => {
             if(!userData) return;
@@ -188,12 +170,12 @@ const OpProfileScreen = () => {
                                         <View style={styles.mediaItem}>
                                             {item.type === 'image' ? (
                                                 <Image 
-                                                    source={{ uri: item.uri }} 
+                                                    source={{ uri: `http://192.168.1.27:8080/${item.uri}` }} 
                                                     style={styles.mediaPreview} 
                                                 />
                                             ) : (
                                                 <Video
-                                                    source={{ uri: item.uri }}
+                                                    source={{ uri: `http://192.168.1.27:8080/${item.uri}` }}
                                                     style={styles.mediaPreview}
                                                     resizeMode="cover"
                                                     shouldPlay={false}
