@@ -26,7 +26,7 @@ public interface UserDataService {
 	public MfaResponse verifyGoogleMFA(MfaRequest mfaRequest);
 	public UserDetails loadUserByUsername(String username);
 	public MyDataResponse getMyDataByToken(String jwtToken);
-	public Response deleteUser(String jwtToken, Password password);	
+	public Response deleteUser(String jwtToken);	
 	public UpdateResponse modifyNickname(String jwtToken, UpdateNickname modifyNickname);
 	public UpdateResponse modifyBirthDate(String jwtToken, UpdateBirthDate updateBirthDate);
 	public Response verifyPassword(String jwtToken, Password password);

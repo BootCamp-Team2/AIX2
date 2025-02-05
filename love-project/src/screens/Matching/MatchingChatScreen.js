@@ -1,11 +1,12 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
-import { Button, Easing, TouchableOpacity, Animated, Image, Text, StyleSheet, View, ActivityIndicator} from 'react-native';
+import { Button, Easing, TouchableOpacity, Animated, Image, Text, StyleSheet, View, ActivityIndicator, KeyboardAvoidingView, Platform} from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { GiftedChat, Bubble, InputToolbar, Send, Time, Avatar } from 'react-native-gifted-chat';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage'; // AsyncStorage 임포트
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Font from 'react-native-vector-icons/FontAwesome';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 // 한국어 감정 사전
 const koreanSentimentDict = {
@@ -55,6 +56,9 @@ const MatchingChatScreen = ({ route }) => {
           setUserData(chatlists.userData);
           setPartnerData(chatlists.partnerData);
         }
+
+        // const affect = await AsyncStorage.getItem(`chat_${userData.userUID}_${partnerData.userUID}_percentage`);
+        // setAffectionScore(setAffectionScore ? json.parse(affect) : 36.5);
       };
   
       loadChatInit();
@@ -133,7 +137,7 @@ const MatchingChatScreen = ({ route }) => {
             delivered: messageData.delivered,
           };
   
-          setMessages((previousMessages) => {
+          setMessages(async (previousMessages) => {
             const updatedMessages = GiftedChat.append(previousMessages, [formattedMessage]);
   
             try {
@@ -185,6 +189,7 @@ const MatchingChatScreen = ({ route }) => {
   
         try {
           AsyncStorage.setItem(`chat_${userData.userUID}_${partnerData.userUID}`, JSON.stringify(updatedMessages));
+          // AsyncStorage.setItem(`chat_${userData.userUID}_${partnerData.userUID}_percentage`, JSON.stringify(affectionScore));
         } catch (error) {
           console.error("Error saving message to AsyncStorage:", error);
         }
@@ -292,76 +297,80 @@ const MatchingChatScreen = ({ route }) => {
   
   
   return (
-  <View style={styles.container}>
-    
-  <View style={styles.matching}>
-    <View >
-      <Image source={partnerData.profilePicture ? {uri: `http://192.168.1.27:8080/${partnerData.profilePicture}`} : require('../../../assets/default-profile.png')} 
-              style={{width : 60, 
-                      height : 60,
-                      borderRadius: 30,
-                      marginRight: 7,
-                      marginLeft: 7,
-                      }}
-      />
-    </View>
-    
-    <Animated.View style={{ transform: [{ scale: scaleValue }] }}>
-      <Font style={styles.heart}                    
-      name={liked ? 'heart' : 'heart-o'} 
-      size={30} 
-      color={liked ? 'red' : 'black'} 
-      />
-    </Animated.View>
-        
-    <View>
-      <Image source={userData.profilePicture ? {uri: `http://192.168.1.27:8080/${userData.profilePicture}`} : require('../../../assets/default-profile.png')} 
-              style={{width : 60, 
-                      height : 60,
-                      borderRadius: 30,
-                      marginRight: 7,
-                      marginLeft: 7,
-                      }}
-      />                       
-    </View>
-  </View>  
-
-  <View>
-      {/* 호감도 점수 표시 */}
-      <View style={styles.scoreBox}>
-        <Text style={styles.scoreText}>상대방 호감도 : {affectionScore}%</Text>
-        <View style={styles.gaugeBarBox}>
-          <View
-            style={[
-              styles.gaugeBar,
-              { width: `${affectionScore}%` }, // 점수에 따라 너비 조정
-            ]}
-          />
-        </View>
+    <View style={styles.container}>
+    <View style={styles.matching}>
+      <View >
+        <Image source={partnerData.profilePicture ? {uri: `http://192.168.1.27:8080/${partnerData.profilePicture}`} : require('../../../assets/default-profile.png')} 
+                style={{width : 60, 
+                        height : 60,
+                        borderRadius: 30,
+                        marginRight: 7,
+                        marginLeft: 7,
+                        }}
+        />
       </View>
-    </View> 
-  
-  
-      <GiftedChat
-        messages={messages}
-        onSend={newMessages => onSend(newMessages)}
-        user={{
-          _id: userData.userUID, // 사용자 ID
-          name: userData.username, // 사용자 이름
-          avatar: `http://192.168.1.27:8080/${userData.profilePicture}`, // 사용자 아바타 URL
-        }}
-        textInputProps={{
-          placeholder: '메시지를 입력하세요...', // 원하는 텍스트로 변경
-        }}
-        renderBubble={renderBubble}
-        renderInputToolbar={renderInputToolbar}
-        renderSend={renderSend}
-        renderAvatar={renderAvatar}
-        renderTime={renderTime}
-        onPressAvatar={() => navigation.navigate('OpProfileScreen', { userData: partnerData })}
-        alwaysShowSend
-      />
-  </View>
+      
+      <Animated.View style={{ transform: [{ scale: scaleValue }] }}>
+        <Font style={styles.heart}                    
+        name={liked ? 'heart' : 'heart-o'} 
+        size={30} 
+        color={liked ? 'red' : 'black'} 
+        />
+      </Animated.View>
+          
+      <View>
+        <Image source={userData.profilePicture ? {uri: `http://192.168.1.27:8080/${userData.profilePicture}`} : require('../../../assets/default-profile.png')} 
+                style={{width : 60, 
+                        height : 60,
+                        borderRadius: 30,
+                        marginRight: 7,
+                        marginLeft: 7,
+                        }}
+        />                       
+      </View>
+    </View>  
+
+    <View>
+        {/* 호감도 점수 표시 */}
+        <View style={styles.scoreBox}>
+          <Text style={styles.scoreText}>서로의 호감도 : {affectionScore}%</Text>
+          <View style={styles.gaugeBarBox}>
+            <View
+              style={[
+                styles.gaugeBar,
+                { width: `${affectionScore}%` }, // 점수에 따라 너비 조정
+              ]}
+            />
+          </View>
+        </View>
+      </View> 
+            
+      <KeyboardAvoidingView 
+        style={{ flex: 1 }} 
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
+        keyboardVerticalOffset={Platform.OS === 'ios' ? -160 : 0}
+      >
+        <GiftedChat
+          messages={messages}
+          onSend={newMessages => onSend(newMessages)}
+          user={{
+            _id: userData.userUID,
+            name: userData.username,
+            avatar: `http://192.168.1.27:8080/${userData.profilePicture}`,
+          }}
+          textInputProps={{
+            placeholder: '메시지를 입력하세요...',
+          }}
+          renderBubble={renderBubble}
+          renderInputToolbar={renderInputToolbar}
+          renderSend={renderSend}
+          renderAvatar={renderAvatar}
+          renderTime={renderTime}
+          onPressAvatar={() => navigation.navigate('OpProfileScreen', { userData: partnerData })}
+          alwaysShowSend
+        />
+      </KeyboardAvoidingView>
+    </View>
   );
   };
   
@@ -370,7 +379,9 @@ const MatchingChatScreen = ({ route }) => {
     container: {
       flex: 1,
       backgroundColor: '#fff', // 채팅 화면 배경
-      padding: 20
+      paddingHorizontal: 5,
+      paddingTop: 5,
+      paddingBottom: 10,
     }, 
   matching:{
     flexDirection: 'row',

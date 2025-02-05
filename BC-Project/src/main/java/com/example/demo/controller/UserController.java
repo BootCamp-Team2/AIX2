@@ -177,9 +177,9 @@ public class UserController {
 
     // 회원 탈퇴
     @DeleteMapping("/deleteUser")
-    public ResponseEntity<Response> deleteUser(@RequestHeader("Authorization") String token, @Valid @RequestBody Password password) {
+    public ResponseEntity<Response> deleteUser(@RequestHeader("Authorization") String token) {
         String jwtToken = token.substring(7);
-        Response response = userDataService.deleteUser(jwtToken, password);
+        Response response = userDataService.deleteUser(jwtToken);
 
         if (response.isSuccess()) {
             return ResponseEntity.ok(response);
