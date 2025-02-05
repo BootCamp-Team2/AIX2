@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
     marginRight : 30,
     marginLeft : 5,
     marginBottom : 1,
-    marginTop: 15
+    marginTop: Platform.OS === 'android' ? 45 : 15,
   },
 
   headerText: {
