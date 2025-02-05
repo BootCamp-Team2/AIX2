@@ -74,8 +74,6 @@ const ProfileScreen = () => {
     // 수정 버튼을 눌렀을 때 저장 처리
     const handleSaveEdit = async (title, value) => {
         if (editMode !== null) {
-            console.log("Before: ", additionalInfo);
-    
             // 수정된 항목 업데이트 (상태 업데이트 전)
             const updatedInfo = [...additionalInfo];
             updatedInfo[editMode] = { title, value };
@@ -87,8 +85,6 @@ const ProfileScreen = () => {
     
             // API 호출 후 상태 업데이트
             setAdditionalInfo(updatedInfo);
-    
-            console.log("After: ", updatedInfo);  // 상태 업데이트 후
         } else {
             // 기본 정보 수정
             const newProfileData = { ...profileData, [title]: value };

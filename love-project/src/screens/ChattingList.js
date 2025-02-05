@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text, FlatList, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { StyleSheet, View, Text, FlatList, TouchableOpacity, ActivityIndicator, Alert, Image } from 'react-native';
 import axios from 'axios';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { io } from 'socket.io-client'; // WebSocket 추가
@@ -7,19 +7,20 @@ import { v4 as uuidv4 } from 'uuid';
 
 const Chattinglist = () => {
   const [chatList, setChatList] = useState([]);
+  const [chatListWithInfo, setChatListWithInfo] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const navigation = useNavigation();
 
   const route = useRoute();
-  const { userUID } = route.params;
+  const { userData } = route.params;
 
-  const socket = io("http://192.168.1.23:8088"); // WebSocket 서버 주소
+  const socket = io("http://192.168.1.11:8080"); // WebSocket 서버 주소
 
   // 채팅 목록을 불러오는 함수
   const loadChatList = async () => {
     try {
       setIsLoading(true);
-      const response = await axios.get(`http://192.168.1.23:8088/api/messages/${userUID}`);
+      const response = await axios.get(`http://192.168.1.11:8088/api/messages/${userData.userUID}`);
       console.log("Messages from server:", response.data); // 서버 응답 로그 확인
       const messages = response.data;
 
@@ -32,7 +33,7 @@ const Chattinglist = () => {
       const chatMap = new Map();
 
       sortedMessages.forEach((message) => {
-        const isSender = message.sender === userUID;
+        const isSender = message.sender === userData.userUID;
         const partnerUID = isSender ? message.receiver : message.sender;
 
         if (!chatMap.has(partnerUID)) {
@@ -72,19 +73,45 @@ const Chattinglist = () => {
     loadChatList(); // 초기 로드
 
     // 새로운 메시지가 오면 채팅 목록 업데이트
-    socket.on("newMessage", (data) => {
-      console.log("Received new message:", data); // 새 메시지 로그 확인
+    const handleNewMessage = (data) => {
+      // console.log("Received new message:", data); // 새 메시지 로그 확인
       loadChatList(); // 새 메시지를 받은 후 채팅 목록 다시 로드
-    });
-
-    return () => {
-      socket.disconnect();
     };
-  }, []); // useEffect는 컴포넌트가 마운트될 때 한 번만 호출됨
+
+    socket.on("newMessage", handleNewMessage);
+
+    // 컴포넌트가 언마운트되거나 socket 변경 시 처리
+    return () => {
+      socket.off("newMessage", handleNewMessage); // 이벤트 리스너 해제
+      socket.disconnect(); // 연결 해제
+    };
+  }, []); // socket 객체가 변경될 때마다 useEffect 호출
+
+  useEffect(() => {
+    const loadUserInfos = async () => {
+      const updatedChatList = await Promise.all(
+        chatList.map(async (chat) => {
+          const formData = new FormData();
+          formData.append("userUID", chat.partnerUID);
+
+          const response = await axios.post("http://192.168.1.27:8080/users/findUserData", formData, { 
+              headers: { "Content-Type": "multipart/form-data" }
+          });
+
+          return {partnerData: response.data.user, lastMessage: chat.lastMessage, lastTimestamp: chat.lastTimestamp};
+        })
+      );
+      setChatListWithInfo(updatedChatList);
+    };
+  
+    if (chatList.length > 0) {
+      loadUserInfos();
+    }
+  }, [chatList]);
 
   // 채팅방을 클릭했을 때 이동
-  const handleChatSelect = (partnerUID) => {
-    navigation.navigate("MatchingChatScreen", { chatlists: { userUID, partnerUID } });
+  const handleChatSelect = (partnerData) => {
+    navigation.navigate("MatchingChatScreen", { chatlists: { userData, partnerData } });
   };
 
   if (isLoading) {
@@ -97,20 +124,28 @@ const Chattinglist = () => {
 
   return (
     <View style={styles.container}>
-      {chatList.length > 0 ? (
+      {chatListWithInfo.length > 0 ? (
         <FlatList
-          data={chatList}
-          keyExtractor={(item) => `${item.partnerUID}-${uuidv4()}`} // 고유 키 추가
+          data={chatListWithInfo}
+          keyExtractor={(item) => `${item.partnerData.userUID}-${uuidv4()}`} // 고유 키 추가
           renderItem={({ item }) => (
-            <TouchableOpacity style={styles.chatItem} onPress={() => handleChatSelect(item.partnerUID)}>
-              <Text style={styles.partnerUID}>{item.partnerUID}</Text>
-              <View style={styles.lastMessageContainer}>
-                <Text style={styles.lastMessage} numberOfLines={1}>
-                  {item.lastMessage}
-                </Text>
-                <Text style={styles.timestamp}>
-                  {new Date(item.lastTimestamp).toLocaleString()}
-                </Text>
+            <TouchableOpacity style={styles.chatItem} onPress={() => handleChatSelect(item.partnerData)}>
+              <View style={styles.chatItemContent}>
+                <Image
+                  source={item.partnerData.profilePicture ? {uri: `http://192.168.1.27:8080/${item.partnerData.profilePicture}`} : require('../../assets/default-profile.png')}
+                  style={[styles.profilePhoto]}
+                />
+                <View style={styles.textContainer}>
+                  <Text style={styles.partnerUID}>{item.partnerData.username}</Text>
+                  <View style={styles.lastMessageContainer}>
+                    <Text style={styles.lastMessage} numberOfLines={1}>
+                      {item.lastMessage}
+                    </Text>
+                    <Text style={styles.timestamp}>
+                      {new Date(item.lastTimestamp).toLocaleString()}
+                    </Text>
+                  </View>
+                </View>
               </View>
             </TouchableOpacity>
           )}
@@ -134,11 +169,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   chatItem: {
+    display: "flex",
     padding: 15,
     backgroundColor: "#ffffff",
     borderRadius: 8,
     marginVertical: 5,
     elevation: 3,
+  },
+  chatItemContent: {
+    flexDirection: 'row', // 이미지를 텍스트와 수평으로 배치
+    alignItems: 'center',
   },
   partnerUID: {
     fontWeight: "bold",
@@ -162,6 +202,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#888888",
     marginTop: 20,
+  },
+  profilePhoto: {
+    width: 60, 
+    height: 60,
+    borderRadius: 50, // 원형으로 만들기
+    marginRight: 15, // 텍스트와 간격을 주기 위해
+  },
+  textContainer: {
+    flex: 1, // 남는 공간을 텍스트가 차지하도록
   },
 });
 

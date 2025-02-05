@@ -20,7 +20,7 @@ const MatchingList = () => {
                         const formData = new FormData();
                         formData.append("userUID", data.userUID);
     
-                        const response = await axios.post("http://192.168.1.29:8080/users/findUserData", formData, { 
+                        const response = await axios.post("http://192.168.1.27:8080/users/findUserData", formData, { 
                             headers: { "Content-Type": "multipart/form-data" }
                         });
     
@@ -79,7 +79,7 @@ const MatchingList = () => {
                     <View style={styles.profile}>
                         <Image
                             source={
-                                item.user.profilePicture ? { uri: `http://192.168.1.29:8080/${item.user.profilePicture}`} : require('../../../assets/default-profile.png')
+                                item.user.profilePicture ? { uri: `http://192.168.1.27:8080/${item.user.profilePicture}`} : require('../../../assets/default-profile.png')
                             }
                             style={styles.profileImg}
                             defaultSource={require('../../../assets/default-profile.png')}

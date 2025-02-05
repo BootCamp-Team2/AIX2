@@ -22,8 +22,6 @@ const OpProfileScreen = () => {
     const [numColumns, setNumColumns] = useState(2); // numColumns 상태 관리
 
     const { userData } = route.params;
-    // console.log(userData);
-
     useEffect(() => {
         const loadProfileData = () => {
             if(!userData) return;
@@ -68,7 +66,7 @@ const OpProfileScreen = () => {
                 <View style={styles.photoContainer}>
                     {/* 프로필 사진 */}
                     <Image
-                        source={profileImg ? { uri: `http://192.168.1.29:8080/${profileImg}` } : require('../../../assets/testProfile/kimgoeunProfile.png')} // 기본 이미지 설정
+                        source={profileImg ? { uri: `http://192.168.1.27:8080/${profileImg}` } : require('../../../assets/testProfile/kimgoeunProfile.png')} // 기본 이미지 설정
                         style={[
                             styles.profilePhoto,
                             {
@@ -170,12 +168,12 @@ const OpProfileScreen = () => {
                                         <View style={styles.mediaItem}>
                                             {item.type === 'image' ? (
                                                 <Image 
-                                                    source={{ uri: `http://192.168.1.29:8080/${item.uri}` }} 
+                                                    source={{ uri: `http://192.168.1.27:8080/${item.uri}` }} 
                                                     style={styles.mediaPreview} 
                                                 />
                                             ) : (
                                                 <Video
-                                                    source={{ uri: `http://192.168.1.29:8080/${item.uri}` }}
+                                                    source={{ uri: `http://192.168.1.27:8080/${item.uri}` }}
                                                     style={styles.mediaPreview}
                                                     resizeMode="cover"
                                                     shouldPlay={false}

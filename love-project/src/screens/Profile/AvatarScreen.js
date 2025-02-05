@@ -187,12 +187,12 @@ const AvatarScreen = () => {
 
       console.log("Path!: ", avatarResponse.data.avatarPath);
 
-      const response = await axios.post("http://192.168.1.29:8080/users/updateCharacterPicture", {character_picture: avatarResponse.data.avatarPath}, 
+      const response = await axios.post("http://192.168.1.27:8080/users/updateCharacterPicture", {character_picture: avatarResponse.data.avatarPath}, 
         {headers: {"Content-Type": "application/json", "Authorization": `Bearer ${token}`,}}
       );
       
       if(response) {
-        const newUserData = await axios.get("http://192.168.1.29:8080/users/myData",
+        const newUserData = await axios.get("http://192.168.1.27:8080/users/myData",
           {headers: {"Authorization": `Bearer ${token}`}}
         );
 

@@ -38,7 +38,7 @@ const ChatScreen = ({ route }) => {
   // 메시지 불러오기
   const onLoadMessages = async () => {
     try {
-      const response = await axios.get("http://192.168.1.29:3000/get-chat", {
+      const response = await axios.get("http://192.168.1.27:3000/get-chat", {
         params: { userUID: userID, partnerUID: partnerID }
       });
 
@@ -70,7 +70,7 @@ const ChatScreen = ({ route }) => {
     loadMessagesFromStorage();
 
     // WebSocket 연결 설정
-    const newSocket = new WebSocket(`ws://192.168.1.29:8080/ws/chat?userUID=${userID}`);
+    const newSocket = new WebSocket(`ws://192.168.1.11:8080/ws/chat?userUID=${userID}`);
     setSocket(newSocket);
 
     // WebSocket 메시지 수신 처리

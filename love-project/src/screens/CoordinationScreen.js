@@ -45,7 +45,7 @@ const CoordinationScreen = () => {
     });
 
     try {
-      const response = await fetch('http://192.168.1.29:3000/uploads/clothes-recommend', {
+      const response = await fetch('http://192.168.1.27:3000/uploads/clothes-recommend', {
         method: 'POST',
         body: formData,
         headers: { 'Content-Type': 'multipart/form-data' },

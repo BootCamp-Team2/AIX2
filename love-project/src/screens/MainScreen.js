@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Image, View, Text, TouchableOpacity, StyleSheet, ScrollView, Platform } from 'react-native';
+import { Image, View, Text, TouchableOpacity, StyleSheet, ScrollView, Platform, SafeAreaView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -22,7 +22,7 @@ const MainScreen = () => {
     const oppositeGender = gender === '남성' ? '여성' : '남성';
 
     try {
-      const response = await fetch(`http://192.168.1.29:8080/users/count?gender=${oppositeGender}&region=${region}`);
+      const response = await fetch(`http://192.168.1.27:8080/users/count?gender=${oppositeGender}&region=${region}`);
       const data = await response.json();
       setOppositeGenderCount(data); // API에서 반환된 카운트를 상태로 설정
     } catch (error) {
@@ -31,97 +31,99 @@ const MainScreen = () => {
   };
 
   return (
-    <ScrollView>
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <Image source={userData.profilePicture ? { uri: `http://192.168.1.29:8080/${userData.profilePicture}` } : require('../../assets/MainScreen/ima.jpg')}
-            style={{ width: 50, height: 50, borderRadius: 30, marginRight: 20, marginLeft: 7, }}
-          />
+    <SafeAreaView>
+      <ScrollView>
+        <View style={styles.container}>
+          <View style={styles.header}>
+            <Image source={userData.profilePicture ? { uri: `http://192.168.1.27:8080/${userData.profilePicture}` } : require('../../assets/MainScreen/ima.jpg')}
+              style={{ width: 50, height: 50, borderRadius: 30, marginRight: 20, marginLeft: 7, }}
+            />
 
-          <Text style={styles.headerText}>{userData.username}{'\n'}
-            <Text style={styles.headerText2}>일반고객</Text>
+            <Text style={styles.headerText}>{userData.username}{'\n'}
+              <Text style={styles.headerText2}>일반고객</Text>
+            </Text>
+          </View>
+
+          <View>
+            <Text style={styles.horizontalLineFirst}></Text>
+          </View>
+
+          <TouchableOpacity style={styles.main}>
+            <Text style={styles.mainText}>{userData.username}님 주변에{'\n'}
+              {oppositeGenderCount}명의 사용자가 있습니다!
+            </Text>
+          </TouchableOpacity>
+            
+        <View>
+          <Text style={styles.horizontalLine} >         
           </Text>
         </View>
 
-        <View>
-          <Text style={styles.horizontalLineFirst}></Text>
-        </View>
-
-        <TouchableOpacity style={styles.main} onPress={() => navigation.navigate("MatchingScreen", { userUID: "0026469667" })}>
-          <Text style={styles.mainText}>{userData.username}님 주변에{'\n'}
-            {oppositeGenderCount}명의 사용자가 있습니다!
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("MatchingScreen", {userUID: "0026469667", userData: userData})}>      
+          <View>
+            <Image source={require('../../assets/MainScreen/matching.jpg')} 
+                style={styles.imageStyle}
+            />
+          </View>
+            <Text style={styles.textStyle}>
+              <Text style={styles.buttonText}>소개팅 매칭{'\n'}
+              <Text style={styles.empty}>{'\n'}</Text>  
+              <Text style={styles.bottom}>새로운 사람을 만나보세요!</Text>
+            </Text>
           </Text>
         </TouchableOpacity>
-           
-      <View>
-        <Text style={styles.horizontalLine} >         
-        </Text>
+
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("ConversationScreen", {userUID: userData.userUID})}>
+          <View>
+            <Image source={require('../../assets/MainScreen/couple.jpg')} 
+                style={styles.imageStyle}
+            />
+          </View>
+            <Text style={styles.textStyle}>
+              <Text style={styles.buttonText}>AI 대화 연습{'\n'}
+              <Text style={styles.empty}>{'\n'}</Text>
+              <Text style={styles.bottom}>대화 스킬을 키워보세요!</Text>
+            </Text>
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("CoordinationScreen")}>
+          <View>
+            <Image source={require('../../assets/MainScreen/coor.jpg')} 
+                style={styles.imageStyle}
+            />
+          </View>
+            <Text style={styles.textStyle}>
+              <Text style={styles.buttonText}>AI 스타일 코디{'\n'}
+              <Text style={styles.empty}>{'\n'}</Text>
+              <Text style={styles.bottom}>어울리는 스타일을 찾아보세요!</Text>
+            </Text>
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("ChattingList", {userData: userData})}>
+          <View>
+            <Image source={require('../../assets/MainScreen/mat.jpg')} 
+                style={styles.imageStyle}
+            />
+          </View>
+            <Text style={styles.textStyle}>
+              <Text style={styles.buttonText}>채팅 리스트{'\n'}
+              <Text style={styles.empty}>{'\n'}</Text>
+              <Text style={styles.bottom}>매칭상대와 서로 대화해 보세요!</Text>
+            </Text>
+          </Text>
+        </TouchableOpacity>
       </View>
-
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("MatchingScreen", {userUID: "0026469667", userData: userData})}>      
-        <View>
-          <Image source={require('../../assets/MainScreen/matching.jpg')} 
-              style={styles.imageStyle}
-          />
-        </View>
-          <Text style={styles.textStyle}>
-            <Text style={styles.buttonText}>소개팅 매칭{'\n'}
-            <Text style={styles.empty}>{'\n'}</Text>  
-            <Text style={styles.bottom}>새로운 사람을 만나보세요!</Text>
-          </Text>
-        </Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("ConversationScreen", {userUID: userData.userUID})}>
-        <View>
-          <Image source={require('../../assets/MainScreen/couple.jpg')} 
-              style={styles.imageStyle}
-          />
-        </View>
-          <Text style={styles.textStyle}>
-            <Text style={styles.buttonText}>AI 대화 연습{'\n'}
-            <Text style={styles.empty}>{'\n'}</Text>
-            <Text style={styles.bottom}>대화 스킬을 키워보세요!</Text>
-          </Text>
-        </Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("CoordinationScreen")}>
-        <View>
-          <Image source={require('../../assets/MainScreen/coor.jpg')} 
-              style={styles.imageStyle}
-          />
-        </View>
-          <Text style={styles.textStyle}>
-            <Text style={styles.buttonText}>AI 스타일 코디{'\n'}
-            <Text style={styles.empty}>{'\n'}</Text>
-            <Text style={styles.bottom}>어울리는 스타일을 찾아보세요!</Text>
-          </Text>
-        </Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("ChattingList", {userUID: userData.userUID})}>
-        <View>
-          <Image source={require('../../assets/MainScreen/mat.jpg')} 
-              style={styles.imageStyle}
-          />
-        </View>
-          <Text style={styles.textStyle}>
-            <Text style={styles.buttonText}>채팅 리스트{'\n'}
-            <Text style={styles.empty}>{'\n'}</Text>
-            <Text style={styles.bottom}>매칭상대와 서로 대화해 보세요!</Text>
-          </Text>
-        </Text>
-      </TouchableOpacity>
-    </View>
-  </ScrollView>
+    </ScrollView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: { 
     flex: 1,     
-    padding: 30,
+    paddingLeft: 30,
+    paddingRight: 30,
   },
 
   header:{
