@@ -582,7 +582,7 @@ const styles = StyleSheet.create({
     },
     header: {
         marginBottom: 20,
-        marginTop: -37,
+        marginTop: -50,
         alignItems: 'center',
         flexDirection: 'center',
         justifyContent: 'space-between',
