@@ -81,7 +81,7 @@ const ProfileScreen = () => {
             updatedInfo[editMode] = { title, value };
     
             // 비동기 API 호출
-            await axios.post("http://192.168.1.29:8080/users/updateAppeal", { appeal: JSON.stringify(updatedInfo) },
+            await axios.post("http://192.168.1.27:8080/users/updateAppeal", { appeal: JSON.stringify(updatedInfo) },
                 { headers: { "Content-Type": "application/json", 'Authorization': `Bearer ${await AsyncStorage.getItem('token')}` }}
             );
     
@@ -111,7 +111,7 @@ const ProfileScreen = () => {
             [updatedItem.key]: updatedItem.value, // 키는 유지하고 값만 업데이트
         };
 
-        await axios.post("http://192.168.1.29:8080/users/updateProfile", newProfileData,
+        await axios.post("http://192.168.1.27:8080/users/updateProfile", newProfileData,
             { headers: { "Content-Type": "application/json", 'Authorization': `Bearer ${await AsyncStorage.getItem('token')}` }}
         );
 
@@ -144,7 +144,7 @@ const ProfileScreen = () => {
                 name: pickerResult.assets[0].uri.split('/').pop(),
             });
 
-            const response = await axios.post("http://192.168.1.29:8080/users/updateProfileImg", formData, {
+            const response = await axios.post("http://192.168.1.27:8080/users/updateProfileImg", formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${await AsyncStorage.getItem('token')}`
@@ -170,7 +170,7 @@ const ProfileScreen = () => {
             setAddProfileModalVisible(false); // 추가 후 모달 닫기
             setNewInfo({ title: '', value: '' }); // 입력 필드 초기화
 
-            await axios.post("http://192.168.1.29:8080/users/updateAppeal", {appeal: JSON.stringify([...additionalInfo, { title: newInfo.title, value: newInfo.value }])},
+            await axios.post("http://192.168.1.27:8080/users/updateAppeal", {appeal: JSON.stringify([...additionalInfo, { title: newInfo.title, value: newInfo.value }])},
                 { headers: { "Content-Type": "application/json", 'Authorization': `Bearer ${await AsyncStorage.getItem('token')}` }}
             );
         } else {
@@ -192,7 +192,7 @@ const ProfileScreen = () => {
         const updatedInfo = additionalInfo.filter((_, i) => i !== index);
         setAdditionalInfo(updatedInfo);
 
-        await axios.post("http://192.168.1.29:8080/users/updateAppeal", {appeal: JSON.stringify(updatedInfo)},
+        await axios.post("http://192.168.1.27:8080/users/updateAppeal", {appeal: JSON.stringify(updatedInfo)},
             { headers: {"Content-Type": "application/json", 'Authorization': `Bearer ${await AsyncStorage.getItem('token')}`}} 
         );
     };
@@ -250,7 +250,7 @@ const ProfileScreen = () => {
                 name: pickerResult.assets[0].uri.split('/').pop(),
             });
 
-            const responsePath = await axios.post("http://192.168.1.29:8080/users/uploadMedia", formData, {
+            const responsePath = await axios.post("http://192.168.1.27:8080/users/uploadMedia", formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${await AsyncStorage.getItem('token')}`
@@ -264,7 +264,7 @@ const ProfileScreen = () => {
 
             setMediaList([newMedia, ...mediaList]);
     
-            await axios.post("http://192.168.1.29:8080/users/updateMedia", {media: JSON.stringify([newMedia, ...mediaList])},
+            await axios.post("http://192.168.1.27:8080/users/updateMedia", {media: JSON.stringify([newMedia, ...mediaList])},
                 {headers: {"Content-Type": "application/json", "Authorization": `Bearer ${await AsyncStorage.getItem('token')}`,}}
             );
         }
@@ -275,7 +275,7 @@ const ProfileScreen = () => {
         const updatedMediaList = mediaList.filter((_, i) => i !== index);
         setMediaList(updatedMediaList);
 
-        await axios.post("http://192.168.1.29:8080/users/updateMedia", {media: JSON.stringify(updatedMediaList)},
+        await axios.post("http://192.168.1.27:8080/users/updateMedia", {media: JSON.stringify(updatedMediaList)},
             {headers: {"Content-Type": "application/json", "Authorization": `Bearer ${await AsyncStorage.getItem('token')}`,}}
         );
     };
@@ -332,7 +332,7 @@ const ProfileScreen = () => {
                 <View style={styles.photoContainer}>
                     {/* 프로필 사진 */}
                     <Image
-                        source={profileImg ? { uri: `http://192.168.1.29:8080/${profileImg}` } : require('../../../assets/testProfile/kimgoeunProfile.png')} // 기본 이미지 설정
+                        source={profileImg ? { uri: `http://192.168.1.27:8080/${profileImg}` } : require('../../../assets/testProfile/kimgoeunProfile.png')} // 기본 이미지 설정
                         style={[
                             styles.profilePhoto,
                             {
@@ -409,7 +409,7 @@ const ProfileScreen = () => {
                     <View style={styles.infoRow}>
                         {['MBTI', '나이', '지역'].map((key) => (
                             <View key={key} style={styles.infoBox}>
-                                <Text style={styles.infoText}>{key}: {profileData[key]}</Text>
+                                <Text style={styles.infoTextOriginal}>{key}: {profileData[key]}</Text>
                                 {showEditButtons && (
                                         <TouchableOpacity 
                                             onPress={() => handleBasicEdit(key)} 
@@ -531,12 +531,12 @@ const ProfileScreen = () => {
                                         <View style={styles.mediaItem}>
                                             {item.type === 'image' ? (
                                                 <Image 
-                                                    source={{ uri: `http://192.168.1.29:8080/${item.uri}` }} 
+                                                    source={{ uri: `http://192.168.1.27:8080/${item.uri}` }} 
                                                     style={styles.mediaPreview} 
                                                 />
                                             ) : (
                                                 <Video
-                                                    source={{ uri: `http://192.168.1.29:8080/${item.uri}` }}
+                                                    source={{ uri: `http://192.168.1.27:8080/${item.uri}` }}
                                                     style={styles.mediaPreview}
                                                     resizeMode="cover"
                                                     shouldPlay={false}
@@ -653,7 +653,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',  // 수직 중앙 정렬
         alignItems: 'center',  // 수평 중앙 정렬
         paddingVertical: 15,       // 상하 여백을 추가
-        backgroundColor: '#FFFFFF',
+        backgroundColor: '#b0c0ff',
         borderRadius: 10,
         borderWidth: 1,
         borderColor: '#E0E0E0',
@@ -666,6 +666,13 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         elevation: 2,
         marginHorizontal: 3,
+    },
+    infoTextOriginal: {
+        fontSize: 18,            // 더 큰 폰트 크기
+        lineHeight: 22, // 텍스트 간 여백 추가
+        color: '#333',           // 텍스트 색상 변경 (조금 더 어두운 색상)
+        textAlign: 'left',       // 왼쪽 정렬
+        //marginBottom: 10,        // 항목 간 간격 추가
     },
     infoText: {
         fontSize: 18,            // 더 큰 폰트 크기
@@ -685,7 +692,7 @@ const styles = StyleSheet.create({
         marginVertical: 10,      // 각 항목 간 세로 간격
         paddingHorizontal: 15,   // 좌우 여백 추가
         borderBottomWidth: 1,    // 구분선 추가
-        borderColor: '#ccc',     // 구분선 색상
+        borderColor: '#9fa9cc',     // 구분선 색상
         paddingBottom: 10,       // 구분선과 내용 사이 여백
     },
     editButtonText: {
