@@ -192,8 +192,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',  
   },
   horizontalLineFirst: {
-    marginTop: 20,
-    marginBottom: 0,
+    marginTop: 30,
+    marginBottom: Platform.OS === 'android' ? 0 : 15,
     width: 340, 
     height: 1,  
     backgroundColor: 'silver',
@@ -305,7 +305,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   button: {
-    paddingTop: 15,
+    paddingTop: Platform.OS === 'android' ? 15 : 20,
     backgroundColor: '#FFB89A',
     borderRadius: 18, 
     width: '75%',
@@ -316,6 +316,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     alignSelf: 'center',
     flexDirection: 'center',
+    justifyContent: 'center', 
   },
   buttonText: {
     fontSize: 25,
@@ -325,10 +326,10 @@ const styles = StyleSheet.create({
     alignItems: 'center', 
     textAlign: 'center', 
     fontWeight: 'bold',
-    alignSelf: 'center'
+    alignSelf: 'center',
   },
   button2: {
-    paddingTop: 15,
+    paddingTop: Platform.OS === 'android' ? 15 : 20,
     backgroundColor: '#FFB89A',
     borderRadius: 18, 
     width: '75%',
@@ -337,7 +338,8 @@ const styles = StyleSheet.create({
     marginBottom: 10, 
     textAlign: 'center', 
     fontWeight: 'bold',
-    alignSelf: 'center'
+    alignSelf: 'center',
+    justifyContent: 'center', 
   },
   button2Text: {
     fontSize: 25,

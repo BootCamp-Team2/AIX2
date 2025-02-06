@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { View, Button, Image, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, ActivityIndicator } from 'react-native';
+import { View, Button, Image, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, ActivityIndicator, Platform } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
 import * as MediaLibrary from 'expo-media-library';
@@ -308,12 +308,12 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: '100%',
+    width: '100%' ,//Platform.OS === 'android' ? '100%' : 350,
     marginBottom: 30,
   },
   button: {
     backgroundColor: '#9AAEFF',
-    width: 150,
+    width: Platform.OS === 'android' ? 150 : 170,
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 10,
@@ -405,6 +405,10 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 8,
     marginHorizontal: 10,
+    height: 40,
+    width: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   genderButtonSelected: {
     backgroundColor: '#9AAEFF',

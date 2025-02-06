@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
     color: 'white',
-    paddingTop: 7,
+    paddingTop: Platform.OS === 'android' ? 4 : 7,
     height: 30
   },
   SignUpText: {

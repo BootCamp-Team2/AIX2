@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
 
   main: {
     // backgroundColor: '#FF9AAB',
-    marginBottom: 5,
+    marginBottom: Platform.OS === 'android' ? 5 : -2,
     padding: 15,
     borderRadius: 30,
     width: '100%',
@@ -180,12 +180,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold', 
     textAlign: 'center',
     alignSelf: 'center', 
-    // backgroundColor: 'red'
   },
 
   horizontalLineFirst: {
     marginTop: 0,
-    marginBottom: 17,
+    marginBottom: Platform.OS === 'android' ? 17 : 25,
     width: '100%', 
     height: 1,  
     backgroundColor: 'silver',
@@ -210,7 +209,7 @@ const styles = StyleSheet.create({
     margin: 3,
     padding: 10,
     alignSelf: 'center',
-    borderRadius: Platform.OS === 'android' ? 17 : 25,
+    borderRadius: 17,
     width: '100%',
     marginBottom: 10,
     flexDirection: 'row',
@@ -218,10 +217,10 @@ const styles = StyleSheet.create({
   
   buttonText: { 
     color: 'white', 
-    fontSize: 17,
+    fontSize: Platform.OS === 'android' ? 17 : 19,
     height: 70, 
     fontWeight: 'bold',
-    margin: 5
+    margin: 5,
   },
 
   empty: {

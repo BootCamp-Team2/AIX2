@@ -103,7 +103,7 @@ const MainNavigator = () => {
         <Stack.Screen
           name="MatchingChatScreen"
           component={MatchingChatScreen}
-          options={{ headerTitle: '코디 화면', headerTitleAlign: 'center' }}
+          options={{ headerTitle: '채팅 화면', headerTitleAlign: 'center' }}
         />
         <Stack.Screen
           name="ConversationScreen"

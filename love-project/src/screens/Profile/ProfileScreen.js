@@ -640,7 +640,7 @@ const styles = StyleSheet.create({
         color: '#9AAEFF',
         fontSize: 24,
         textAlign: 'center',
-        marginTop: 15,
+        marginTop: Platform.OS === 'android' ? 15 : 22,
         marginLeft: 150
     },
     // editButtonText: {
@@ -789,7 +789,9 @@ const styles = StyleSheet.create({
         backgroundColor: '#FF6F61',
         borderRadius: 8,
         padding: 5,
-        alignItems: 'center',
+        alignItems: 'center', // 텍스트 중앙 정렬
+        justifyContent: 'center', // 내용 중앙 정렬
+        height: 30
     },
     deleteButtonText: {
         color: '#FFFFFF',
@@ -798,7 +800,8 @@ const styles = StyleSheet.create({
     appeal: {
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: 5
+        marginTop: 5,
+        marginBottom: Platform.OS === 'android' ? 0 : 15
     },
     appealText: {
         color: '#9AAEFF',
@@ -827,6 +830,10 @@ const styles = StyleSheet.create({
         padding: 5, // 선택사항: 여백 추가
         borderRadius: 15, // 선택사항: 둥근 버튼
         elevation: 5, // 선택사항: 그림자 효과
+        shadowColor: '#000', // 그림자 색상
+        shadowOffset: { width: 0, height: 2 }, // 그림자 위치
+        shadowOpacity: 0.2, // 그림자 투명도
+        shadowRadius: 3, // 그림자 퍼짐 정도
     },
     photoContainer: {
         alignItems: 'center',
@@ -910,6 +917,7 @@ const styles = StyleSheet.create({
         // shadowRadius: 4, // 그림자 반경
         // elevation: 5, // 안드로이드 그림자
         marginTop: 8, // 상단 여백
+        height: 30
     },  
     modalOverlay: {
         flex: 1,
