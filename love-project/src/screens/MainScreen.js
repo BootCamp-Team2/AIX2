@@ -48,7 +48,7 @@ const MainScreen = () => {
       <ScrollView>
         <View style={styles.container}>
           <View style={styles.header}>
-            <Image source={userData.profilePicture ? { uri: `http://192.168.1.27:8080/${userData.profilePicture}` } : require('../../assets/MainScreen/ima.jpg')}
+            <Image source={userData.profilePicture ? { uri: `http://192.168.1.27:8080/${userData.profilePicture}`, cache: 'reload' } : require('../../assets/MainScreen/ima.jpg')}
               style={{ width: 50, height: 50, borderRadius: 30, marginRight: 20, marginLeft: 7, }}
             />
 

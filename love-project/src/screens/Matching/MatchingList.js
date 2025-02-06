@@ -28,7 +28,7 @@ const MatchingList = () => {
                     })
                 );
 
-                console.log(responses);
+                // console.log(responses);
                 setRecommendUserData(responses);
             } catch(error) {
                 console.error("추천 사용자 데이터 로드 중 오류 발생:", error);
