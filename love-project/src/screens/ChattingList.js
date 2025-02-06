@@ -41,6 +41,7 @@ const Chattinglist = () => {
             partnerUID,
             lastMessage: message.content,
             lastTimestamp: message.timestamp,
+            unreadCount: message.delivered === false ? 1 : 0,
           });
         } else {
           const existingChat = chatMap.get(partnerUID);
@@ -49,6 +50,7 @@ const Chattinglist = () => {
               partnerUID,
               lastMessage: message.content,
               lastTimestamp: message.timestamp,
+              unreadCount: message.delivered === false ? existingChat.unreadCount + 1 : existingChat.unreadCount,
             });
           }
         }
@@ -145,6 +147,11 @@ const Chattinglist = () => {
                       {new Date(item.lastTimestamp).toLocaleString()}
                     </Text>
                   </View>
+                  {item.unreadCount > 0 && (
+                    <View style={styles.unreadCountContainer}>
+                      <Text style={styles.unreadCount}>{item.unreadCount}</Text>
+                    </View>
+                  )}
                 </View>
               </View>
             </TouchableOpacity>
@@ -211,6 +218,19 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     flex: 1, // 남는 공간을 텍스트가 차지하도록
+  },
+  unreadCountContainer: {
+    position: 'absolute',
+    top: 5,
+    right: 15,
+    backgroundColor: '#e74c3c',
+    borderRadius: 15,
+    paddingVertical: 2,
+    paddingHorizontal: 8,
+  },
+  unreadCount: {
+    color: 'white',
+    fontSize: 12,
   },
 });
 

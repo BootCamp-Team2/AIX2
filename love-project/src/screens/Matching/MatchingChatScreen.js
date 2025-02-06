@@ -77,34 +77,6 @@ const MatchingChatScreen = ({ route }) => {
       }
     };
   
-    // 메시지 불러오기
-    const onLoadMessages = async () => {
-      try {
-        const response = await axios.get("http://192.168.1.27:3000/get-chat", {
-          params: { userUID: userID, partnerUID: partnerID }
-        });
-  
-        if (response.data && response.data.messages) {
-          const formattedMessages = response.data.messages.map(message => ({
-            _id: message.id,
-            text: message.content,
-            createdAt: new Date(message.timestamp),
-            user: {
-              _id: message.senderUID,
-              name: message.senderUID === userID ? '나' : "1",
-            },
-            delivered: message.delivered, // delivered 상태도 포함
-          }));
-  
-          setMessages(formattedMessages); // 이전 메시지를 상태에 설정
-          // 로컬 저장소에 저장
-          await AsyncStorage.setItem(`chat_${userID}_${userID}`, JSON.stringify(formattedMessages));
-        }
-      } catch (error) {
-        console.error("Error loading messages:", error);
-      }
-    };
-  
     useEffect(() => {
       loadMessagesFromStorage();
   
@@ -114,7 +86,7 @@ const MatchingChatScreen = ({ route }) => {
   
       newSocket.onmessage = async (event) => {
         const messageData = JSON.parse(event.data);
-        // console.log("Received message:", messageData);
+        console.log("Received message:", messageData);
 
         const score = analyzeKoreanSentiment(messageData.message)
         setAffectionScore((prevScore) => {
@@ -126,7 +98,7 @@ const MatchingChatScreen = ({ route }) => {
           const timestamp = messageData.timestamp ? new Date(messageData.timestamp) : new Date();
   
           const formattedMessage = {
-            _id: messageData.id || new Date().getTime(),
+            _id: messageData.id,
             text: messageData.message,
             createdAt: timestamp,
             user: {
@@ -137,7 +109,7 @@ const MatchingChatScreen = ({ route }) => {
             delivered: messageData.delivered,
           };
   
-          setMessages(async (previousMessages) => {
+          setMessages((previousMessages) => {
             const updatedMessages = GiftedChat.append(previousMessages, [formattedMessage]);
   
             try {
@@ -160,6 +132,13 @@ const MatchingChatScreen = ({ route }) => {
         console.error("WebSocket error:", error);
         setIsLoading(false);
       };
+
+      // newSocket.onclose = () => {
+      //   console.log("WebSocket closed. Attempting to reconnect...");
+      //   setTimeout(() => {
+      //     setSocket(new WebSocket(`ws://192.168.1.11:8088/ws/chat?userUID=${userData.userUID}`));
+      //   }, 5000); // 5초 후 재연결 시도
+      // };
   
       return () => {
         if (newSocket && newSocket.readyState === WebSocket.OPEN) {
@@ -354,9 +333,9 @@ const MatchingChatScreen = ({ route }) => {
           messages={messages}
           onSend={newMessages => onSend(newMessages)}
           user={{
-            _id: userData.userUID,
-            name: userData.username,
-            avatar: `http://192.168.1.27:8080/${userData.profilePicture}`,
+              _id: userData.userUID,
+              name: userData.username,
+              avatar: `http://192.168.1.27:8080/${userData.profilePicture}`,
           }}
           textInputProps={{
             placeholder: '메시지를 입력하세요...',
