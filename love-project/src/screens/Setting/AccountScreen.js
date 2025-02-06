@@ -34,7 +34,8 @@ const AccountScreen = () => {
   const handleLogout = async () => {
     try {
       // AsyncStorage에서 토큰 삭제
-      await AsyncStorage.removeItem('token'); 
+      // await AsyncStorage.removeItem('token'); 
+      await AsyncStorage.clear();
       console.log('로그아웃 처리 완료');
       Alert.alert("로그아웃", "정상적으로 로그아웃되었습니다."); // 로그아웃 완료 메시지
       navigation.navigate('LoginScreen'); // 로그인 화면으로 리디렉션

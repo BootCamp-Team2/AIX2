@@ -21,7 +21,7 @@ const Chattinglist = () => {
     try {
       setIsLoading(true);
       const response = await axios.get(`http://192.168.1.11:8088/api/messages/${userData.userUID}`);
-      console.log("Messages from server:", response.data); // 서버 응답 로그 확인
+      // console.log("Messages from server:", response.data); // 서버 응답 로그 확인
       const messages = response.data;
 
       // 메시지 데이터를 시간 순으로 정렬 (sender, receiver 기준 없이)
@@ -41,6 +41,7 @@ const Chattinglist = () => {
             partnerUID,
             lastMessage: message.content,
             lastTimestamp: message.timestamp,
+            unreadCount: message.delivered === false && !isSender ? 1 : 0,
           });
         } else {
           const existingChat = chatMap.get(partnerUID);
@@ -49,6 +50,12 @@ const Chattinglist = () => {
               partnerUID,
               lastMessage: message.content,
               lastTimestamp: message.timestamp,
+              unreadCount: message.delivered === false && !isSender ? existingChat.unreadCount + 1 : existingChat.unreadCount,
+            });
+          } else {
+            chatMap.set(partnerUID, {
+              ...existingChat, // 기존 채팅 정보 유지
+              unreadCount: existingChat.unreadCount + (message.delivered === false && !isSender ? 1 : 0),
             });
           }
         }
@@ -98,7 +105,7 @@ const Chattinglist = () => {
               headers: { "Content-Type": "multipart/form-data" }
           });
 
-          return {partnerData: response.data.user, lastMessage: chat.lastMessage, lastTimestamp: chat.lastTimestamp};
+          return {partnerData: response.data.user, lastMessage: chat.lastMessage, lastTimestamp: chat.lastTimestamp, unreadCount: chat.unreadCount};
         })
       );
       setChatListWithInfo(updatedChatList);
@@ -145,6 +152,11 @@ const Chattinglist = () => {
                       {new Date(item.lastTimestamp).toLocaleString()}
                     </Text>
                   </View>
+                  {item.unreadCount > 0 && (
+                    <View style={styles.unreadCountContainer}>
+                      <Text style={styles.unreadCount}>{item.unreadCount}</Text>
+                    </View>
+                  )}
                 </View>
               </View>
             </TouchableOpacity>
@@ -211,6 +223,19 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     flex: 1, // 남는 공간을 텍스트가 차지하도록
+  },
+  unreadCountContainer: {
+    position: 'absolute',
+    top: 5,
+    right: 15,
+    backgroundColor: '#e74c3c',
+    borderRadius: 15,
+    paddingVertical: 2,
+    paddingHorizontal: 8,
+  },
+  unreadCount: {
+    color: 'white',
+    fontSize: 12,
   },
 });
 

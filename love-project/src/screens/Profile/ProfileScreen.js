@@ -153,11 +153,13 @@ const ProfileScreen = () => {
         });
 
         if (!pickerResult.cancelled) {
+            console.log("checking!: ", pickerResult.assets[0]);
+
             const formData = new FormData();
             formData.append('fileMedia', {
                 uri: pickerResult.assets[0].uri,
-                type: pickerResult.assets[0].type,
-                name: pickerResult.assets[0].uri.split('/').pop(),
+                type: "img/jpeg",
+                name: "uploadProfile.jpg",
             });
 
             await axios.post("http://192.168.1.27:8080/users/updateProfileImg", formData, {
@@ -167,7 +169,7 @@ const ProfileScreen = () => {
                 }
             });
 
-            // setProfileImg(pickerResult.assets[0].uri)
+            
             Alert.alert('성공적으로 프로필이 적용되었습니다.');
             setTimeout(() => {
                 navigation.reset({index: 0, routes: [{name: "MainScreen"}]})
@@ -261,8 +263,8 @@ const ProfileScreen = () => {
             const formData = new FormData();
             formData.append('fileMedia', {
                 uri: pickerResult.assets[0].uri,
-                type: pickerResult.assets[0].type,
-                name: pickerResult.assets[0].uri.split('/').pop(),
+                type: 'img/jpeg',
+                name: 'uploadMedia.jpg',
             });
 
             const responsePath = await axios.post("http://192.168.1.27:8080/users/uploadMedia", formData, {
@@ -355,7 +357,7 @@ const ProfileScreen = () => {
                 <View style={styles.photoContainer}>
                     {/* 프로필 사진 */}
                     <Image
-                        source={profileImg ? profileImg.includes("uploads") ? { uri: `http://192.168.1.27:8080/${profileImg}`, cache: 'reload' } : profileImg : require('../../../assets/testProfile/kimgoeunProfile.png')} // 기본 이미지 설정
+                        source={profileImg ? profileImg.includes("uploads") ? { uri: `http://192.168.1.27:8080/${profileImg}?timestamp=${new Date().getTime()}`, cache: 'reload' } : profileImg : require('../../../assets/testProfile/kimgoeunProfile.png')} // 기본 이미지 설정
                         style={[
                             styles.profilePhoto,
                             {
@@ -371,7 +373,7 @@ const ProfileScreen = () => {
                     <Image
                         source={
                             avatarImg ? avatarImg.includes("output")
-                            ? { uri: `http://192.168.1.10:1000/${avatarImg}`, cache: 'reload' } // 적용된 아바타 URI 사용
+                            ? { uri: `http://192.168.1.10:1000/${avatarImg}?timestamp=${new Date().getTime()}`, cache: 'reload' } // 적용된 아바타 URI 사용
                             : avatarImg : require('../../../assets/nothing.png') // 기본 이미지
                         }
                         style={[
