@@ -13,7 +13,7 @@ public class WebConfig implements WebMvcConfigurer {
 
         registry
             .addMapping("/**")
-            .allowedOrigins("http://192.168.247.137:8081")
+            .allowedOrigins("http://192.168.1.27:8080")
             .allowedOriginPatterns("*")
             .allowCredentials(true)
             .allowedMethods(ALLOWED_METHOD_NAMES.split(","));
