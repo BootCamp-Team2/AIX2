@@ -98,7 +98,7 @@ const MatchingChatScreen = ({ route }) => {
           const timestamp = messageData.timestamp ? new Date(messageData.timestamp) : new Date();
   
           const formattedMessage = {
-            _id: messageData.id,
+            _id: messageData.id || new Date().getTime(),
             text: messageData.message,
             createdAt: timestamp,
             user: {
@@ -133,12 +133,12 @@ const MatchingChatScreen = ({ route }) => {
         setIsLoading(false);
       };
 
-      // newSocket.onclose = () => {
-      //   console.log("WebSocket closed. Attempting to reconnect...");
-      //   setTimeout(() => {
-      //     setSocket(new WebSocket(`ws://192.168.1.11:8088/ws/chat?userUID=${userData.userUID}`));
-      //   }, 5000); // 5초 후 재연결 시도
-      // };
+      newSocket.onclose = () => {
+        console.log("WebSocket closed. Attempting to reconnect...");
+        setTimeout(() => {
+          setSocket(new WebSocket(`ws://192.168.1.11:8088/ws/chat?userUID=${userData.userUID}`));
+        }, 5000); // 5초 후 재연결 시도
+      };
   
       return () => {
         if (newSocket && newSocket.readyState === WebSocket.OPEN) {
@@ -299,12 +299,12 @@ const MatchingChatScreen = ({ route }) => {
           
       <View>
         <Image source={userData.profilePicture ? {uri: `http://192.168.1.27:8080/${userData.profilePicture}`} : require('../../../assets/default-profile.png')} 
-                style={{width : 60, 
-                        height : 60,
-                        borderRadius: 30,
-                        marginRight: 7,
-                        marginLeft: 7,
-                        }}
+            style={{width : 60, 
+                    height : 60,
+                    borderRadius: 30,
+                    marginRight: 7,
+                    marginLeft: 7,
+                    }}
         />                       
       </View>
     </View>  
