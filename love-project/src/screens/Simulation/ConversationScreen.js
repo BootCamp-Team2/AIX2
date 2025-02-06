@@ -98,12 +98,22 @@ const ConversationScreen = () => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={50}
     >
-      <ScrollView contentContainerStyle={styles.containerScroll}>       
+      <ScrollView contentContainerStyle={styles.containerScroll}>    
+
         <View style={styles.container}>
+          <View>
+            <Text style={styles.horizontalLineFirst}></Text>
+          </View>
+
           <Text style={styles.main}>
             AI와 대화를 시작하기 전에 {'\n'}
             나의 이상형을 만드세요!
           </Text>
+
+          <View>
+            <Text style={styles.horizontalLine} ></Text>
+          </View>
+
           <Text style={styles.middle}>
             이상형 성별을 선택해 주세요!!
           </Text>
@@ -123,13 +133,13 @@ const ConversationScreen = () => {
             </TouchableOpacity>
           </View>
 
-          <Text style={styles.middle}>
+          {/* <Text style={styles.middle}>
             나의 이상형을 입력하세요
-          </Text>
+          </Text> */}
 
           <TextInput 
             style={styles.textBox}          
-            placeholder="텍스트를 입력하세요"                    
+            placeholder="나의 이상형을 입력하세요"                    
             value={inputValue}
             onChangeText={(inputValue) => setInputValue(inputValue)}
           />
@@ -179,7 +189,23 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'center',
-    alignItems: 'center',    
+    alignItems: 'center',  
+  },
+  horizontalLineFirst: {
+    marginTop: 20,
+    marginBottom: 0,
+    width: 340, 
+    height: 1,  
+    backgroundColor: 'silver',
+    marginVertical: 10, // Space above and below the line
+  },
+  horizontalLine: {
+    marginBottom: 15,
+    marginTop: -3,
+    width: 340, 
+    height: 1,  
+    backgroundColor: 'silver',
+    marginVertical: 10, // Space above and below the line
   },
   menu: {
     position: 'absolute',
@@ -221,15 +247,15 @@ const styles = StyleSheet.create({
     height: 70, 
     fontWeight: 'bold',
     marginTop: 20, 
-    marginBottom: 10, 
+    marginBottom: 25, 
     color : '#FFB89A', 
     textAlign: 'center', 
     alignSelf: 'center' 
   },
   middle: { 
-    fontSize: 24, 
+    fontSize: 17, 
     fontWeight: 'bold', 
-    marginBottom: 20, 
+    marginBottom: 10, 
     color : '#FFB89A', 
     textAlign: 'center',
     alignSelf: 'center'
@@ -240,7 +266,7 @@ const styles = StyleSheet.create({
   select: {
     paddingTop: 10,
     backgroundColor: '#ccc',
-    borderRadius: 23, 
+    borderRadius: 18, 
     width: '35%',
     height: 55, 
     alignItems: 'center', 
@@ -254,7 +280,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFB89A'
   },
   selectText: {
-    marginTop: 8,
+    marginTop: Platform.OS === 'android' ? 1 : 8,
     fontSize: 20,
     color : 'white', 
     width: '80%',
@@ -266,10 +292,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   textBox: {
+    marginTop: 20,
     textAlign: 'center',
     width: 300,   
     height: 200,
-    borderRadius: 35,
+    borderRadius: 30,
     marginBottom: 30, 
     borderWidth: 2,
     borderColor: '#FFB89A',
@@ -280,14 +307,15 @@ const styles = StyleSheet.create({
   button: {
     paddingTop: 15,
     backgroundColor: '#FFB89A',
-    borderRadius: 23, 
+    borderRadius: 18, 
     width: '75%',
     height: 60, 
     alignItems: 'center', 
     marginBottom: 10, 
     textAlign: 'center', 
     fontWeight: 'bold',
-    alignSelf: 'center'
+    alignSelf: 'center',
+    flexDirection: 'center',
   },
   buttonText: {
     fontSize: 25,
@@ -302,7 +330,7 @@ const styles = StyleSheet.create({
   button2: {
     paddingTop: 15,
     backgroundColor: '#FFB89A',
-    borderRadius: 23, 
+    borderRadius: 18, 
     width: '75%',
     height: 60, 
     alignItems: 'center', 
