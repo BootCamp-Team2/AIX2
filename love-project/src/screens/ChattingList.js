@@ -41,7 +41,7 @@ const Chattinglist = () => {
             partnerUID,
             lastMessage: message.content,
             lastTimestamp: message.timestamp,
-            unreadCount: message.delivered === false ? 1 : 0,
+            unreadCount: message.delivered === false && !isSender ? 1 : 0,
           });
         } else {
           const existingChat = chatMap.get(partnerUID);
@@ -50,7 +50,12 @@ const Chattinglist = () => {
               partnerUID,
               lastMessage: message.content,
               lastTimestamp: message.timestamp,
-              unreadCount: message.delivered === false ? existingChat.unreadCount + 1 : existingChat.unreadCount,
+              unreadCount: message.delivered === false && !isSender ? existingChat.unreadCount + 1 : existingChat.unreadCount,
+            });
+          } else {
+            chatMap.set(partnerUID, {
+              ...existingChat, // 기존 채팅 정보 유지
+              unreadCount: existingChat.unreadCount + (message.delivered === false && !isSender ? 1 : 0),
             });
           }
         }
@@ -100,7 +105,7 @@ const Chattinglist = () => {
               headers: { "Content-Type": "multipart/form-data" }
           });
 
-          return {partnerData: response.data.user, lastMessage: chat.lastMessage, lastTimestamp: chat.lastTimestamp};
+          return {partnerData: response.data.user, lastMessage: chat.lastMessage, lastTimestamp: chat.lastTimestamp, unreadCount: chat.unreadCount};
         })
       );
       setChatListWithInfo(updatedChatList);
