@@ -75,7 +75,7 @@ const OpProfileScreen = () => {
                 <View style={styles.photoContainer}>
                     {/* 프로필 사진 */}
                     <Image
-                        source={profileImg ? { uri: `http://192.168.1.27:8080/${profileImg}` } : require('../../../assets/testProfile/kimgoeunProfile.png')} // 기본 이미지 설정
+                        source={profileImg ? { uri: `http://192.168.1.27:8080/${profileImg}`, cache: 'reload' } : require('../../../assets/testProfile/kimgoeunProfile.png')} // 기본 이미지 설정
                         style={[
                             styles.profilePhoto,
                             {
@@ -90,7 +90,7 @@ const OpProfileScreen = () => {
                     {/* 겹치는 원 */}
                     {avatarImg && ( // 아바타 이미지 있을때에만 나오게 지정
                         <Image
-                            source={{ uri: `http://192.168.1.10:1000/${avatarImg}` }} // avatarImg가 있을 때 URI 사용
+                            source={{ uri: `http://192.168.1.10:1000/${avatarImg}`, cache: 'reload' }} // avatarImg가 있을 때 URI 사용
                             style={[
                                 styles.overlappingCircle,
                                 {

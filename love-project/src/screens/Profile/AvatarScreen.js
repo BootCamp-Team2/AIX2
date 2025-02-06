@@ -122,7 +122,7 @@ const AvatarScreen = () => {
       });
 
       if (response.data && response.data.avatarUrl) {
-        console.log(response.data.avatarUrl)
+        // console.log(response.data.avatarUrl)
         setAvatarUri(response.data.avatarUrl); // 서버에서 반환된 아바타 URL 저장
         setUploadStatus('Avatar generated successfully');
 
@@ -176,8 +176,8 @@ const AvatarScreen = () => {
   // "Apply to Profile" 버튼 핸들러
   const handleApplyToProfile = async () => {
     if (avatarUri) {
-      console.log(avatarUri);
-      console.log(userUID);
+      // console.log(avatarUri);
+      // console.log(userUID);
       const formData = new FormData();
       formData.append("img_src", avatarUri);
       formData.append("uid", userUID);
@@ -185,24 +185,16 @@ const AvatarScreen = () => {
         {headers: {"Content-Type": "multipart/form-data"}}
       );
 
-      console.log("Path!: ", avatarResponse.data.avatarPath);
+      // console.log("Path!: ", avatarResponse.data.avatarPath);
 
-      const response = await axios.post("http://192.168.1.27:8080/users/updateCharacterPicture", {character_picture: avatarResponse.data.avatarPath}, 
+      await axios.post("http://192.168.1.27:8080/users/updateCharacterPicture", {character_picture: avatarResponse.data.avatarPath}, 
         {headers: {"Content-Type": "application/json", "Authorization": `Bearer ${token}`,}}
       );
       
-      if(response) {
-        const newUserData = await axios.get("http://192.168.1.27:8080/users/myData",
-          {headers: {"Authorization": `Bearer ${token}`}}
-        );
-
-        await AsyncStorage.setItem('userData', JSON.stringify(newUserData.data.user));
-
-        Alert.alert("성공적으로 프로필이 적용되었습니다.");
-        setTimeout(() => {
-          navigation.reset({index: 0, routes: [{name: "MainScreen"}]})
-        }, 1000);
-      }
+      Alert.alert("성공적으로 프로필이 적용되었습니다.");
+      setTimeout(() => {
+        navigation.reset({index: 0, routes: [{name: "MainScreen"}]})
+      }, 2000);
     }
   };
 
