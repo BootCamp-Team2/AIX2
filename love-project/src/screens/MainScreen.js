@@ -71,21 +71,7 @@ const MainScreen = () => {
           <Text style={styles.horizontalLine} >         
           </Text>
         </View>
-
-        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("MatchingScreen", {userUID: "0026469667", userData: userData})}>      
-          <View>
-            <Image source={require('../../assets/MainScreen/matching.jpg')} 
-                style={styles.imageStyle}
-            />
-          </View>
-            <Text style={styles.textStyle}>
-              <Text style={styles.buttonText}>소개팅 매칭{'\n'}
-              <Text style={styles.empty}>{'\n'}</Text>  
-              <Text style={styles.bottom}>새로운 사람을 만나보세요!</Text>
-            </Text>
-          </Text>
-        </TouchableOpacity>
-
+        
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("ConversationScreen", {userUID: userData.userUID})}>
           <View>
             <Image source={require('../../assets/MainScreen/couple.jpg')} 
@@ -113,6 +99,21 @@ const MainScreen = () => {
             </Text>
           </Text>
         </TouchableOpacity>
+
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("MatchingScreen", {userUID: "0026469667", userData: userData})}>      
+          <View>
+            <Image source={require('../../assets/MainScreen/matching.jpg')} 
+                style={styles.imageStyle}
+            />
+          </View>
+            <Text style={styles.textStyle}>
+              <Text style={styles.buttonText}>소개팅 매칭{'\n'}
+              <Text style={styles.empty}>{'\n'}</Text>  
+              <Text style={styles.bottom}>새로운 사람을 만나보세요!</Text>
+            </Text>
+          </Text>
+        </TouchableOpacity>
+        
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("ChattingList", {userData: userData})}>
           <View>
             <Image source={require('../../assets/MainScreen/mat.jpg')} 
