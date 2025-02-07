@@ -8,6 +8,7 @@ import ProfileScreen from '../screens/Profile/ProfileScreen';
 import SettingScreen from '../screens/Setting/SettingScreen';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
 const Tab = createBottomTabNavigator();
 
 const TabBar = () => {
@@ -16,10 +17,11 @@ const TabBar = () => {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
+          position: 'absolute',
           backgroundColor: '#fff', // 탭바 배경색
           borderRadius: 20, // 둥글게 만들기
-          marginHorizontal: 10, // 양쪽에 간격 추가
-          marginBottom: Platform.OS === 'android' ? 10 : 40, // 아래쪽 간격
+          marginHorizontal: 20, // 양쪽에 간격 추가
+          marginBottom: Platform.OS === 'android' ? 10 : 15, // 아래쪽 간격
           elevation: 3, // 그림자 효과 (Android)
           shadowColor: '#000', // 그림자 색상 (iOS)
           shadowOffset: { width: 0, height: 2 }, // 그림자 위치 (iOS)
@@ -40,7 +42,7 @@ const TabBar = () => {
           options={{
                   tabBarIcon: ({ color }) => <Icon name="home" size={20} color={color} />, // 아이콘 색상 설정
                   headerShown: false,
-                  }}
+                }}
       />
       <Tab.Screen 
           name="Profile" 

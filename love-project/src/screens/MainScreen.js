@@ -171,7 +171,7 @@ const MainScreen = () => {
 
 const styles = StyleSheet.create({
   container: { 
-    flex: 1,     
+    flex: 1,
     paddingLeft: 30,
     paddingRight: 30,
   },
