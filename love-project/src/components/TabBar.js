@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Platform } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icon2 from 'react-native-vector-icons/Ionicons';
 import MainScreen from '../screens/MainScreen';
@@ -18,13 +19,13 @@ const TabBar = () => {
           backgroundColor: '#fff', // 탭바 배경색
           borderRadius: 20, // 둥글게 만들기
           marginHorizontal: 10, // 양쪽에 간격 추가
-          marginBottom: 10, // 아래쪽 간격
+          marginBottom: Platform.OS === 'android' ? 10 : 40, // 아래쪽 간격
           elevation: 3, // 그림자 효과 (Android)
           shadowColor: '#000', // 그림자 색상 (iOS)
           shadowOffset: { width: 0, height: 2 }, // 그림자 위치 (iOS)
           shadowOpacity: 0.25, // 그림자 투명도 (iOS)
           shadowRadius: 3.84, // 그림자 반경 (iOS)
-          height: 55,
+          height: Platform.OS === 'android' ? 55 : 57,
         },
         tabBarItemStyle: {
           borderRadius: 15, // 각 탭 아이템 둥글게

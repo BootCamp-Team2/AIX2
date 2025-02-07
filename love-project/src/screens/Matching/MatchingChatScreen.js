@@ -226,6 +226,7 @@ const MatchingChatScreen = ({ route }) => {
           borderColor: '#FF9AAB', // 입력창 상단 테두리 색상
           borderWidth: 2,
           borderRadius: 7,
+          marginBottom: Platform.OS === 'android' ? 0 : 35,
         }}
       />
     );
@@ -327,7 +328,7 @@ const MatchingChatScreen = ({ route }) => {
       <KeyboardAvoidingView 
         style={{ flex: 1 }} 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
-        keyboardVerticalOffset={Platform.OS === 'ios' ? -160 : 0}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? -160 : -178}
       >
         <GiftedChat
           messages={messages}

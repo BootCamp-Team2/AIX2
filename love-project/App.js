@@ -78,77 +78,77 @@ const MainNavigator = () => {
         <Stack.Screen
           name="SettingScreen"
           component={SettingScreen}
-          options={{ headerTitle: '설정 화면', headerTitleAlign: 'center' }}
+          options={{ headerTitle: '설정 화면', headerTitleAlign: 'center' , headerTintColor: '#000'}}
         />
         <Stack.Screen
           name="AccountScreen"
           component={AccountScreen}
-          options={{ headerTitle: '계정', headerTitleAlign: 'center' }}
+          options={{ headerTitle: '계정', headerTitleAlign: 'center' , headerTintColor: '#000'}}
         />
         <Stack.Screen
           name="MatchingList"
           component={MatchingList}
-          options={{ headerTitle: '매칭 화면', headerTitleAlign: 'center' }}
+          options={{ headerTitle: '매칭 리스트', headerTitleAlign: 'center', headerTintColor: '#000', }}
         />
         <Stack.Screen
           name="MatchingScreen"
           component={MatchingScreen}
-          options={{ headerTitle: '매칭 화면', headerTitleAlign: 'center', headerStyle: { backgroundColor: '#FFF0F0' } }}
+          options={{ headerTitle: '매칭 화면', headerTitleAlign: 'center', headerStyle: { backgroundColor: '#FFF0F0' }, headerTintColor: '#000' }}
         />
         <Stack.Screen
           name="ModifyMatchInfo"
           component={ModifyMatchInfo}
-          options={{ headerTitle: '매칭 정보 수정', headerTitleAlign: 'center' }}
+          options={{ headerTitle: '매칭 정보 수정', headerTitleAlign: 'center' , headerTintColor: '#000'}}
         />
         <Stack.Screen
           name="MatchingChatScreen"
           component={MatchingChatScreen}
-          options={{ headerTitle: '채팅 화면', headerTitleAlign: 'center' }}
+          options={{ headerTitle: '채팅 화면', headerTitleAlign: 'center' , headerTintColor: '#000'}}
         />
         <Stack.Screen
           name="ConversationScreen"
           component={ConversationScreen}
-          options={{ headerTitle: 'AI 대화 시뮬레이션 화면', headerTitleAlign: 'center', headerStyle: { backgroundColor: '#FFE4D9' }}}
+          options={{ headerTitle: 'AI 대화 시뮬레이션 화면', headerTitleAlign: 'center', headerStyle: { backgroundColor: '#FFE4D9' }, headerTintColor: '#000'}}
         />
         <Stack.Screen
           name="CoordinationScreen"
           component={CoordinationScreen}
-          options={{ headerTitle: 'AI 스타일 코디 화면', headerTitleAlign: 'center', headerStyle: { backgroundColor: '#d1e8d9' } }}
+          options={{ headerTitle: 'AI 스타일 코디 화면', headerTitleAlign: 'center', headerStyle: { backgroundColor: '#d1e8d9' }, headerTintColor: '#000' }}
         />
         <Stack.Screen
           name="IdealTypeImg"
           component={IdealTypeImg}
-          options={{ headerTitle: '이상형 이미지 생성 화면', headerTitleAlign: 'center' }}
+          options={{ headerTitle: '이상형 이미지 생성 화면', headerTitleAlign: 'center' , headerTintColor: '#000'}}
         />
         <Stack.Screen
           name="IdealTypeSet"
           component={IdealTypeSet}
-          options={{ headerTitle: '이상형 이미지 설정 화면', headerTitleAlign: 'center' }}
+          options={{ headerTitle: '이상형 이미지 설정 화면', headerTitleAlign: 'center' , headerTintColor: '#000'}}
         />
         <Stack.Screen
           name="MyCharacter"
           component={MyCharacter}
-          options={{ headerTitle: '캐릭터 생성', headerTitleAlign: 'center' }}
+          options={{ headerTitle: '캐릭터 생성', headerTitleAlign: 'center' , headerTintColor: '#000'}}
         />
         <Stack.Screen
           name="AvatarScreen"
           component={AvatarScreen}
-          options={{ headerTitle: '아바타 생성', headerTitleAlign: 'center', headerStyle: { backgroundColor: '#d9e0fc' } }}
+          options={{ headerTitle: '아바타 생성', headerTitleAlign: 'center', headerStyle: { backgroundColor: '#d9e0fc' } , headerTintColor: '#000'}}
         />
         <Stack.Screen
           name="AIchat"
           component={AIchat}
-          options={{ headerTitle: '챗봇과 채팅', headerTitleAlign: 'center' }}
+          options={{ headerTitle: '챗봇과 채팅', headerTitleAlign: 'center' , headerTintColor: '#000'}}
         />
         <Stack.Screen
           name="AssistantSelect"
           component={AssistantSelect}
-          options={{ headerTitle: '챗봇 선택', headerTitleAlign: 'center' }}
+          options={{ headerTitle: '챗봇 선택', headerTitleAlign: 'center' , headerTintColor: '#000'}}
         />
         <Stack.Screen
           name="CoachingScreen"
           component={CoachingScreen}
-          options={{ headerTitle: '연애 상담', headerTitleAlign: 'center' }}
+          options={{ headerTitle: '연애 상담', headerTitleAlign: 'center' , headerTintColor: '#000'}}
         />
         <Stack.Screen
           name="TabBar"
@@ -160,17 +160,17 @@ const MainNavigator = () => {
         <Stack.Screen
           name="ChatchatScreen"
           component={ChatchatScreen}
-          options={{ headerTitle: '채팅 화면', headerTitleAlign: 'center' }}
+          options={{ headerTitle: '채팅 화면', headerTitleAlign: 'center' , headerTintColor: '#000'}}
         />
         <Stack.Screen
           name="ChattingList"
           component={ChattingList}
-          options={{ headerTitle: '채팅 화면', headerTitleAlign: 'center' }}
+          options={{ headerTitle: '채팅 화면', headerTitleAlign: 'center' , headerTintColor: '#000'}}
         />
         <Stack.Screen
           name="ChatScreen"
           component={ChatScreen}
-          options={{ headerTitle: '채팅 화면', headerTitleAlign: 'center' }}
+          options={{ headerTitle: '채팅 화면', headerTitleAlign: 'center' , headerTintColor: '#000'}}
         />
       </Stack.Navigator>
     </NavigationContainer>

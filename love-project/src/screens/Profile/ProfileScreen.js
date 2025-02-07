@@ -651,7 +651,7 @@ const styles = StyleSheet.create({
     // },
     photoContainer: {
         alignItems: 'center',
-        flexDirection: 'row',
+        flexDirection: 'row'
     },
     segmentedControl: {
         flexDirection: 'row',

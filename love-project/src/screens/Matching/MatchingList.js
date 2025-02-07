@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import { Image, FlatList, View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { Image, FlatList, View, Text, TouchableOpacity, StyleSheet, Alert, Platform } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import axios from 'axios';
@@ -61,15 +61,20 @@ const MatchingList = () => {
             data={recommendUserData}
             keyExtractor={(item) => item.userUID ? item.userUID.toString() : Math.random().toString()} // uid가 없으면 임의의 숫자를 사용
             ListHeaderComponent={
-                <View style={styles.header}>
-                    <Text style={styles.top}>
-                        
-                        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("MatchingChatScreen")}>
-                        <Text style={styles.topText}>매칭 리스트-여길 누르면 1:1 채팅창으로 이동해요</Text>
-                        </TouchableOpacity>
-                        
+                <View style={styles.headerMsg}>
+                    <Text style={styles.headerText}>
+                        대화하고 싶은 상대를 선택하세요!
                     </Text>
                 </View>
+                // <View style={styles.header}>
+                //     <Text style={styles.top}>
+                        
+                //         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("MatchingChatScreen")}>
+                //         <Text style={styles.topText}>매칭 리스트-여길 누르면 1:1 채팅창으로 이동해요</Text>
+                //         </TouchableOpacity>
+                        
+                //     </Text>
+                // </View>
             }
             renderItem={({ item }) => (
                 <TouchableOpacity
@@ -103,6 +108,23 @@ const MatchingList = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+    },
+    headerMsg: {
+        backgroundColor: '#fff',
+        padding: 20,
+        marginTop: 15,
+        marginBottom: 15,
+    },
+    headerText: {
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        justifyContent: 'center',
+        alignSelf: 'center',
+        textAlign:'center',
+        fontSize: 20,
+        color: '#FF9AAB',
+        fontWeight: 'bold',
     },
     header: {
         backgroundColor: '#B2E0F9',
@@ -150,9 +172,11 @@ const styles = StyleSheet.create({
     card: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#B2E0F9',
+        backgroundColor: '#f2e1e4',
         borderRadius: 10,
         padding: 10,
+        marginTop: 5,
+        marginBottom: 5,
         marginHorizontal: 10,
     },
     profileImg: {

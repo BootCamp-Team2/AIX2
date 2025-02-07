@@ -80,7 +80,9 @@ const OpProfileScreen = () => {
                             styles.profilePhoto,
                             {
                                 zIndex: isCircleFront ? 0 : 1,
-                                left: isCircleFront ? 155 : 115, 
+                                left: isCircleFront 
+                                ? (Platform.OS === 'ios' ? 155 : 155) 
+                                : (Platform.OS === 'ios' ? 140 : 117),
                                 width: isCircleFront ? 80 : 100,
                                 height: isCircleFront ? 80 : 100,
                                 top: isCircleFront ? 10 : 0,
@@ -103,12 +105,12 @@ const OpProfileScreen = () => {
                             ]}
                         />
                     )}
-                    {/* 프로필 변경 버튼 */}
+                    {/* 프로필 변경 버튼
                     <TouchableOpacity style={styles.switchButton} onPress={() => {
                         handleSwitch();
                     }}>
                         <Icon5 style={styles.switchText} name="account-convert-outline" size={24} color="#9AAEFF" />
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                 </View>
 
                 <View style={styles.segmentedControl}>
@@ -339,7 +341,6 @@ const styles = StyleSheet.create({
         lineHeight: 22, // 텍스트 간 여백 추가
         color: '#333',           // 텍스트 색상 변경 (조금 더 어두운 색상)
         textAlign: 'left',       // 왼쪽 정렬
-        marginBottom: 10,        // 항목 간 간격 추가
     },
     keyText: {
         fontWeight: 'bold',

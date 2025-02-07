@@ -53,7 +53,7 @@ const CoordinationScreen = () => {
 
       const data = await response.json();
 
-      // console.log("🔍 서버 응답 데이터:", data);
+      //console.log("🔍 서버 응답 데이터:", data);
 
       // result_msg에서 분석 결과 및 추천 코디 데이터를 파싱
       const resultMsg = JSON.parse(data.result_msg); // JSON 문자열을 객체로 변환
@@ -77,7 +77,7 @@ const CoordinationScreen = () => {
       // result_search에서 추천 이미지 URL을 추출 (undefined 방지)
       const resultSearch = JSON.parse(data.result_search);
 
-      // console.log("🔍 result_search 데이터:", resultSearch);
+      //console.log("🔍 result_search 데이터:", resultSearch);
 
 
       if (Array.isArray(resultSearch)) {
@@ -94,7 +94,7 @@ const CoordinationScreen = () => {
         const imageUrls = [group1Images, group2Images, group3Images];
 
 
-        // console.log(imageUrls);
+        //console.log(imageUrls);
         setRecommendationImages(imageUrls); // 이미지 URL 상태 업데이트
       } else {
         console.error("result_search가 예상된 형식이 아닙니다.", resultSearch);
