@@ -21,7 +21,7 @@ const Chattinglist = () => {
     try {
       setIsLoading(true);
       const response = await axios.get(`http://192.168.1.11:8088/api/messages/${userData.userUID}`);
-      // console.log("Messages from server:", response.data); // 서버 응답 로그 확인
+      console.log("Messages from server:", response.data); // 서버 응답 로그 확인
       const messages = response.data;
 
       // 메시지 데이터를 시간 순으로 정렬 (sender, receiver 기준 없이)
@@ -118,6 +118,12 @@ const Chattinglist = () => {
 
   // 채팅방을 클릭했을 때 이동
   const handleChatSelect = (partnerData) => {
+    setChatListWithInfo((prevChatList) => 
+      prevChatList.map((chat) =>
+        chat.partnerData.userUID === partnerData.userUID ? { ...chat, unreadCount: 0 } : chat
+      )
+    );
+
     navigation.navigate("MatchingChatScreen", { chatlists: { userData, partnerData } });
   };
 
@@ -134,7 +140,7 @@ const Chattinglist = () => {
       {chatListWithInfo.length > 0 ? (
         <FlatList
           data={chatListWithInfo}
-          keyExtractor={(item) => `${item.partnerData.userUID}-${uuidv4()}`} // 고유 키 추가
+          keyExtractor={(item) => `${item.partnerData.userUID}`} // 고유 키 추가
           renderItem={({ item }) => (
             <TouchableOpacity style={styles.chatItem} onPress={() => handleChatSelect(item.partnerData)}>
               <View style={styles.chatItemContent}>
