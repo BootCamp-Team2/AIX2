@@ -283,6 +283,7 @@ const MatchingChatScreen = ({ route }) => {
   
   
   return (
+    <SafeAreaView>
     <View style={styles.container}>
     <View style={styles.matching}>
       <View >
@@ -357,6 +358,7 @@ const MatchingChatScreen = ({ route }) => {
         />
       </KeyboardAvoidingView>
     </View>
+    </SafeAreaView>
   );
   };
   
