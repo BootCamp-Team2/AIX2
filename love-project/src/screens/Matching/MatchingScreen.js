@@ -6,6 +6,7 @@ import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 import ModifyMatchInfo from './ModifyMatchInfo';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { LinearGradient } from 'expo-linear-gradient'
 
 
 const MatchingScreen = () => {
@@ -89,6 +90,12 @@ const MatchingScreen = () => {
       };
     
     return(
+        <LinearGradient
+            colors={['#FFFFFF', '#FFD9D9']} // 원하는 그라데이션 색상
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.gradientBackground}
+            >
     <ScrollView contentContainerStyle={styles.containerScroll}>
     <View style={styles.container}>
         {/* <View style={styles.header}>
@@ -139,6 +146,7 @@ const MatchingScreen = () => {
         </Text>        
      </View>
     </ScrollView>
+    </LinearGradient>
                 );
             };
             
@@ -290,6 +298,9 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         textDecorationLine: "underline",
     },
+    gradientBackground: {
+        flex: 1, // 전체 화면을 채우기 위해 flex: 1
+      },
 });
 
 export default MatchingScreen;

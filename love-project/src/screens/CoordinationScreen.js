@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import { LinearGradient } from 'expo-linear-gradient'
 
 const CoordinationScreen = () => {
   const [image, setImage] = useState(null);
@@ -110,6 +111,12 @@ const CoordinationScreen = () => {
   
 
   return (
+    <LinearGradient
+    colors={['#FFFFFF', '#E8F7F1']} // 원하는 그라데이션 색상
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.gradientBackground}
+        >
     <ScrollView contentContainerStyle={styles.container}>
       <TouchableOpacity style={styles.image} onPress={pickImage}>
         {image ? (
@@ -184,6 +191,7 @@ const CoordinationScreen = () => {
         </View>
       )}
     </ScrollView>
+    </LinearGradient>
   );
 };
 
@@ -192,7 +200,6 @@ const styles = StyleSheet.create({
     flexGrow: 1, 
     alignItems: 'center',  
     padding: 20, 
-    backgroundColor: '#f5f5f5' 
   },
   subontainer: {  
     justifyContent: 'center',
@@ -327,7 +334,7 @@ const styles = StyleSheet.create({
   recommendationText: 
   { 
     fontSize: 16, 
-    color: '#444',
+    color: '#2f5e3e',
     width: 100,
     height: 25,
     textAlign: 'center', // 텍스트 중앙 정렬
@@ -384,6 +391,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#81C999',
     fontWeight: 'bold',
+  },
+  gradientBackground: {
+    flex: 1, // 전체 화면을 채우기 위해 flex: 1
   },
 });
 

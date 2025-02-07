@@ -328,7 +328,7 @@ const MatchingChatScreen = ({ route }) => {
       <KeyboardAvoidingView 
         style={{ flex: 1 }} 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
-        keyboardVerticalOffset={Platform.OS === 'ios' ? -160 : -178}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? -270 : -268} // ios 조정 확인 필요
       >
         <GiftedChat
           messages={messages}
@@ -368,6 +368,7 @@ const MatchingChatScreen = ({ route }) => {
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 3,
+    marginTop: 15
   },  
   heart: {
       color : '#FF9AAB',

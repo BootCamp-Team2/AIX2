@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Image, View, Text, TouchableOpacity, StyleSheet, ScrollView, Platform, SafeAreaView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { LinearGradient } from 'expo-linear-gradient'
 
 const MainScreen = () => {
   const navigation = useNavigation();
@@ -44,6 +45,12 @@ const MainScreen = () => {
   };
 
   return (
+    <LinearGradient
+      colors={['#FFFFFF', '#FFD9D9']} // 원하는 그라데이션 색상
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={styles.gradientBackground}
+    >
     <SafeAreaView>
       <ScrollView>
         <View style={styles.container}>
@@ -73,20 +80,33 @@ const MainScreen = () => {
         </View>
         
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("ConversationScreen", {userUID: userData.userUID})}>
-          <View>
-            <Image source={require('../../assets/MainScreen/couple.jpg')} 
-                style={styles.imageStyle}
-            />
-          </View>
-            <Text style={styles.textStyle}>
-              <Text style={styles.buttonText}>AI 대화 연습{'\n'}
-              <Text style={styles.empty}>{'\n'}</Text>
-              <Text style={styles.bottom}>대화 스킬을 키워보세요!</Text>
+          <LinearGradient
+           colors={['#FF9AAB', '#FFC3A0']} // 그라데이션 색상 설정
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.gradientButton}
+          >
+            <View>
+              <Image source={require('../../assets/MainScreen/couple.jpg')} 
+                  style={styles.imageStyle}
+              />
+            </View>
+              <Text style={styles.textStyle}>
+                <Text style={styles.buttonText}>AI 대화 연습{'\n'}
+                <Text style={styles.empty}>{'\n'}</Text>
+                <Text style={styles.bottom}>대화 스킬을 키워보세요!</Text>
+              </Text>
             </Text>
-          </Text>
+          </LinearGradient>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("CoordinationScreen")}>
+        <LinearGradient
+            colors={['#FF9AAB', '#FFC3A0']} // 그라데이션 색상 설정
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.gradientButton}
+          >
           <View>
             <Image source={require('../../assets/MainScreen/coor.jpg')} 
                 style={styles.imageStyle}
@@ -98,9 +118,16 @@ const MainScreen = () => {
               <Text style={styles.bottom}>어울리는 스타일을 찾아보세요!</Text>
             </Text>
           </Text>
+          </LinearGradient>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("MatchingScreen", {userUID: "0026469667", userData: userData})}>      
+        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("MatchingScreen", {userUID: "0026469667", userData: userData})}>     
+        <LinearGradient
+            colors={['#FF9AAB', '#FFC3A0']} // 그라데이션 색상 설정
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.gradientButton}
+          > 
           <View>
             <Image source={require('../../assets/MainScreen/matching.jpg')} 
                 style={styles.imageStyle}
@@ -112,9 +139,16 @@ const MainScreen = () => {
               <Text style={styles.bottom}>새로운 사람을 만나보세요!</Text>
             </Text>
           </Text>
+          </LinearGradient>
         </TouchableOpacity>
         
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("ChattingList", {userData: userData})}>
+        <LinearGradient
+            colors={['#FF9AAB', '#FFC3A0']} // 그라데이션 색상 설정
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.gradientButton}
+          > 
           <View>
             <Image source={require('../../assets/MainScreen/mat.jpg')} 
                 style={styles.imageStyle}
@@ -126,10 +160,12 @@ const MainScreen = () => {
               <Text style={styles.bottom}>매칭상대와 서로 대화해 보세요!</Text>
             </Text>
           </Text>
+          </LinearGradient>
         </TouchableOpacity>
       </View>
     </ScrollView>
     </SafeAreaView>
+    </LinearGradient>
   );
 };
 
@@ -204,17 +240,17 @@ const styles = StyleSheet.create({
     height: 50,
   },
   
-  button: {
-    backgroundColor: '#FF9AAB',
-    height: 90,
-    margin: 3,
-    padding: 10,
-    alignSelf: 'center',
-    borderRadius: 17,
-    width: '100%',
-    marginBottom: 10,
-    flexDirection: 'row',
-    },
+  // button: {
+  //   backgroundColor: '#FF9AAB',
+  //   height: 90,
+  //   margin: 3,
+  //   padding: 10,
+  //   alignSelf: 'center',
+  //   borderRadius: 17,
+  //   width: '100%',
+  //   marginBottom: 10,
+  //   flexDirection: 'row',
+  //   },
   
   buttonText: { 
     color: 'white', 
@@ -240,7 +276,22 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginRight: 15,
     marginLeft: 7 
-  }
+  },
+  gradientButton: {
+    height: 90,
+    margin: 3,
+    padding: 10,
+    alignSelf: 'center',
+    borderRadius: 17,
+    width: '100%',
+    justifyContent: 'center',
+    marginBottom: 10,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+  },
+  gradientBackground: {
+    flex: 1, // 전체 화면을 채우기 위해 flex: 1
+  },
 });
 
 export default MainScreen;

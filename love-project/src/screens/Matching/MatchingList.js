@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import { Image, FlatList, View, Text, TouchableOpacity, StyleSheet, Alert, Platform } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { LinearGradient } from 'expo-linear-gradient'
 import axios from 'axios';
 
 const MatchingList = () => {
@@ -57,6 +58,12 @@ const MatchingList = () => {
     };
 
     return (
+        <LinearGradient
+        colors={['#FFF9FB', '#FFE6E6']} // 그라데이션 색상 설정
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={styles.gradientButton}
+                  >
         <FlatList
             data={recommendUserData}
             keyExtractor={(item) => item.userUID ? item.userUID.toString() : Math.random().toString()} // uid가 없으면 임의의 숫자를 사용
@@ -78,9 +85,15 @@ const MatchingList = () => {
             }
             renderItem={({ item }) => (
                 <TouchableOpacity
-                    style={styles.card}
+                    //style={styles.card}
                     onPress={() => {handlePress(item.user)}}
                 >
+                    <LinearGradient
+                                colors={['#FFD5C2', '#FFB6C1']} // 그라데이션 색상 설정
+                                start={{ x: 0, y: 0 }}
+                                end={{ x: 1, y: 1 }}
+                                style={styles.card}
+                              >
                     <View style={styles.profile}>
                         <Image
                             source={
@@ -97,11 +110,13 @@ const MatchingList = () => {
                             {item.user.introduce}
                         </Text>
                     </View>
+                    </LinearGradient>
                 </TouchableOpacity>
             )}
             ItemSeparatorComponent={() => <View style={styles.separator} />}
             horizontal={false} // 수평 배열 비활성화
         />
+        </LinearGradient>
     );
 };
 
@@ -191,6 +206,9 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 4,
     },
+    gradientBackground: {
+        flex: 1, // 전체 화면을 채우기 위해 flex: 1
+      },
 });
 
 export default MatchingList;

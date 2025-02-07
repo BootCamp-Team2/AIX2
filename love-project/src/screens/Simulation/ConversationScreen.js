@@ -16,6 +16,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { LinearGradient } from 'expo-linear-gradient'
 
 const ConversationScreen = () => {
   const route = useRoute();
@@ -94,6 +95,12 @@ const ConversationScreen = () => {
   };
 
   return (
+    <LinearGradient
+    colors={['#FFFFFF', '#FBE3D5']} // 원하는 그라데이션 색상
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.gradientBackground}
+        >
     <KeyboardAvoidingView 
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={50}
@@ -142,6 +149,7 @@ const ConversationScreen = () => {
             placeholder="나의 이상형을 입력하세요"                    
             value={inputValue}
             onChangeText={(inputValue) => setInputValue(inputValue)}
+            multiline={true} // 줄바꿈 허용
           />
 
           <TouchableOpacity 
@@ -175,6 +183,7 @@ const ConversationScreen = () => {
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
+    </LinearGradient>
   );
 };
 
@@ -303,6 +312,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     fontSize: 21,      
     paddingHorizontal: 10,
+    backgroundColor: '#FFFFFF'
   },
   button: {
     paddingTop: Platform.OS === 'android' ? 15 : 20,
@@ -350,6 +360,9 @@ const styles = StyleSheet.create({
     textAlign: 'center', 
     fontWeight: 'bold',
     alignSelf: 'center'
+  },
+  gradientBackground: {
+    flex: 1, // 전체 화면을 채우기 위해 flex: 1
   },
 });
 

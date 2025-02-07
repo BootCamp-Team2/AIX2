@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, Alert, TextInput, ScrollView, KeyboardAvoidingView, Platform, FlatList, Modal, LogBox } from 'react-native';
 import { useNavigation, useFocusEffect, useRoute } from "@react-navigation/native";
 import { MaterialIcons } from '@expo/vector-icons'; // Expo Icons 추가
+import { LinearGradient } from 'expo-linear-gradient';
 import * as ImagePicker from 'expo-image-picker'; // ImagePicker 추가
 import Icon2 from 'react-native-vector-icons/Feather';
 import Icon3 from 'react-native-vector-icons/Ionicons'; 
@@ -332,6 +333,12 @@ const ProfileScreen = () => {
 
 
     return (
+        <LinearGradient
+              colors={['#F1F7FF', '#F1F7FF']} // 원하는 그라데이션 색상
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.gradientBackground}
+            >
         <KeyboardAvoidingView 
             style={styles.container} 
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // iOS와 Android에 따라 키보드 회피 방식 설정
@@ -614,6 +621,7 @@ const ProfileScreen = () => {
 
             
         </KeyboardAvoidingView>
+        </LinearGradient>
     );
 };
 
@@ -621,9 +629,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'flex-start',
-        padding: 16,
-        backgroundColor: '#F9F9F9',
-        
+        padding: 16,        
     },
     header: {
         marginBottom: 20,
@@ -721,7 +727,7 @@ const styles = StyleSheet.create({
     infoTextOriginal: {
         fontSize: 18,            // 더 큰 폰트 크기
         lineHeight: 22, // 텍스트 간 여백 추가
-        color: '#333',           // 텍스트 색상 변경 (조금 더 어두운 색상)
+        color: '#FFF',           // 텍스트 색상 변경 (조금 더 어두운 색상)
         textAlign: 'left',       // 왼쪽 정렬
         //marginBottom: 10,        // 항목 간 간격 추가
     },
@@ -944,6 +950,9 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
         color: '#000',
+      },
+      gradientBackground: {
+        flex: 1, // 전체 화면을 채우기 위해 flex: 1
       },
 });
 

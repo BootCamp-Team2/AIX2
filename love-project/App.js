@@ -103,7 +103,7 @@ const MainNavigator = () => {
         <Stack.Screen
           name="MatchingChatScreen"
           component={MatchingChatScreen}
-          options={{ headerTitle: '채팅 화면', headerTitleAlign: 'center' , headerTintColor: '#000'}}
+          options={{ headerShown: false, headerTitle: '채팅 화면', headerTitleAlign: 'center' , headerTintColor: '#000'}}
         />
         <Stack.Screen
           name="ConversationScreen"
@@ -165,7 +165,7 @@ const MainNavigator = () => {
         <Stack.Screen
           name="ChattingList"
           component={ChattingList}
-          options={{ headerTitle: '채팅 화면', headerTitleAlign: 'center' , headerTintColor: '#000'}}
+          options={{ headerTitle: '채팅 리스트', headerTitleAlign: 'center' , headerTintColor: '#000'}}
         />
         <Stack.Screen
           name="ChatScreen"

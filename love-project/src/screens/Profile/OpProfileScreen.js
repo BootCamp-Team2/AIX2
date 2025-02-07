@@ -233,7 +233,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'flex-start',
         padding: 16,
-        backgroundColor: '#F9F9F9',
+        backgroundColor: '#F1F7FF',
         
     },
     header: {
@@ -339,7 +339,7 @@ const styles = StyleSheet.create({
     infoText: {
         fontSize: 18,            // 더 큰 폰트 크기
         lineHeight: 22, // 텍스트 간 여백 추가
-        color: '#333',           // 텍스트 색상 변경 (조금 더 어두운 색상)
+        color: '#FFF',           // 텍스트 색상 변경 (조금 더 어두운 색상)
         textAlign: 'left',       // 왼쪽 정렬
     },
     keyText: {
