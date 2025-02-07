@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
-import { Button, Easing, TouchableOpacity, Animated, Image, Text, StyleSheet, View, ActivityIndicator, KeyboardAvoidingView, Platform} from 'react-native';
+import { Button, Easing, TouchableOpacity, Animated, Image, Text, StyleSheet, View, ActivityIndicator, KeyboardAvoidingView, Platform, SafeAreaView} from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { GiftedChat, Bubble, InputToolbar, Send, Time, Avatar } from 'react-native-gifted-chat';
 import axios from 'axios';
@@ -232,7 +232,8 @@ const MatchingChatScreen = ({ route }) => {
           borderColor: '#FF9AAB', // 입력창 상단 테두리 색상
           borderWidth: 2,
           borderRadius: 7,
-          marginBottom: Platform.OS === 'android' ? 0 : 35,
+          marginHorizontal: 7,
+          marginBottom: 3.5,
         }}
       />
     );
@@ -283,8 +284,7 @@ const MatchingChatScreen = ({ route }) => {
   
   
   return (
-    <SafeAreaView>
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
     <View style={styles.matching}>
       <View >
         <Image source={partnerData.profilePicture ? {uri: `http://192.168.1.27:8080/${partnerData.profilePicture}`} : require('../../../assets/default-profile.png')} 
@@ -335,7 +335,7 @@ const MatchingChatScreen = ({ route }) => {
       <KeyboardAvoidingView 
         style={{ flex: 1 }} 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
-        keyboardVerticalOffset={Platform.OS === 'ios' ? -270 : -268} // ios 조정 확인 필요
+        keyboardVerticalOffset={Platform.OS === 'ios' ? -300 : -268} // ios 조정 확인 필요
       >
         <GiftedChat
           messages={messages}
@@ -357,7 +357,6 @@ const MatchingChatScreen = ({ route }) => {
           alwaysShowSend
         />
       </KeyboardAvoidingView>
-    </View>
     </SafeAreaView>
   );
   };
@@ -369,14 +368,14 @@ const MatchingChatScreen = ({ route }) => {
       backgroundColor: '#fff', // 채팅 화면 배경
       paddingHorizontal: 5,
       paddingTop: 5,
-      paddingBottom: 10,
+      // paddingBottom: 10,
     }, 
   matching:{
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 3,
-    marginTop: 15
+    // marginTop: 15
   },  
   heart: {
       color : '#FF9AAB',
