@@ -35,6 +35,7 @@ const MatchingChatScreen = ({ route }) => {
     const navigation = useNavigation(); // 화면 전환에 사용
     const [messages, setMessages] = useState([]);
     const [socket, setSocket] = useState(null);
+    const socketRef = useRef(null); // WebSocket 상태 관리
     const [isLoading, setIsLoading] = useState(true);
     const giftChatRef = useRef();
 
@@ -79,9 +80,13 @@ const MatchingChatScreen = ({ route }) => {
   
     useEffect(() => {
       loadMessagesFromStorage();
+
+      if(!userData?.userUID || !partnerData?.userUID) return;
+      if(socketRef.current) return;
   
       const newSocket = new WebSocket(`ws://192.168.1.11:8088/ws/chat?userUID=${userData.userUID}`);
       // console.log(newSocket);
+      socketRef.current = newSocket;
       setSocket(newSocket);
   
       newSocket.onmessage = async (event) => {
@@ -133,16 +138,17 @@ const MatchingChatScreen = ({ route }) => {
         setIsLoading(false);
       };
 
-      newSocket.onclose = () => {
-        console.log("WebSocket closed. Attempting to reconnect...");
-        setTimeout(() => {
-          setSocket(new WebSocket(`ws://192.168.1.11:8088/ws/chat?userUID=${userData.userUID}`));
-        }, 5000); // 5초 후 재연결 시도
-      };
+      // newSocket.onclose = () => {
+      //   console.log("WebSocket closed. Attempting to reconnect...");
+      //   setTimeout(() => {
+      //     setSocket(new WebSocket(`ws://192.168.1.11:8088/ws/chat?userUID=${userData.userUID}`));
+      //   }, 5000); // 5초 후 재연결 시도
+      // };
   
       return () => {
-        if (newSocket && newSocket.readyState === WebSocket.OPEN) {
-          newSocket.close();
+        if(socketRef.current) {
+          socketRef.current.close();
+          socketRef.current = null;
         }
       };
     }, [userData, partnerData]);
