@@ -73,7 +73,7 @@ const MainNavigator = () => {
         <Stack.Screen
           name="OpProfileScreen"
           component={OpProfileScreen}
-          options={{ headerShown: false }}
+          options={{ headerTitle: '프로필 화면', headerTitleAlign: 'center' }}
         />
         <Stack.Screen
           name="SettingScreen"
