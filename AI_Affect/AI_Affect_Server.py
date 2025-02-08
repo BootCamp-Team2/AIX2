@@ -8,6 +8,7 @@ from datetime import datetime
 
 import os
 import re
+import json
 
 load_dotenv()
 OpenAI.api_key = os.getenv("OPENAI_API_KEY")
@@ -25,12 +26,12 @@ class Message(BaseModel):
     createdAt: datetime
     user: User
 
-def call_openai_api(messages: List[Message]) -> str:
+async def call_openai_api(messages: List[Message]) -> str:
     client = OpenAI()
 
     request_messages = [
         {
-            "role": "System",
+            "role": "system",
             "content": [
                 {
                     "type": "text",
@@ -65,13 +66,15 @@ def call_openai_api(messages: List[Message]) -> str:
 
                         ## TIP
                         - 최근에 대화한 내용에 좀 더 초점을 두고 평가해줘. 물론! 전에 했던 대화내용을 반영하지 말라는 소리는 아니야
+
+                        결과물을 JSON 형태로 출력해줘.
                     '''
                 }
             ]
         }
     ]
 
-    request_messages.append([{ "role": "user", "content": msg.text } for msg in messages])
+    request_messages.extend([{ "role": "user", "content": f"{msg.user.name}: {msg.text}" } for msg in messages])
     response = client.chat.completions.create(
         model="gpt-4o",
         messages=request_messages,
