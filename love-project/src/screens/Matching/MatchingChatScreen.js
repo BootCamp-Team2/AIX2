@@ -188,7 +188,7 @@ const MatchingChatScreen = ({ route }) => {
 
     useEffect(() => {
       const responseConversationAPI = async () => {
-        if(messagesCount >= 1) {
+        if(messagesCount >= 5) {
           setMessagesCount(0);
   
           const analysisData = await analysisConversation(userData.username, messages);
