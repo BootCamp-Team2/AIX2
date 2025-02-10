@@ -108,7 +108,7 @@ const MainNavigator = () => {
         <Stack.Screen
           name="ConversationScreen"
           component={ConversationScreen}
-          options={{ headerTitle: 'AI 대화 시뮬레이션 화면', headerTitleAlign: 'center', headerStyle: { backgroundColor: '#FFE4D9' }, headerTintColor: '#000'}}
+          options={{ headerTitle: 'AI 대화 코칭 화면', headerTitleAlign: 'center', headerStyle: { backgroundColor: '#FFE4D9' }, headerTintColor: '#000'}}
         />
         <Stack.Screen
           name="CoordinationScreen"

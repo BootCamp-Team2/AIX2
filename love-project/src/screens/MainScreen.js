@@ -92,7 +92,7 @@ const MainScreen = () => {
               />
             </View>
               <Text style={styles.textStyle}>
-                <Text style={styles.buttonText}>AI 대화 연습{'\n'}
+                <Text style={styles.buttonText}>AI 대화 코칭{'\n'}
                 <Text style={styles.empty}>{'\n'}</Text>
                 <Text style={styles.bottom}>대화 스킬을 키워보세요!</Text>
               </Text>
