@@ -7,6 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'; // AsyncSt
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Font from 'react-native-vector-icons/FontAwesome';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { Ionicons } from "@expo/vector-icons";
 
 // 한국어 텍스트 감정 분석 함수
 const analysisConversation = async (username, chatData) => {
@@ -57,13 +58,21 @@ const MatchingChatScreen = ({ route }) => {
           setUserData(chatlists.userData);
           setPartnerData(chatlists.partnerData);
         }
-
-        const affect = await AsyncStorage.getItem(`chat_${userData.userUID}_${partnerData.userUID}_percentage`);
-        setAffectionScore(affect ? Number(affect) : 0);
       };
   
       loadChatInit();
     }, [partner, chatlists]);
+
+    useEffect(() => {
+      const loadAffectScore = async () => {
+        if (userData && partnerData) {
+          const affect = await AsyncStorage.getItem(`chat_${userData.userUID}_${partnerData.userUID}_percentage`);
+          setAffectionScore(affect ? Number(affect) : 0);
+        }
+      };
+
+      loadAffectScore();
+    }, [userData, partnerData]);
   
     // 채팅 기록 로컬 저장소에서 불러오기
     const loadMessagesFromStorage = async () => {
@@ -409,22 +418,33 @@ const MatchingChatScreen = ({ route }) => {
           alwaysShowSend
         />
       </KeyboardAvoidingView>
-
-      {/* 팝업 모달 */}
       <Modal visible={modalVisible} transparent animationType="fade" onRequestClose={() => setModalVisible(false)}>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>❤️ 분석내용 ❤️</Text>
-            <Text>(평가점수)</Text>
-            <Text>{selectedMessage.score}</Text>
-            <Text>(중심 대화내용)</Text>
-            <Text>{selectedMessage.key_conversation}</Text>
-            <Text>(이유)</Text>
-            <Text>{selectedMessage.reason}</Text>
-            <Text>(피드백)</Text>
-            <Text>{selectedMessage.recommendation}</Text>
-            <TouchableOpacity onPress={() => setModalVisible(false)}>
-              <Text style={styles.closeButton}>닫기</Text>
+            {/* 타이틀 */}
+            <View style={styles.header}>
+              <Ionicons name="chatbubbles-outline" size={24} color="#FF6B6B" />
+              <Text style={styles.modalTitle}>대화 분석 결과</Text>
+            </View>
+
+            {/* 분석 내용 */}
+            <View style={styles.content}>
+              <Text style={styles.label}>📊 평가점수</Text>
+              <Text style={styles.value}>{selectedMessage.score}</Text>
+
+              <Text style={styles.label}>💬 중심 대화내용</Text>
+              <Text style={styles.value}>{selectedMessage.key_conversation}</Text>
+
+              <Text style={styles.label}>🔍 이유</Text>
+              <Text style={styles.value}>{selectedMessage.reason}</Text>
+
+              <Text style={styles.label}>✨ 피드백</Text>
+              <Text style={styles.value}>{selectedMessage.recommendation}</Text>
+            </View>
+
+            {/* 닫기 버튼 */}
+            <TouchableOpacity style={styles.closeButton} onPress={() => setModalVisible(false)}>
+              <Text style={styles.closeButtonText}>닫기</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -495,26 +515,60 @@ const MatchingChatScreen = ({ route }) => {
   },
   modalOverlay: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
   },
   modalContainer: {
-    width: 300,
+    width: "85%",
+    backgroundColor: "#FFF",
+    borderRadius: 15,
     padding: 20,
-    backgroundColor: 'white',
-    borderRadius: 10,
-    alignItems: 'center',
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 5,
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 15,
   },
   modalTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
+    fontWeight: "bold",
+    marginLeft: 8,
+    color: "#FF6B6B",
+  },
+  content: {
+    width: "100%",
+    alignItems: "center",
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginTop: 15,
+    color: "#333",
+    textDecorationLine: "underline"
+  },
+  value: {
+    fontSize: 15,
+    marginTop: 10,
+    textAlign: "center",
+    color: "#555",
   },
   closeButton: {
-    marginTop: 10,
-    color: 'blue',
+    marginTop: 20,
+    backgroundColor: "#FF9AAB",
+    paddingVertical: 10,
+    paddingHorizontal: 30,
+    borderRadius: 8,
+  },
+  closeButtonText: {
     fontSize: 16,
+    color: "#FFF",
+    fontWeight: "bold",
   },
 });
 
