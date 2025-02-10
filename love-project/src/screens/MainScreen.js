@@ -87,7 +87,7 @@ const MainScreen = () => {
             style={styles.gradientButton}
           >
             <View>
-              <Image source={require('../../assets/MainScreen/couple.jpg')} 
+              <Image source={require('../../assets/MainScreen/AI 대화 연습 이미지.webp')} 
                   style={styles.imageStyle}
               />
             </View>
@@ -108,7 +108,7 @@ const MainScreen = () => {
             style={styles.gradientButton}
           >
           <View>
-            <Image source={require('../../assets/MainScreen/coor.jpg')} 
+            <Image source={require('../../assets/MainScreen/AI 스타일 코디.jpg')} 
                 style={styles.imageStyle}
             />
           </View>
@@ -129,7 +129,7 @@ const MainScreen = () => {
             style={styles.gradientButton}
           > 
           <View>
-            <Image source={require('../../assets/MainScreen/matching.jpg')} 
+            <Image source={require('../../assets/MainScreen/소개팅 매칭.jpg')} 
                 style={styles.imageStyle}
             />
           </View>
@@ -150,7 +150,7 @@ const MainScreen = () => {
             style={styles.gradientButton}
           > 
           <View>
-            <Image source={require('../../assets/MainScreen/mat.jpg')} 
+            <Image source={require('../../assets/MainScreen/채팅 리스트.png')} 
                 style={styles.imageStyle}
             />
           </View>
