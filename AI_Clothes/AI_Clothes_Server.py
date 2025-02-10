@@ -68,7 +68,7 @@ def call_vision_api(image_data):
                 ],
             },
         ],
-        max_tokens=1000
+        max_tokens=1024
     )
 
     return response.choices[0].message.content
