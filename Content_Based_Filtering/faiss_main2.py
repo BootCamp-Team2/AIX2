@@ -33,7 +33,7 @@ def list_to_multiply_hot(value_list, value_types):
 def fetch_mbti_data():
     ## MySQL Server 연결
     conn = mysql.connector.connect(
-        host="192.168.219.142",
+        host="192.168.1.10",
         port="3307",
         user="lovepractice",
         password="500412!!",
@@ -127,10 +127,13 @@ def search_users(df_origin, df, feature_list, userUID):
     
     ## 일치하지 않거나 포함되어 있지 않는다면 패널티 부여 ( 패널티 : 추가점수 ) - 유클리드 거리는 짧을수록 유사도 큼
     add_score = 0.1
+    gender_mismatch_score = 1.0  # 성별 불일치 시 추가할 점수
+
     adjusted_scores = [
         (i, (distances[0][idx])
             + (add_score if user_df["myHeight"].iloc[0] != others_df["favoriteHeight"].iloc[i] else 0)
-            + (add_score if any(item not in user_df["myAppearance"].tolist() for item in others_df["favoriteAppearance"].tolist()) else 0))
+            + (add_score if any(item not in user_df["myAppearance"].tolist() for item in others_df["favoriteAppearance"].tolist()) else 0)
+            + (gender_mismatch_score if user_df["myGender"].iloc[0] != others_df["recommendGender"].iloc[i] else 0))  # 더 높은 점수 부여
         for idx, i in enumerate(valid_indices)
     ]
     

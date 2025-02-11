@@ -18,9 +18,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-ASSETS_FOLDER = "./assets"
-app.mount("/assets", StaticFiles(directory=ASSETS_FOLDER), name="assets")
-
 df = None
 df_origin = None
 feature_list = None
@@ -78,7 +75,7 @@ def generate_recommend(userIdeal):
 # MySQL Server 연결
 def get_db_connection():
     return mysql.connector.connect(
-        host="192.168.219.142",
+        host="192.168.1.10",
         port="3307",
         user="lovepractice",
         password="500412!!",
