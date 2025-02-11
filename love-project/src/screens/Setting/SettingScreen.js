@@ -46,7 +46,7 @@ const SettingsScreen = () => {
       <TouchableOpacity style={styles.settingBox} onPress={() => navigation.navigate("AccountScreen")}>
         <Text style={styles.title}>계정</Text>
         <Icon5 style={styles.switch} name="chevron-right" size={30} color="#eee" /> 
-      </TouchableOpacity>ㄴ
+      </TouchableOpacity>
 
       <LogoutModal 
         visible={logoutModalVisible} 
