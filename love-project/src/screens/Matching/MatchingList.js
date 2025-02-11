@@ -67,22 +67,22 @@ const MatchingList = () => {
         <FlatList
             data={recommendUserData}
             keyExtractor={(item) => item.userUID ? item.userUID.toString() : Math.random().toString()} // uid가 없으면 임의의 숫자를 사용
-            ListHeaderComponent={
-                // <View style={styles.headerMsg}>
-                //     <Text style={styles.headerText}>
-                //         대화하고 싶은 상대를 선택하세요!
-                //     </Text>
-                // </View>
-                <View style={styles.header}>
-                    <Text style={styles.top}>
+            // ListHeaderComponent={
+            //     // <View style={styles.headerMsg}>
+            //     //     <Text style={styles.headerText}>
+            //     //         대화하고 싶은 상대를 선택하세요!
+            //     //     </Text>
+            //     // </View>
+            //     <View style={styles.header}>
+            //         <Text style={styles.top}>
                         
-                        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("MatchingChatScreen")}>
-                        <Text style={styles.topText}>매칭 리스트-여길 누르면 1:1 채팅창으로 이동해요</Text>
-                        </TouchableOpacity>
+            //             <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("MatchingChatScreen")}>
+            //             <Text style={styles.topText}>매칭 리스트-여길 누르면 1:1 채팅창으로 이동해요</Text>
+            //             </TouchableOpacity>
                         
-                    </Text>
-                </View>
-            }
+            //         </Text>
+            //     </View>
+            // }
             renderItem={({ item }) => (
                 <TouchableOpacity
                     //style={styles.card}
