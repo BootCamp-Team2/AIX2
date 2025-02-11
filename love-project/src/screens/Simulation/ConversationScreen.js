@@ -1,4 +1,3 @@
-// ConversationScreen.js
 import React, { useState } from 'react';
 import {
   ActivityIndicator,
@@ -11,12 +10,12 @@ import {
   StyleSheet,
   ScrollView,
   Alert,
+  Image,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { LinearGradient } from 'expo-linear-gradient'
+import { LinearGradient } from 'expo-linear-gradient';
 
 const ConversationScreen = () => {
   const route = useRoute();
@@ -24,7 +23,7 @@ const ConversationScreen = () => {
   const navigation = useNavigation();
 
   const [simulatorUri, setSimulatorUri] = useState(null);
-  const [loading, setLoading] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const [gender, setGender] = useState(null);
 
@@ -35,35 +34,33 @@ const ConversationScreen = () => {
     }
 
     if (gender == null) {
-      alert("성별을 선택해주세요.");
+      alert('성별을 선택해주세요.');
       return;
     }
 
     const formData = new FormData();
-    formData.append("ideal_type", inputValue);
-    formData.append("gender", gender);
-    formData.append("userUID", userUID);
-    
-    console.log(`Your Input idealType: ${inputValue}`)
+    formData.append('ideal_type', inputValue);
+    formData.append('gender', gender);
+    formData.append('userUID', userUID);
+    console.log(`Your Input idealType: ${inputValue}`);
 
     try {
       setLoading(true);
       
       const sel_formData = new FormData();
-      sel_formData.append("type", "sim");
-      const select_r = await axios.post("http://192.168.1.10:1000/select-server", sel_formData, {
+      sel_formData.append('type', 'sim');
+      const select_r = await axios.post('http://192.168.1.10:1000/select-server', sel_formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-      if (select_r.data)
-        if (select_r.data.server_ip === "") {
-          Alert.alert("서버가 혼잡합니다. 잠시 후에 다시 시도해주세요.")
-          setLoading(null);
-          return;
-        }
+      if (select_r.data && select_r.data.server_ip === '') {
+        Alert.alert('서버가 혼잡합니다. 잠시 후에 다시 시도해주세요.');
+        setLoading(false);
+        return;
+      }
       
-      console.log("사용가능한 서버: ", select_r.data.server_ip)
+      console.log('사용가능한 서버: ', select_r.data.server_ip);
       const response = await axios.post(`${select_r.data.server_ip}/sim/create`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -72,23 +69,13 @@ const ConversationScreen = () => {
   
       if (response.data && response.data.simUrl) {
         console.log(response.data.simUrl);
-        setSimulatorUri(response.data.simUrl);
-
-        // 서버에서 생성된 이미지 URL (예시)
-        const generatedPhoto = `http://192.168.1.10:1000/output/${userUID}/mySimulator.jpg`;
-
-        // AsyncStorage에 저장 (다음에 불러올 수 있도록)
-        await AsyncStorage.setItem("idealPhoto", generatedPhoto);
-        
-        // 이미지 생성 완료 후 AssistantSelect로 이동 (파라미터로도 전달)
-        navigation.navigate("AssistantSelect", { 
-          userUID, 
-          gender, 
-          idealPhoto: generatedPhoto 
-        });
+        // 이미지 생성 후 페이지 이동 없이 화면 내에서 이미지 표시
+        const generatedPhoto = `http://192.168.1.10:1000/output/${userUID}/mySimulator.jpg?timestamp=${Date.now()}`;
+        setSimulatorUri(generatedPhoto);
+        // AsyncStorage에 저장 (필요 시 이후에 불러올 수 있도록)
+        await AsyncStorage.setItem('idealPhoto', generatedPhoto);
       }
     } catch (error) {
-      setLoading(null);
       console.error('request failed:', error.message);
     }
     setLoading(false);
@@ -96,93 +83,107 @@ const ConversationScreen = () => {
 
   return (
     <LinearGradient
-    colors={['#FFFFFF', '#FBE3D5']} // 원하는 그라데이션 색상
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.gradientBackground}
-        >
-    <KeyboardAvoidingView 
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={50}
+      colors={['#FFFFFF', '#FBE3D5']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={styles.gradientBackground}
     >
-      <ScrollView contentContainerStyle={styles.containerScroll}>    
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={50}
+      >
+        <ScrollView contentContainerStyle={styles.containerScroll}>
+          <View style={styles.container}>
+            <View>
+              <Text style={styles.horizontalLineFirst}></Text>
+            </View>
 
-        <View style={styles.container}>
-          <View>
-            <Text style={styles.horizontalLineFirst}></Text>
-          </View>
-
-          <Text style={styles.main}>
-            AI와 대화를 시작하기 전에 {'\n'}
-            나의 이상형을 만드세요!
-          </Text>
-
-          <View>
-            <Text style={styles.horizontalLine} ></Text>
-          </View>
-
-          <Text style={styles.middle}>
-            이상형 성별을 선택해 주세요!!
-          </Text>
-          
-          <View style={styles.selectBox}>
-            <TouchableOpacity 
-              style={[styles.select, gender === "male" && styles.buttonSelected]}
-              onPress={() => setGender('male')}
-            >
-              <Text style={styles.selectText}>남성</Text>            
-            </TouchableOpacity>
-            <TouchableOpacity 
-              style={[styles.select, gender === "female" && styles.buttonSelected]}
-              onPress={() => setGender('female')}
-            >
-              <Text style={styles.selectText}>여성</Text>            
-            </TouchableOpacity>
-          </View>
-
-          {/* <Text style={styles.middle}>
-            나의 이상형을 입력하세요
-          </Text> */}
-
-          <TextInput 
-            style={styles.textBox}          
-            placeholder="나의 이상형을 입력하세요"                    
-            value={inputValue}
-            onChangeText={(inputValue) => setInputValue(inputValue)}
-            multiline={true} // 줄바꿈 허용
-          />
-
-          <TouchableOpacity 
-            style={styles.button} 
-            onPress={() => {
-              if(loading == null) {
-                CreateMySim();
-              } else { 
-                if(!loading) {
-                  navigation.navigate("AssistantSelect", { simUri: simulatorUri });
-                } 
-              }
-            }} 
-            disabled={loading}
-          >
-            <Text style={styles.buttonText}>
-              {loading == null ? "나의 이상형 생성!" : loading ? "나의 이상형 생성중..." : "생성완료!"}
+            <Text style={styles.main}>
+              AI와 대화를 시작하기 전에 {'\n'}
+              나의 이상형을 만드세요!
             </Text>
-          </TouchableOpacity>  
 
-          {loading && (
-            <ActivityIndicator size="large" color="#FFB89A" style={styles.loader} />
-          )}
+            <View>
+              <Text style={styles.horizontalLine}></Text>
+            </View>
 
-          <TouchableOpacity 
-            style={styles.button2} 
-            onPress={() => navigation.navigate("AssistantSelect", { userUID, gender })}
-          >
-            <Text style={styles.button2Text}>AI 대화 바로가기</Text>            
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+            <Text style={styles.middle}>
+              이상형 성별을 선택해 주세요!!
+            </Text>
+
+            <View style={styles.selectBox}>
+              <TouchableOpacity
+                style={[styles.select, gender === 'male' && styles.buttonSelected]}
+                onPress={() => setGender('male')}
+              >
+                <Text style={styles.selectText}>남성</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.select, gender === 'female' && styles.buttonSelected]}
+                onPress={() => setGender('female')}
+              >
+                <Text style={styles.selectText}>여성</Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* 이미지가 생성되면 TextInput 대신 생성된 이미지 표시 */}
+            {simulatorUri ? (
+              <Image
+                source={{ uri: simulatorUri }}
+                style={styles.generatedImage}
+                resizeMode="contain"
+              />
+            ) : (
+              <TextInput
+                style={styles.textBox}
+                placeholder="나의 이상형을 입력하세요"
+                value={inputValue}
+                onChangeText={(text) => setInputValue(text)}
+                multiline={true}
+              />
+            )}
+
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => {
+                if (simulatorUri) {
+                  // 이미지가 생성된 상태라면 "이상형 재생성" 버튼: AsyncStorage의 idealPhoto와 simulatorUri만 초기화
+                  AsyncStorage.removeItem('idealPhoto');
+                  setSimulatorUri(null);
+                } else {
+                  CreateMySim();
+                }
+              }}
+              disabled={loading}
+            >
+              <Text style={styles.buttonText}>
+                {simulatorUri
+                  ? '이상형 재생성'
+                  : loading
+                  ? '나의 이상형 생성중...'
+                  : '나의 이상형 생성!'}
+              </Text>
+            </TouchableOpacity>
+
+            {loading && (
+              <ActivityIndicator size="large" color="#FFB89A" style={styles.loader} />
+            )}
+
+            <TouchableOpacity
+              style={styles.button2}
+              onPress={() =>
+                navigation.navigate('AssistantSelect', {
+                  userUID,
+                  gender,
+                  idealPhoto: simulatorUri,
+                })
+              }
+            >
+              <Text style={styles.button2Text}>AI 대화 바로가기</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </LinearGradient>
   );
 };
@@ -206,7 +207,7 @@ const styles = StyleSheet.create({
     width: 340, 
     height: 1,  
     backgroundColor: 'silver',
-    marginVertical: 10, // Space above and below the line
+    marginVertical: 10,
   },
   horizontalLine: {
     marginBottom: 15,
@@ -214,42 +215,7 @@ const styles = StyleSheet.create({
     width: 340, 
     height: 1,  
     backgroundColor: 'silver',
-    marginVertical: 10, // Space above and below the line
-  },
-  menu: {
-    position: 'absolute',
-    top: 15,
-    left: 10,
-    width: '20%'
-  },
-  check: {
-    position: 'absolute',
-    top: 15,
-    right: -20,
-    width: '20%'
-  },
-  header: { 
-    backgroundColor: '#FFF0F0',
-    marginBottom: 20, 
-    fontSize: 26, 
-    paddingTop: 15, 
-    width: '100%',  
-    height: 70,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    textAlign: 'center', 
-    alignSelf: 'center',
-  },
-  headerText: {
-    position: 'absolute',
-    textAlign: 'center',
-    color : 'black',
-    alignSelf: 'center',
-    justifyContent: 'center',
-    fontSize: 26,  
-    width: '100%',
-    marginTop: 15     
+    marginVertical: 10,
   },
   main: { 
     fontSize: 24,
@@ -283,15 +249,15 @@ const styles = StyleSheet.create({
     textAlign: 'center', 
     fontWeight: 'bold',
     alignSelf: 'center',
-    marginHorizontal: 15
+    marginHorizontal: 15,
   },
   buttonSelected: {
-    backgroundColor: '#FFB89A'
+    backgroundColor: '#FFB89A',
   },
   selectText: {
     marginTop: Platform.OS === 'android' ? 1 : 8,
     fontSize: 20,
-    color : 'white', 
+    color: 'white', 
     width: '80%',
     height: 50, 
     alignItems: 'center', 
@@ -309,10 +275,16 @@ const styles = StyleSheet.create({
     marginBottom: 30, 
     borderWidth: 2,
     borderColor: '#FFB89A',
-    backgroundColor: 'transparent',
     fontSize: 21,      
     paddingHorizontal: 10,
-    backgroundColor: '#FFFFFF'
+    backgroundColor: '#FFFFFF',
+  },
+  generatedImage: {
+    width: 300,
+    height: 200,
+    marginTop: 20,
+    marginBottom: 30,
+    borderRadius: 30,
   },
   button: {
     paddingTop: Platform.OS === 'android' ? 15 : 20,
@@ -325,7 +297,7 @@ const styles = StyleSheet.create({
     textAlign: 'center', 
     fontWeight: 'bold',
     alignSelf: 'center',
-    flexDirection: 'center',
+    flexDirection: 'row',
     justifyContent: 'center', 
   },
   buttonText: {
@@ -359,10 +331,10 @@ const styles = StyleSheet.create({
     alignItems: 'center', 
     textAlign: 'center', 
     fontWeight: 'bold',
-    alignSelf: 'center'
+    alignSelf: 'center',
   },
   gradientBackground: {
-    flex: 1, // 전체 화면을 채우기 위해 flex: 1
+    flex: 1,
   },
 });
 
